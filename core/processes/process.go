@@ -5,7 +5,7 @@ import (
 	"geometris-go/core/interfaces"
 	"geometris-go/core/processes/response"
 	"geometris-go/logger"
-	"geometris-go/message"
+	message "geometris-go/message/interfaces"
 )
 
 //Process ...

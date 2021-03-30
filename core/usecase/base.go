@@ -2,16 +2,18 @@ package usecase
 
 import (
 	core "geometris-go/core/interfaces"
+	"geometris-go/repository"
 	"geometris-go/unitofwork/interfaces"
 )
 
 //Base ...
 type Base struct {
-	unitOfWork interfaces.IUnitOfWork
+	mysqlRepository  repository.IRepository
+	rabbitRepository repository.IRepository
 }
 
-func (b *Base) flushProcessResults(_response core.IProcessResponse) {
-	b.unitOfWork.AddDirtyStates(_response.States())
-	b.unitOfWork.AddDirtyTasks(_response.DirtyTasks())
-	b.unitOfWork.AddNewTasks(_response.NewTasks())
+func (b *Base) flushProcessResults(_response core.IProcessResponse, _uow interfaces.IUnitOfWork) {
+	_uow.AddDirtyStates(_response.States()...)
+	_uow.AddDirtyTasks(_response.DirtyTasks()...)
+	_uow.AddNewTasks(_response.NewTasks()...)
 }

@@ -2,13 +2,13 @@ package interfaces
 
 import (
 	"container/list"
-	"geometris-go/message"
+	"geometris-go/message/interfaces"
 )
 
 //ITask ...
 type ITask interface {
 	Start() *list.List
-	NewMessageArrived(message.IMessage, IDevice) *list.List
+	NewMessageArrived(interfaces.IMessage, IDevice) *list.List
 	Stop(string)
 	Actual()
 	IsClosed() bool

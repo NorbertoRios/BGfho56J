@@ -12,12 +12,17 @@ func NewRawLocationMessage(_serial, _data string) interfaces.IMessage {
 		Base: Base{
 			identity: fmt.Sprintf("geometris_%v", _serial),
 		},
-		RawData: strings.Split(_data, ","),
+		rawData: strings.Split(_data, ","),
 	}
 }
 
 //RawLocationMessage ...
 type RawLocationMessage struct {
 	Base
-	RawData []string
+	rawData []string
+}
+
+//RawData ...
+func (rlm *RawLocationMessage) RawData() []string {
+	return rlm.rawData
 }

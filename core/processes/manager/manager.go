@@ -9,12 +9,12 @@ import (
 )
 
 //BuildProcesses ...
-func BuildProcesses(_param24 string) interfaces.IProcesses {
+func BuildProcesses(_syncParam string) interfaces.IProcesses {
 	manager := &Processes{
 		mutex:     &sync.Mutex{},
 		processes: make(map[string]interfaces.IProcess),
 	}
-	if _param24 == "" {
+	if _syncParam == "" {
 		manager.addProcess("synch", synchronization.New())
 	}
 	return manager

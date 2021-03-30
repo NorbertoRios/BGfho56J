@@ -1,9 +1,7 @@
 package repository
 
-import "geometris-go/core/device"
-
 //IRepository interface for all repositories
 type IRepository interface {
-	Save(...device.Device) error
+	Save(...interface{}) error
 	Load(string) interface{}
 }

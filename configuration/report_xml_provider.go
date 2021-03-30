@@ -10,7 +10,7 @@ import (
 type xmlField struct {
 	ID   string `xml:"id,attr"`
 	Name string `xml:"name,attr"`
-	Size int    `xml:"size,attr"`
+	Type string `xml:"type,attr"`
 }
 
 type xmlReportConfiguration struct {
@@ -46,9 +46,9 @@ func (provider *XMLProvider) Provide() ([]Field, error) {
 	result := make([]Field, 0)
 	for _, xmlField := range xmlConfiguration.Fields {
 		field := Field{
-			ID:   xmlField.ID,
-			Name: xmlField.Name,
-			Size: xmlField.Size,
+			ID:        xmlField.ID,
+			Name:      xmlField.Name,
+			ValueType: xmlField.Type,
 		}
 		result = append(result, field)
 	}

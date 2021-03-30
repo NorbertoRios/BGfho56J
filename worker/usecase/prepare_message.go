@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"geometris-go/logger"
 	"geometris-go/message"
 	"geometris-go/message/messagetype"
 	"geometris-go/parser"
@@ -75,7 +74,7 @@ func (mr *PrepareMessage) PreparedMessage() interface{} {
 		}
 	default:
 		{
-			logger.Logger().WriteToLog(logger.Error, "[MessageArrivedUseCase | prepareMessage] Unexpected packet : \"", mr.rawMessage.RawData, "\" message type ", mr.rawMessage.MessageType)
+			//logger.Logger().WriteToLog(logger.Error, "[MessageArrivedUseCase | prepareMessage] Unexpected packet : \"", mr.rawMessage.RawData, "\" message type ", mr.rawMessage.MessageType)
 		}
 	}
 	return struct{}{}

@@ -2,16 +2,19 @@ package usecase
 
 import (
 	core "geometris-go/core/interfaces"
-	"geometris-go/unitofwork/interfaces"
+	"geometris-go/repository"
+	"geometris-go/unitofwork"
 )
 
 //NewAPIRequestUseCase ...
-func NewAPIRequestUseCase(_uow interfaces.IUnitOfWork, _device core.IDevice) *APIRequestUseCase {
+func NewAPIRequestUseCase(_mysql, _rabbit repository.IRepository, _device core.IDevice) *APIRequestUseCase {
 	usecase := &APIRequestUseCase{
+		Base: Base{
+			mysqlRepository:  _mysql,
+			rabbitRepository: _rabbit,
+		},
 		device: _device,
 	}
-	usecase.unitOfWork = _uow
-
 	return usecase
 }
 
@@ -23,8 +26,9 @@ type APIRequestUseCase struct {
 
 //Launch ...
 func (usecase *APIRequestUseCase) Launch(_request core.IRequest, extractor func(core.IDevice, core.IRequest) core.IExtractor) {
+	_uow := unitofwork.New(usecase.mysqlRepository, usecase.rabbitRepository)
 	process := extractor(usecase.device, _request).Extract()
 	processResp := process.NewRequest(_request, usecase.device)
-	usecase.flushProcessResults(processResp)
-	usecase.unitOfWork.Commit()
+	usecase.flushProcessResults(processResp, _uow)
+	_uow.Commit()
 }

@@ -7,22 +7,20 @@ import (
 	"geometris-go/core/processes/manager"
 	"geometris-go/core/sensors"
 	"geometris-go/logger"
-	"geometris-go/parser"
 	"sync"
 	"time"
 )
 
 //NewDevice ...
-func NewDevice(_identity string, _parameter24 string, _sensors map[string]sensors.ISensor, _channel connInterfaces.IChannel) interfaces.IDevice {
+func NewDevice(_identity string, _syncParam string, _sensors map[string]sensors.ISensor, _channel connInterfaces.IChannel) interfaces.IDevice {
 	return &Device{
-		identity: _identity,
-		//parser:              parser.NewGenxBinaryReportParser(_parameter24),
+		identity:            _identity,
 		LastActivity:        time.Now().UTC(),
 		LastStateUpdateTime: time.Now().UTC(),
 		CurrentState:        NewState(_sensors),
 		UDPChannel:          _channel,
 		Mutex:               &sync.Mutex{},
-		processes:           manager.BuildProcesses(_parameter24),
+		processes:           manager.BuildProcesses(_syncParam),
 	}
 }
 
@@ -102,8 +100,7 @@ func (device *Device) New24Param(_param24 string) {
 
 }
 
-//Parser ...
-func (device *Device) Parser() parser.IParser {
-	//return device.parser
-	return nil
+//SyncParam ...
+func (device *Device) SyncParam() string {
+	return ""
 }

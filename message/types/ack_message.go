@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 	"geometris-go/message/interfaces"
+	"strings"
 )
 
 //NewAckMessage ...
@@ -11,12 +12,28 @@ func NewAckMessage(_serial, _command string) interfaces.IMessage {
 		Base: Base{
 			identity: fmt.Sprintf("geometris_%v", _serial),
 		},
-		Command: _command,
+		commands: _command,
 	}
 }
 
 //AckMessage represents ack message
 type AckMessage struct {
 	Base
-	Command string
+	commands string
+}
+
+//Commands ...
+func (m *AckMessage) Commands() string {
+	return m.commands
+}
+
+//Parameters ...
+func (m *AckMessage) Parameters() map[string]string {
+	rawParams := strings.Split(m.commands, ";")
+	parameters := make(map[string]string)
+	for _, param := range rawParams {
+		keyValue := strings.Split(param, "=")
+		parameters[keyValue[0]] = keyValue[1]
+	}
+	return parameters
 }

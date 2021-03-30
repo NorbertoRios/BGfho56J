@@ -3,7 +3,7 @@ package worker
 import (
 	"geometris-go/connection/interfaces"
 	"geometris-go/interfaces/unitofwork"
-	"geometris-go/message"
+	message "geometris-go/message/interfaces"
 )
 
 //NewWorkerPool ...
@@ -19,16 +19,16 @@ type WorkersPool struct {
 }
 
 //Flush ...
-func (wp *WorkersPool) Flush(rMessage *message.RawMessage, channel interfaces.IChannel) {
-	data := &EntryData{RawMessage: rMessage, Channel: channel}
+func (wp *WorkersPool) Flush(message message.IMessage, channel interfaces.IChannel) {
+	data := &EntryData{RawMessage: message, Channel: channel}
 	for _, worker := range wp.Pool.all() {
-		if worker.DeviceExist(rMessage.Identity()) {
+		if worker.DeviceExist(message.Identity()) {
 			worker.Push(data)
 			return
 		}
 	}
 	worker := wp.Pool.next()
-	worker.NewDevice(rMessage.Identity())
+	worker.NewDevice(message.Identity())
 	worker.Push(data)
 }
 

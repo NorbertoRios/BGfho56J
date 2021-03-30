@@ -5,6 +5,13 @@ import (
 	"strings"
 )
 
+//NewString ...
+func NewString(_data string) *String {
+	return &String{
+		Data: _data,
+	}
+}
+
 //String str for string
 type String struct {
 	Data string
@@ -37,28 +44,34 @@ func (str *String) BitmaskStringToByte() byte {
 }
 
 //Byte returns byte from string
-func (str *String) Byte(base int) byte {
-	value, err := strconv.ParseUint(str.Data, base, 8)
+func (str *String) Byte() byte {
+	value, err := strconv.ParseUint(str.Data, 10, 8)
 	if err != nil {
 		return 0
 	}
 	return byte(value)
 }
 
-//Float32 string value to float32
-func (str *String) Float32() float32 {
-	value, _ := strconv.ParseFloat(str.Data, 32)
+//Float ...
+func (str *String) Float(bitSize int) interface{} {
+	value, _ := strconv.ParseFloat(str.Data, bitSize)
 	return float32(value)
 }
 
-//Int32 string value to int32
-func (str *String) Int32(base int) int32 {
-	value, _ := strconv.ParseInt(str.Data, base, 32)
+//IntValue ...
+func (str *String) IntValue() interface{} {
+	value, _ := strconv.ParseInt(str.Data, 10, 32)
+	return int(value)
+}
+
+//Int ...
+func (str *String) Int(bitSize int) interface{} {
+	value, _ := strconv.ParseInt(str.Data, 10, bitSize)
 	return int32(value)
 }
 
-//UInt16 string value to UInt16
-func (str *String) UInt16(base int) uint16 {
-	value, _ := strconv.ParseInt(str.Data, base, 16)
-	return uint16(value)
+//UInt ...
+func (str *String) UInt(bitSize int) interface{} {
+	value, _ := strconv.ParseInt(str.Data, 10, bitSize)
+	return value
 }

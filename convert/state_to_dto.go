@@ -1,27 +1,35 @@
 package convert
 
 import (
-	"geometris-go/core/sensors"
+	"geometris-go/convert/observer"
 	"geometris-go/dto"
+	"geometris-go/message/interfaces"
+	"geometris-go/message/types"
 )
 
 //NewStateToDTO ...
-func NewStateToDTO(_state []sensors.ISensor) *StateToDTO {
+func NewStateToDTO() *StateToDTO {
 	return &StateToDTO{
-		state: _state,
+		observable: observer.NewObservable(),
 	}
 }
 
 //StateToDTO ...
 type StateToDTO struct {
-	state []sensors.ISensor
+	observable *observer.Observable
 }
 
 //Convert ...
-func (std *StateToDTO) Convert() dto.IMessage {
+func (std *StateToDTO) Convert(_message interfaces.IMessage) dto.IMessage {
 	dtoMessage := dto.NewMessage()
-	for _, sensor := range std.state {
-		dtoMessage.AppendRange(sensor.ToDTO())
+	locationMessage, s := _message.(*types.LocationMessage)
+	if !s {
+		return dtoMessage
+	}
+	dtoMessage.SetValue("DevID", _message.Identity())
+	for _, sensor := range locationMessage.Sensors() {
+		hash := std.observable.Notify(sensor)
+		dtoMessage.AppendRange(hash)
 	}
 	return dtoMessage
 }

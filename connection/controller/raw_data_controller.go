@@ -2,26 +2,26 @@ package controller
 
 import (
 	"geometris-go/connection/interfaces"
-	"geometris-go/message"
+	"geometris-go/message/factory"
 	"geometris-go/worker"
 )
 
 //NewRawDataController ...
 func NewRawDataController(wp *worker.WorkersPool) *RawDataController {
 	return &RawDataController{
-		factory:     message.Factory(),
+		factory:     factory.New(),
 		workersPool: wp,
 	}
 }
 
 //RawDataController ...
 type RawDataController struct {
-	factory     *message.RawMessageFactory
+	factory     *factory.MessageFactory
 	workersPool *worker.WorkersPool
 }
 
 //Process ..
 func (controller *RawDataController) Process(packet []byte, channel interfaces.IChannel) {
-	rMessage := controller.factory.BuildRawMessage(packet)
+	rMessage := controller.factory.BuildMessage(packet)
 	controller.workersPool.Flush(rMessage, channel)
 }

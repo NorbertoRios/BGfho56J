@@ -5,8 +5,7 @@ import (
 	"geometris-go/core/interfaces"
 	"geometris-go/core/processes/states"
 	"geometris-go/core/processes/watchdog"
-	"geometris-go/message"
-	"strings"
+	"geometris-go/message/types"
 )
 
 //NewInProgressState ..
@@ -25,19 +24,18 @@ type InProgress struct {
 //NewMessageArrived ...
 func (s *InProgress) NewMessageArrived(msg interface{}, _device interfaces.IDevice, _task interfaces.ITask) *list.List {
 	switch msg.(type) {
-	case *message.ParametersMessage:
+	case *types.ParametersMessage:
 		{
-			param, _ := msg.(*message.ParametersMessage)
-			if value, f := param.Parameters["24"]; f {
+			param, _ := msg.(*types.ParametersMessage)
+			if value, f := param.Parameters()["12"]; f {
 				s.complete(_device, _task, value)
 			}
 		}
-	case *message.AckMessage:
+	case *types.AckMessage:
 		{
-			ack, _ := msg.(*message.AckMessage)
-			param := strings.Split(ack.Value, "=")[0]
-			if param == "24" {
-				s.complete(_device, _task, ack.Value)
+			ack, _ := msg.(*types.AckMessage)
+			if value, f := ack.Parameters()["12"]; f {
+				s.complete(_device, _task, value)
 			}
 		}
 	}

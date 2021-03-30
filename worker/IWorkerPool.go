@@ -2,11 +2,11 @@ package worker
 
 import (
 	"geometris-go/connection/interfaces"
-	"geometris-go/message"
+	message "geometris-go/message/interfaces"
 )
 
 //IWorkerPool ...
 type IWorkerPool interface {
-	Flush(*message.RawMessage, interfaces.IChannel)
+	Flush(message.IMessage, interfaces.IChannel)
 	Run()
 }

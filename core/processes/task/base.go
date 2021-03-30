@@ -4,7 +4,7 @@ import (
 	"container/list"
 	"geometris-go/core/interfaces"
 	"geometris-go/core/processes/states"
-	"geometris-go/message"
+	message "geometris-go/message/interfaces"
 )
 
 //Task ...
