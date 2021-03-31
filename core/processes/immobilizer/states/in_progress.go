@@ -29,7 +29,7 @@ func (s *InProgress) NewMessageArrived(msg interface{}, _device interfaces.IDevi
 	case *types.AckMessage:
 		{
 			ack, _ := msg.(*types.AckMessage)
-			if ack.Parameters() == s.ackMessage {
+			if ack.Commands() == s.ackMessage {
 				s.watchdog.Stop()
 				_task.ChangeState(states.NewDone(_task.Request().(interfaces.IRequest)))
 			}

@@ -4,5 +4,5 @@ import "geometris-go/core/sensors"
 
 //IObserver ...
 type IObserver interface {
-	Convert(sensors.ISensor) map[string]interface{}
+	Build(string, string, string) []sensors.ISensor
 }

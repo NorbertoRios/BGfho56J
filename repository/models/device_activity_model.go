@@ -1,16 +1,11 @@
 package models
 
 import (
-	"geometris-go/core/interfaces"
 	"time"
 )
 
 //NewDeviceActivity ...
-func NewDeviceActivity(_device interfaces.IDevice) *DeviceActivity {
-	// state := _device.CurrentDeviceState()
-	// for _, deviceSensor := range state {
-	// 	return deviceSensor
-	// }
+func NewDeviceActivity() *DeviceActivity {
 	return nil
 }
 

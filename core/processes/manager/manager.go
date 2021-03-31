@@ -16,7 +16,10 @@ func BuildProcesses(_syncParam string) interfaces.IProcesses {
 	}
 	if _syncParam == "" {
 		manager.addProcess("synch", synchronization.New())
+	} else {
+
 	}
+
 	return manager
 }
 

@@ -4,5 +4,4 @@ package sensors
 type ISensor interface {
 	Symbol() string
 	Value() interface{}
-	ParamID() string
 }

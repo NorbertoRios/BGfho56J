@@ -10,7 +10,7 @@ import (
 //IDevice ...
 type IDevice interface {
 	Send(string) bool
-	State() map[string]sensors.ISensor
+	State() IDeviceState
 	LastActivityTime() time.Time
 	NewChannel(connInterfaces.IChannel)
 	NewState([]sensors.ISensor)

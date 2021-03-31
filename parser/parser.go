@@ -3,6 +3,7 @@ package parser
 import (
 	"geometris-go/configuration"
 	"geometris-go/core/sensors"
+	"geometris-go/core/sensors/builder"
 	"geometris-go/logger"
 	message "geometris-go/message/interfaces"
 	messageTypes "geometris-go/message/types"
@@ -40,30 +41,14 @@ func (p *Parser) Parse(_rawMessage message.IMessage, _param12 string) message.IM
 		logger.Logger().WriteToLog(logger.Error, "[Parser | Parse] Unexpected type for message: "+"_rawMessage"+". Identity: ", _rawMessage.Identity())
 		return _rawMessage
 	}
+	sb := builder.NewSensorBuilder()
 	keyValue := strings.Split(_param12, "=")
 	fields := p.reportConfig.GetFieldsByIds(strings.Split(keyValue[1], "."))
 	messageSensors := []sensors.ISensor{}
 	values := rawMessage.RawData()
 	for i, field := range fields {
 		value := values[i]
-		sensor := sensors.NewSensor(field.ID, field.Name, p.castValueToType(value, field.ValueType))
-		messageSensors = append(messageSensors, sensor)
+		messageSensors = append(messageSensors, sb.Build(field.Name, value, field.ValueType)...)
 	}
 	return messageTypes.NewLocationMessage(_rawMessage.Identity(), messageSensors)
-}
-
-func (p *Parser) castValueToType(_value, _type string) interface{} {
-	strValue := types.NewString(_value)
-	switch _type {
-	case "float64":
-		return strValue.Float(64)
-	case "uint32":
-		return strValue.UInt(32)
-	case "int":
-		return strValue.IntValue()
-	case "byte":
-		return strValue.Byte()
-	default:
-		return _value
-	}
 }

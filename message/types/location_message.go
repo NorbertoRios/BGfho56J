@@ -26,7 +26,7 @@ type LocationMessage struct {
 //Ack ...
 func (lm *LocationMessage) Ack() string {
 	for _, sensor := range lm.sensors {
-		if sensor.ParamID() == "36" {
+		if sensor.Symbol() == "TimeStamp" {
 			return fmt.Sprintf("ACK %v", sensor.Value())
 		}
 	}

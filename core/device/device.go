@@ -84,10 +84,10 @@ func (device *Device) LastActivityTime() time.Time {
 }
 
 //State returns device current state
-func (device *Device) State() map[string]sensors.ISensor {
+func (device *Device) State() interfaces.IDeviceState {
 	device.Mutex.Lock()
 	defer device.Mutex.Unlock()
-	return device.CurrentState.State()
+	return device.CurrentState
 }
 
 //Processes ...
