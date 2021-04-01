@@ -4,7 +4,7 @@ package interfaces
 type IProcessResponse interface {
 	AppendNewTask(ITask)
 	AppendDirtyTask(ITask)
-	AppendState(IDeviceState)
+	AppendState(...IDeviceState)
 	NewTasks() []ITask
 	DirtyTasks() []ITask
 	States() []IDeviceState

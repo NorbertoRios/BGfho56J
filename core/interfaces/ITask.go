@@ -15,4 +15,5 @@ type ITask interface {
 	Request() IRequest
 	ChangeState(ITaskState)
 	FacadeResponse() string
+	Pause()
 }

@@ -1,12 +1,15 @@
 package worker
 
-import "geometris-go/interfaces/unitofwork"
+import (
+	"geometris-go/repository"
+)
 
 //NewPool ...
-func NewPool(workersCount int, _uow unitofwork.IUnitOfWork) *Pool {
+func NewPool(workersCount int, _mysql, rabbit repository.IRepository) *Pool {
 	_workers := []IWorker{}
 	for i := 0; i < workersCount; i++ {
-		w := NewWorker(_uow)
+		w := NewWorker(_mysql, rabbit)
+		go w.Run()
 		_workers = append(_workers, w)
 	}
 	return &Pool{

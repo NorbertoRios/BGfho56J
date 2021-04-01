@@ -2,14 +2,14 @@ package worker
 
 import (
 	"geometris-go/connection/interfaces"
-	"geometris-go/interfaces/unitofwork"
-	message "geometris-go/message/interfaces"
+	"geometris-go/message/factory"
+	"geometris-go/repository"
 )
 
 //NewWorkerPool ...
-func NewWorkerPool(workersCount int, _uow unitofwork.IUnitOfWork) IWorkerPool {
+func NewWorkerPool(workersCount int, _mysql, _rabbit repository.IRepository) IWorkerPool {
 	return &WorkersPool{
-		Pool: NewPool(workersCount, _uow),
+		Pool: NewPool(workersCount, _mysql, _rabbit),
 	}
 }
 
@@ -19,8 +19,10 @@ type WorkersPool struct {
 }
 
 //Flush ...
-func (wp *WorkersPool) Flush(message message.IMessage, channel interfaces.IChannel) {
-	data := &EntryData{RawMessage: message, Channel: channel}
+func (wp *WorkersPool) Flush(rawData []byte, channel interfaces.IChannel) {
+	messageFactory := factory.New()
+	message := messageFactory.BuildMessage(rawData)
+	data := &EntryData{Message: message, Channel: channel}
 	for _, worker := range wp.Pool.all() {
 		if worker.DeviceExist(message.Identity()) {
 			worker.Push(data)

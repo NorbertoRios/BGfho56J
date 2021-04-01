@@ -9,7 +9,7 @@ import (
 )
 
 //NewInProgressState ..
-func NewInProgressState(_paramMessage string, _duration int, _task interfaces.ITask) *InProgress {
+func NewInProgressState() interfaces.ITaskState {
 	return &InProgress{}
 }
 
@@ -20,9 +20,9 @@ type InProgress struct {
 
 //NewMessageArrived ...
 func (s *InProgress) NewMessageArrived(msg interface{}, _device interfaces.IDevice, _task interfaces.ITask) *list.List {
-	locationMessage, f := msg.(*types.RawLocationMessage)
+	locationMessage, f := msg.(*types.LocationMessage)
 	cList := list.New()
-	if !f {
+	if !f || locationMessage == nil {
 		return cList
 	}
 	_device.NewState(locationMessage.Sensors())

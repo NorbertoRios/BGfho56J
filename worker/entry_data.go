@@ -2,11 +2,11 @@ package worker
 
 import (
 	"geometris-go/connection/interfaces"
-	"geometris-go/message"
+	message "geometris-go/message/interfaces"
 )
 
 //EntryData ...
 type EntryData struct {
-	RawMessage *message.RawMessage
-	Channel    interfaces.IChannel
+	Message message.IMessage
+	Channel interfaces.IChannel
 }

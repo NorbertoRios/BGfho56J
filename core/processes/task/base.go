@@ -18,6 +18,11 @@ func (t *Task) Start() *list.List {
 	return t.CurrentState.Start(t)
 }
 
+//Pause ...
+func (t *Task) Pause() {
+
+}
+
 //FacadeResponse ...
 func (t *Task) FacadeResponse() string {
 	return t.CurrentState.FacadeResponse()

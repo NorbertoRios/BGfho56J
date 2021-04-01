@@ -26,8 +26,8 @@ func (r *ProcessResponse) States() []interfaces.IDeviceState {
 }
 
 //AppendState ...
-func (r *ProcessResponse) AppendState(_state interfaces.IDeviceState) {
-	r.states = append(r.states, _state)
+func (r *ProcessResponse) AppendState(_state ...interfaces.IDeviceState) {
+	r.states = append(r.states, _state...)
 }
 
 //AppendNewTask ...

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"geometris-go/core/interfaces"
 	"geometris-go/core/processes/immobilizer"
+	"geometris-go/core/processes/message"
 	"geometris-go/core/processes/synchronization"
 	"sync"
 )
@@ -17,7 +18,7 @@ func BuildProcesses(_syncParam string) interfaces.IProcesses {
 	if _syncParam == "" {
 		manager.addProcess("synch", synchronization.New())
 	} else {
-
+		manager.addProcess("location", message.New(_syncParam))
 	}
 
 	return manager

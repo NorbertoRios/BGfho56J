@@ -1,15 +1,16 @@
 package worker
 
 import (
-	"geometris-go/interfaces/unitofwork"
-	"geometris-go/worker/usecase"
+	"geometris-go/core/usecase"
+	"geometris-go/repository"
 	"sync"
 )
 
 //NewWorker ...
-func NewWorker(_uow unitofwork.IUnitOfWork) *Worker {
+func NewWorker(_mysql, _rabbit repository.IRepository) *Worker {
 	return &Worker{
-		Uow:            _uow,
+		mysql:          _mysql,
+		rabbit:         _rabbit,
 		messageChannel: make(chan *EntryData, 1000000),
 		Devices:        make(map[string]bool),
 		Mutex:          &sync.Mutex{},
@@ -19,7 +20,8 @@ func NewWorker(_uow unitofwork.IUnitOfWork) *Worker {
 //Worker ...
 type Worker struct {
 	Mutex          *sync.Mutex
-	Uow            unitofwork.IUnitOfWork
+	mysql          repository.IRepository
+	rabbit         repository.IRepository
 	messageChannel chan *EntryData
 	Devices        map[string]bool
 }
@@ -49,17 +51,8 @@ func (w *Worker) Run() {
 		select {
 		case entryData := <-w.messageChannel:
 			{
-				device := w.Uow.Device(entryData.RawMessage.Identity())
-				if device == nil {
-					w.Uow.Register(entryData.RawMessage.Identity(), entryData.Channel)
-					device = w.Uow.Device(entryData.RawMessage.Identity())
-				} else {
-					device.NewChannel(entryData.Channel)
-				}
-				usecase.NewMessageIncomeUseCase(entryData.RawMessage, device, w.Uow).Launch()
-				// if !w.uow.Commit() {
-				// 	logger.Logger().WriteToLog(logger.Fatal, "[Worker | Run] Something went wrong while commit changes to database")
-				// }
+				usecase := usecase.NewUDPMessageUseCase(w.mysql, w.rabbit)
+				usecase.Launch(entryData.Message, entryData.Channel)
 			}
 		}
 	}

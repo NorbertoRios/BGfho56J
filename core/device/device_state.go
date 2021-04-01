@@ -42,3 +42,14 @@ func (s *State) State() map[string]sensors.ISensor {
 	defer s.mutex.Unlock()
 	return s.deviceSensors
 }
+
+//Sensors ...
+func (s *State) Sensors() []sensors.ISensor {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	deviceSensors := []sensors.ISensor{}
+	for _, v := range s.deviceSensors {
+		deviceSensors = append(deviceSensors, v)
+	}
+	return deviceSensors
+}

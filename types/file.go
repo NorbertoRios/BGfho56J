@@ -10,21 +10,27 @@ type IFile interface {
 	Path() string
 }
 
+//NewFileWithDir ...
+func NewFileWithDir(_dir, _path string) *File {
+	return &File{
+		filePath: _path,
+		dir:      _dir,
+	}
+}
+
 //NewFile ...
 func NewFile(_path string) *File {
-	return &File{
-		FilePath: _path,
-	}
+	return NewFileWithDir(filepath.Dir(os.Args[0]), _path)
 }
 
 //File utils for files (configs)
 type File struct {
-	FilePath string
+	filePath string
+	dir      string
 }
 
 //Path returns absolute file path
 func (file File) Path() string {
-	dir := filepath.Dir(os.Args[0])
-	absPath, _ := filepath.Abs(dir + file.FilePath)
+	absPath, _ := filepath.Abs(file.dir + file.filePath)
 	return absPath
 }

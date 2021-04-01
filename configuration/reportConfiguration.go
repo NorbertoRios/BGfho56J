@@ -3,7 +3,20 @@ package configuration
 import (
 	"fmt"
 	"geometris-go/logger"
+	"geometris-go/types"
 )
+
+var config *ReportConfiguration
+
+//ReportConfig ...
+func ReportConfig() *ReportConfiguration {
+	if config == nil {
+		file := types.NewFile("/config/initialize/ReportConfiguration.xml")
+		provider := ConstructXMLProvider(file)
+		config = constructReportConfiguration(provider)
+	}
+	return config
+}
 
 //ReportConfiguration represents report config
 type ReportConfiguration struct {
@@ -11,10 +24,10 @@ type ReportConfiguration struct {
 }
 
 //ConstructReportConfiguration create report config instance
-func ConstructReportConfiguration(provider IReportConfigProvider) *ReportConfiguration {
+func constructReportConfiguration(provider IReportConfigProvider) *ReportConfiguration {
 	fields, err := provider.Provide()
 	if err != nil {
-		logger.Logger().WriteToLog(logger.Fatal, "[ReportConfiguration | ConstructReportConfiguration] Error while constructing report configuration. Error: ", err)
+		logger.Logger().WriteToLog(logger.Fatal, "[ReportConfiguration | constructReportConfiguration] Error while constructing report configuration. Error: ", err)
 	}
 	configuration := &ReportConfiguration{
 		Fields: fields,

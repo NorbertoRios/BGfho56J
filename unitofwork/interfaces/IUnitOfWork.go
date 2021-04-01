@@ -1,6 +1,8 @@
 package interfaces
 
-import "geometris-go/core/interfaces"
+import (
+	"geometris-go/core/interfaces"
+)
 
 //IUnitOfWork ...
 type IUnitOfWork interface {

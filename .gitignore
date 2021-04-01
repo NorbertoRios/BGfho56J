@@ -3,3 +3,4 @@ credentials.json
 *.log
 *.pdf
 *.uxf
+__debug_bin

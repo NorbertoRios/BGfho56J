@@ -2,6 +2,7 @@ package interfaces
 
 import (
 	"container/list"
+	"context"
 	"geometris-go/message/interfaces"
 )
 
@@ -11,7 +12,7 @@ type IProcess interface {
 	NewRequest(interface{}, IDevice) IProcessResponse
 	MessageArrived(interfaces.IMessage, IDevice) IProcessResponse
 	Stop(IDevice, string)
-	Pause()
+	Pause(context.Context)
 	TasksHistory() *list.List
 	Current() ITask
 }

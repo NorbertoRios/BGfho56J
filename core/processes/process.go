@@ -2,6 +2,7 @@ package process
 
 import (
 	"container/list"
+	"context"
 	"geometris-go/core/interfaces"
 	"geometris-go/core/processes/response"
 	"geometris-go/logger"
@@ -31,8 +32,8 @@ func (p *Process) Stop(_device interfaces.IDevice, _description string) {
 }
 
 //Pause ...
-func (p *Process) Pause() {
-
+func (p *Process) Pause(cnt context.Context) {
+	p.CurrentTask.Pause()
 }
 
 //TasksCompetitiveness ...

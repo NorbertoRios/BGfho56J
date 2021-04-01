@@ -2,7 +2,7 @@ package usecase
 
 import (
 	connInterfaces "geometris-go/connection/interfaces"
-	"geometris-go/message/factory"
+	"geometris-go/message/interfaces"
 	"geometris-go/repository"
 	"geometris-go/storage"
 	"geometris-go/unitofwork"
@@ -10,12 +10,10 @@ import (
 
 //NewUDPMessageUseCase ...
 func NewUDPMessageUseCase(_mysql, _rabbit repository.IRepository) *UDPMessageUseCase {
-	return &UDPMessageUseCase{
-		Base: Base{
-			mysqlRepository:  _mysql,
-			rabbitRepository: _rabbit,
-		},
-	}
+	usecase := &UDPMessageUseCase{}
+	usecase.mysqlRepository = _mysql
+	usecase.rabbitRepository = _rabbit
+	return usecase
 }
 
 //UDPMessageUseCase ...
@@ -24,13 +22,12 @@ type UDPMessageUseCase struct {
 }
 
 //Launch ...
-func (usecase *UDPMessageUseCase) Launch(rawData []byte, _channel connInterfaces.IChannel) {
-	messageFactory := factory.New()
-	message := messageFactory.BuildMessage(rawData)
+func (usecase *UDPMessageUseCase) Launch(message interfaces.IMessage, _channel connInterfaces.IChannel) {
 	device := storage.Storage().Device(message.Identity())
 	// if device == nil {
 
 	// }
+	device.NewChannel(_channel)
 	uow := unitofwork.New(usecase.mysqlRepository, usecase.rabbitRepository)
 	processes := device.Processes().All()
 	for _, p := range processes {
@@ -39,14 +36,3 @@ func (usecase *UDPMessageUseCase) Launch(rawData []byte, _channel connInterfaces
 	}
 	uow.Commit()
 }
-
-//func (usecase *UDPMessageUseCase) createDevice(_message message.IMessage) core.IDevice {
-//	deviceActivity := usecase.mysqlRepository.Load(_message.Identity()).(*models.DeviceActivity)
-//	//Convert activity to sensors
-//	processes := device.Processes().All()
-//	for _, p := range processes {
-//		processResp := p.NewRequest(_message, device)
-//		usecase.flushProcessResults(processResp)
-//	}
-//	return device
-//}

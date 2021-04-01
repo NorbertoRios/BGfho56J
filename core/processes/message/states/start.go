@@ -3,8 +3,8 @@ package states
 import (
 	"container/list"
 	"geometris-go/core/interfaces"
-	"geometris-go/core/processes/commands"
 	"geometris-go/core/processes/states"
+	"geometris-go/logger"
 )
 
 //NewStartState ...
@@ -20,8 +20,8 @@ type Start struct {
 //Start ...
 func (s *Start) Start(_task interfaces.ITask) *list.List {
 	cList := list.New()
-	cList.PushBack(commands.NewSendMessageCommand("DIAG PARAMS=12 VIAUDP"))
-	inProgress := NewInProgressState("DIAG PARAMS=12 VIAUDP", 300, _task)
+	logger.Logger().WriteToLog(logger.Info, "[MessageProcess | StartState] Message process is started")
+	inProgress := NewInProgressState()
 	_task.ChangeState(inProgress)
 	return cList
 }

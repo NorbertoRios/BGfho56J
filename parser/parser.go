@@ -7,18 +7,16 @@ import (
 	"geometris-go/logger"
 	message "geometris-go/message/interfaces"
 	messageTypes "geometris-go/message/types"
-	"geometris-go/types"
 	"strings"
 )
 
 var parser *Parser
 
 //New ...
-func New(file *types.File) *Parser {
+func New() *Parser {
 	if parser == nil {
-		provider := configuration.ConstructXMLProvider(file)
 		parser = &Parser{
-			reportConfig: configuration.ConstructReportConfiguration(provider),
+			reportConfig: configuration.ReportConfig(),
 		}
 	}
 	return parser

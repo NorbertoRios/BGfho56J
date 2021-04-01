@@ -4,22 +4,27 @@ import (
 	"container/list"
 	"geometris-go/core/interfaces"
 	process "geometris-go/core/processes"
-	"geometris-go/core/processes/immobilizer/task"
+
+	"geometris-go/core/processes/message/states"
+	"geometris-go/core/processes/message/task"
 	"geometris-go/core/processes/response"
 	message "geometris-go/message/interfaces"
+	"geometris-go/message/types"
 	messageTypes "geometris-go/message/types"
 	"geometris-go/parser"
-	"geometris-go/types"
 )
 
 //New ...
 func New(_syncParam string) interfaces.IProcess {
-	return &Process{
+	p := &Process{
 		Process: process.Process{
-			History: list.New(),
+			History:     list.New(),
+			CurrentTask: task.New(),
 		},
 		syncParam: _syncParam,
 	}
+	p.CurrentTask.ChangeState(states.NewInProgressState())
+	return p
 }
 
 //Process ....
@@ -50,8 +55,13 @@ func (p *Process) TasksCompetitiveness(_newTask interfaces.ITask, _device interf
 //MessageArrived ...
 func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.IDevice) interfaces.IProcessResponse {
 	resp := response.NewProcessResponse()
-	messageParser := parser.New(types.NewFile("/config/initialize/ReportConfiguration.xml"))
+	if _, s := _message.(*types.RawLocationMessage); !s {
+		return resp
+	}
+	messageParser := parser.New()
 	locationMessage := messageParser.Parse(_message, p.syncParam).(*messageTypes.LocationMessage)
-	p.CurrentTask.NewMessageArrived(locationMessage, _device)
+	commads := p.CurrentTask.NewMessageArrived(locationMessage, _device)
+	p.ExecuteCommands(commads, _device)
 	resp.AppendState(_device.State())
+	return resp
 }
