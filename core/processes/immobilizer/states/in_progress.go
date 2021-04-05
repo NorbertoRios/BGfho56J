@@ -1,44 +1,20 @@
 package states
 
 import (
-	"container/list"
 	"geometris-go/core/interfaces"
 	"geometris-go/core/processes/states"
 	"geometris-go/core/processes/watchdog"
-	"geometris-go/message/types"
 )
 
 //NewInProgressState ...
-func NewInProgressState(_ackMessage string, _timeout int, _task interfaces.ITask) *InProgress {
-	return &InProgress{
-		ackMessage: _ackMessage,
-		watchdog:   watchdog.New(_task, NewAnyMessageState(_ackMessage), _timeout),
-	}
+func NewInProgressState(_ackMessage string, _timeout int, _task interfaces.ITask) interfaces.IInProgressState {
+	state := &InProgress{}
+	state.AckMessage = _ackMessage
+	state.Watchdog = watchdog.New(_task, states.NewAnyMessageState(_ackMessage, NewInProgressState), _timeout)
+	return state
 }
 
 //InProgress ...
 type InProgress struct {
-	states.Base
-	ackMessage string
-	watchdog   *watchdog.Watchdog
-}
-
-//NewMessageArrived ...
-func (s *InProgress) NewMessageArrived(msg interface{}, _device interfaces.IDevice, _task interfaces.ITask) *list.List {
-	switch msg.(type) {
-	case *types.AckMessage:
-		{
-			ack, _ := msg.(*types.AckMessage)
-			if ack.Commands() == s.ackMessage {
-				s.watchdog.Stop()
-				_task.ChangeState(states.NewDone(_task.Request().(interfaces.IRequest)))
-			}
-		}
-	}
-	return list.New()
-}
-
-//Run ...
-func (s *InProgress) Run() {
-	s.watchdog.Start()
+	states.InProgress
 }

@@ -7,28 +7,22 @@ import (
 )
 
 //NewAPIRequestUseCase ...
-func NewAPIRequestUseCase(_mysql, _rabbit repository.IRepository, _device core.IDevice) *APIRequestUseCase {
-	usecase := &APIRequestUseCase{
-		Base: Base{
-			mysqlRepository:  _mysql,
-			rabbitRepository: _rabbit,
-		},
-		device: _device,
-	}
+func NewAPIRequestUseCase(_mysql, _rabbit repository.IRepository) core.IAPIUseCase {
+	usecase := &APIRequestUseCase{}
+	usecase.mysqlRepository = _mysql
+	usecase.rabbitRepository = _rabbit
 	return usecase
 }
 
 //APIRequestUseCase ...
 type APIRequestUseCase struct {
 	Base
-	device core.IDevice
 }
 
 //Launch ...
-func (usecase *APIRequestUseCase) Launch(_request core.IRequest, extractor func(core.IDevice, core.IRequest) core.IExtractor) {
+func (usecase *APIRequestUseCase) Launch(_request core.IRequest, _device core.IDevice, _process core.IProcess) {
 	_uow := unitofwork.New(usecase.mysqlRepository, usecase.rabbitRepository)
-	process := extractor(usecase.device, _request).Extract()
-	processResp := process.NewRequest(_request, usecase.device)
+	processResp := _process.NewRequest(_request, _device)
 	usecase.flushProcessResults(processResp, _uow)
 	_uow.Commit()
 }

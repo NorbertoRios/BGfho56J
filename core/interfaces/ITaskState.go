@@ -10,6 +10,8 @@ type ITaskState interface {
 	IsClosed() bool
 	Start(ITask) *list.List
 	Stop(ITask) *list.List
+	Resume(ITask)
+	Pause(ITask)
 	TimeExpired(ITask)
 	FacadeResponse() string
 }

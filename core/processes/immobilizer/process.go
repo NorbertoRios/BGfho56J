@@ -5,7 +5,6 @@ import (
 	"geometris-go/core/interfaces"
 	process "geometris-go/core/processes"
 	"geometris-go/core/processes/immobilizer/task"
-	"geometris-go/core/processes/response"
 )
 
 //New ...
@@ -27,22 +26,6 @@ type Process struct {
 
 //NewRequest ....
 func (p *Process) NewRequest(_request interface{}, _device interfaces.IDevice) interfaces.IProcessResponse {
-	immoReq, s := _request.(interfaces.IImmoRequest)
-	if !s {
-		return response.NewProcessResponse()
-	}
+	immoReq, _ := _request.(interfaces.IImmoRequest)
 	return p.TasksCompetitiveness(task.New(immoReq), _device)
-}
-
-//TasksCompetitiveness ...
-func (p *Process) TasksCompetitiveness(_newTask interfaces.ITask, _device interfaces.IDevice) interfaces.IProcessResponse {
-	resp := response.NewProcessResponse()
-	if p.CurrentTask != nil {
-		p.CurrentTask.Stop("Deprecated")
-		resp.AppendDirtyTask(p.CurrentTask)
-	}
-	p.CurrentTask = _newTask
-	p.ExecuteCommands(p.CurrentTask.Start(), _device)
-	resp.AppendNewTask(_newTask)
-	return resp
 }

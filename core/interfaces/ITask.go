@@ -16,4 +16,5 @@ type ITask interface {
 	ChangeState(ITaskState)
 	FacadeResponse() string
 	Pause()
+	Resume()
 }

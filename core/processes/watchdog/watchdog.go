@@ -6,7 +6,7 @@ import (
 )
 
 //New ...
-func New(_task interfaces.ITask, _state interfaces.ITaskState, _duration int) *Watchdog {
+func New(_task interfaces.ITask, _state interfaces.ITaskState, _duration int) interfaces.IWatchdog {
 	return &Watchdog{
 		task:     _task,
 		state:    _state,

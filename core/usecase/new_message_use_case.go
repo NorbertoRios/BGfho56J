@@ -2,6 +2,8 @@ package usecase
 
 import (
 	connInterfaces "geometris-go/connection/interfaces"
+	"geometris-go/core/device"
+	"geometris-go/core/sensors"
 	"geometris-go/message/interfaces"
 	"geometris-go/repository"
 	"geometris-go/storage"
@@ -23,15 +25,15 @@ type UDPMessageUseCase struct {
 
 //Launch ...
 func (usecase *UDPMessageUseCase) Launch(message interfaces.IMessage, _channel connInterfaces.IChannel) {
-	device := storage.Storage().Device(message.Identity())
-	// if device == nil {
-
-	// }
-	device.NewChannel(_channel)
+	dev := storage.Storage().Device(message.Identity())
+	if dev == nil {
+		dev = device.NewDevice(message.Identity(), "", make(map[string]sensors.ISensor), _channel)
+	}
+	dev.NewChannel(_channel)
 	uow := unitofwork.New(usecase.mysqlRepository, usecase.rabbitRepository)
-	processes := device.Processes().All()
+	processes := dev.Processes().All()
 	for _, p := range processes {
-		processResp := p.MessageArrived(message, device)
+		processResp := p.MessageArrived(message, dev)
 		usecase.flushProcessResults(processResp, uow)
 	}
 	uow.Commit()

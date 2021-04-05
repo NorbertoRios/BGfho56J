@@ -1,7 +1,9 @@
 package worker
 
 import (
+	"fmt"
 	"geometris-go/connection/interfaces"
+	"geometris-go/logger"
 	"geometris-go/message/factory"
 	"geometris-go/repository"
 )
@@ -23,8 +25,9 @@ func (wp *WorkersPool) Flush(rawData []byte, channel interfaces.IChannel) {
 	messageFactory := factory.New()
 	message := messageFactory.BuildMessage(rawData)
 	data := &EntryData{Message: message, Channel: channel}
-	for _, worker := range wp.Pool.all() {
+	for id, worker := range wp.Pool.all() {
 		if worker.DeviceExist(message.Identity()) {
+			logger.Logger().WriteToLog(logger.Info, fmt.Sprintf("[WorkersPool | Flush] Message %v added to worker: %v", message.Identity(), id))
 			worker.Push(data)
 			return
 		}

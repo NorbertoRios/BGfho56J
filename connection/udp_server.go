@@ -11,6 +11,7 @@ import (
 //ConstructUDPServer returns new UDP server
 func ConstructUDPServer(host string, port int, _controller *controller.RawDataController) *UDPServer {
 	addr := fmt.Sprintf("%v:%v", host, port)
+	logger.Logger().WriteToLog(logger.Info, "[UDPServer] Start at: ", addr)
 	udpAddr, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
 		logger.Logger().WriteToLog(logger.Fatal, "[UDPServer] Wrong UDP Address: ", addr)

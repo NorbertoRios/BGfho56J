@@ -13,6 +13,7 @@ import (
 type Process struct {
 	History     *list.List
 	CurrentTask interfaces.ITask
+	CuncelFunc  context.CancelFunc
 }
 
 //Start ...
@@ -32,20 +33,25 @@ func (p *Process) Stop(_device interfaces.IDevice, _description string) {
 }
 
 //Pause ...
-func (p *Process) Pause(cnt context.Context) {
+func (p *Process) Pause() {
 	p.CurrentTask.Pause()
+}
+
+//Resume ...
+func (p *Process) Resume() {
+	p.CurrentTask.Resume()
 }
 
 //TasksCompetitiveness ...
 func (p *Process) TasksCompetitiveness(_newTask interfaces.ITask, _device interfaces.IDevice) interfaces.IProcessResponse {
-	resp := new(response.ProcessResponse)
+	resp := response.NewProcessResponse()
 	if p.CurrentTask != nil {
 		p.CurrentTask.Stop("Deprecated")
-		p.SaveTask(p.CurrentTask)
 		resp.AppendDirtyTask(p.CurrentTask)
 	}
-	resp.AppendNewTask(_newTask)
 	p.CurrentTask = _newTask
+	p.ExecuteCommands(p.CurrentTask.Start(), _device)
+	resp.AppendNewTask(_newTask)
 	return resp
 }
 
@@ -59,6 +65,9 @@ func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.I
 		resp.AppendDirtyTask(p.CurrentTask)
 		p.SaveTask(p.CurrentTask)
 		p.CurrentTask = nil
+		if p.CuncelFunc != nil {
+			p.CuncelFunc()
+		}
 	}
 	return resp
 }

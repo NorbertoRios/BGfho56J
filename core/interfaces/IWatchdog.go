@@ -2,7 +2,6 @@ package interfaces
 
 //IWatchdog ...
 type IWatchdog interface {
-	Start(ITask)
+	Start()
 	Stop()
-	Started() bool
 }

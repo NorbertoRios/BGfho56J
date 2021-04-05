@@ -14,6 +14,14 @@ func (s *Base) NewMessageArrived(_message interface{}, _device interfaces.IDevic
 	return list.New()
 }
 
+//Pause ...
+func (s *Base) Pause(_task interfaces.ITask) {
+}
+
+//Resume ...
+func (s *Base) Resume(_task interfaces.ITask) {
+}
+
 //IsClosed ...
 func (s *Base) IsClosed() bool {
 	return false

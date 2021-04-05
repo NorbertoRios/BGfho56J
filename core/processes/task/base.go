@@ -20,7 +20,7 @@ func (t *Task) Start() *list.List {
 
 //Pause ...
 func (t *Task) Pause() {
-
+	t.CurrentState.Pause(t)
 }
 
 //FacadeResponse ...
@@ -36,6 +36,11 @@ func (t *Task) NewMessageArrived(_message message.IMessage, _device interfaces.I
 //Stop ...
 func (t *Task) Stop(_description string) {
 	t.ChangeState(states.NewClose(t.FacadeRequest, _description))
+}
+
+//Resume ...
+func (t *Task) Resume() {
+	t.CurrentState.Resume(t)
 }
 
 //Actual ...

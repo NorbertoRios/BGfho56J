@@ -38,20 +38,6 @@ func (p *Process) NewRequest(_request interface{}, _device interfaces.IDevice) i
 	return p.TasksCompetitiveness(task.New(), _device)
 }
 
-//TasksCompetitiveness ...
-func (p *Process) TasksCompetitiveness(_newTask interfaces.ITask, _device interfaces.IDevice) interfaces.IProcessResponse {
-	resp := response.NewProcessResponse()
-	if p.CurrentTask != nil {
-		p.CurrentTask.Stop("Deprecated")
-		p.SaveTask(p.CurrentTask)
-		resp.AppendDirtyTask(p.CurrentTask)
-	}
-	p.CurrentTask = _newTask
-	p.ExecuteCommands(p.CurrentTask.Start(), _device)
-	resp.AppendNewTask(_newTask)
-	return resp
-}
-
 //MessageArrived ...
 func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.IDevice) interfaces.IProcessResponse {
 	resp := response.NewProcessResponse()
