@@ -144,9 +144,9 @@ func (p *Processes) pauseProcesses(_keys ...string) context.CancelFunc {
 	cnt, cancelFunc := context.WithCancel(context.Background())
 	paused := make(map[string]interfaces.IProcess)
 	for _, key := range _keys {
+		p.appendToPaused(key)
 		if process, f := p.processes[key]; f {
 			process.Pause()
-			p.appendToPaused(key)
 		}
 	}
 	go p.listen(cnt, paused)
