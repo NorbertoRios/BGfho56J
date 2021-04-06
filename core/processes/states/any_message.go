@@ -9,7 +9,8 @@ import (
 //NewAnyMessageState ...
 func NewAnyMessageState(_message string, _constructor func(string, int, interfaces.ITask) interfaces.IInProgressState) interfaces.ITaskState {
 	return &AnyMessageState{
-		message: _message,
+		message:     _message,
+		constructor: _constructor,
 	}
 }
 

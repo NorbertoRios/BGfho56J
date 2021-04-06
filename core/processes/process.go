@@ -7,6 +7,7 @@ import (
 	"geometris-go/core/processes/response"
 	"geometris-go/logger"
 	message "geometris-go/message/interfaces"
+	"reflect"
 )
 
 //Process ...
@@ -45,13 +46,22 @@ func (p *Process) Resume() {
 //TasksCompetitiveness ...
 func (p *Process) TasksCompetitiveness(_newTask interfaces.ITask, _device interfaces.IDevice) interfaces.IProcessResponse {
 	resp := response.NewProcessResponse()
-	if p.CurrentTask != nil {
-		p.CurrentTask.Stop("Deprecated")
-		resp.AppendDirtyTask(p.CurrentTask)
+	if p.CurrentTask == nil {
+		p.CurrentTask = _newTask
+		p.ExecuteCommands(p.CurrentTask.Start(), _device)
+		resp.AppendNewTask(_newTask)
+	} else {
+		if reflect.DeepEqual(_newTask.Request(), p.CurrentTask.Request()) {
+			_newTask.Stop("Duplicate")
+			resp.AppendDirtyTask(_newTask)
+		} else {
+			p.CurrentTask.Stop("Deprecated")
+			resp.AppendDirtyTask(p.CurrentTask)
+			p.CurrentTask = _newTask
+			p.ExecuteCommands(p.CurrentTask.Start(), _device)
+			resp.AppendNewTask(_newTask)
+		}
 	}
-	p.CurrentTask = _newTask
-	p.ExecuteCommands(p.CurrentTask.Start(), _device)
-	resp.AppendNewTask(_newTask)
 	return resp
 }
 

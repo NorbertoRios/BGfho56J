@@ -1,6 +1,17 @@
 package request
 
-import "strings"
+import (
+	"geometris-go/core/interfaces"
+	"strings"
+)
+
+//NewRequest ...
+func NewRequest(_callbackID, _identity string) interfaces.IRequest {
+	return &Request{
+		FacadeCallbackID: _callbackID,
+		DeviceIdentity:   _identity,
+	}
+}
 
 //Request ...
 type Request struct {
@@ -20,5 +31,5 @@ func (r *Request) Identity() string {
 
 //Serial ...
 func (r *Request) Serial() string {
-	return strings.ReplaceAll(r.DeviceIdentity, "genx_", "")
+	return strings.ReplaceAll(r.DeviceIdentity, "geometris_", "")
 }

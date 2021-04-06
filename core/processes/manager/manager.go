@@ -6,6 +6,7 @@ import (
 	"geometris-go/core/interfaces"
 	"geometris-go/core/processes/configuration"
 	"geometris-go/core/processes/immobilizer"
+	"geometris-go/core/processes/location"
 	"geometris-go/core/processes/message"
 	"geometris-go/core/processes/synchronization"
 	"geometris-go/logger"
@@ -48,6 +49,23 @@ func (p *Processes) Configuration() interfaces.IProcess {
 		return v
 	}
 	process := configuration.New()
+	p.processes[key] = process
+	return process
+}
+
+//LocationRequest ...
+func (p *Processes) LocationRequest() interfaces.IProcess {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+	key := "location_request"
+	if _, f := p.paused[key]; f {
+		logger.Logger().WriteToLog(logger.Info, "[Processes | LocationRequest] Process "+key+" is paused")
+		return nil
+	}
+	if v, f := p.processes[key]; f {
+		return v
+	}
+	process := location.New()
 	p.processes[key] = process
 	return process
 }
