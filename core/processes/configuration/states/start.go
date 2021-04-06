@@ -6,6 +6,7 @@ import (
 	"geometris-go/core/interfaces"
 	"geometris-go/core/processes/commands"
 	"geometris-go/core/processes/states"
+	"geometris-go/logger"
 )
 
 //NewStartState ...
@@ -25,8 +26,15 @@ type Start struct {
 func (s *Start) Start(_task interfaces.ITask) *list.List {
 	cfgTask, _ := _task.(interfaces.IConfigTask)
 	cList := list.New()
-	command := fmt.Sprintf("SETPARAMS %v ACK", cfgTask.CommandsManager().Command())
-	cList.PushBack(commands.NewSendMessageCommand(command))
-	_task.ChangeState(NewInProgressState(command, 300, _task))
+	command := cfgTask.Command()
+	if command == "" {
+		logger.Logger().WriteToLog(logger.Info, fmt.Sprintf("[Configuration | Start] Task %v unexpected closed. No commands to send.", command))
+		_task.ChangeState(states.NewClose(s.request, "Commands is empty"))
+		return cList
+	}
+	cList.PushBack(commands.NewSendMessageCommand("SETPARAMS " + command + " ACK;"))
+	inProgress := NewInProgressState(command, 300, _task)
+	_task.ChangeState(inProgress)
+	inProgress.Run()
 	return cList
 }

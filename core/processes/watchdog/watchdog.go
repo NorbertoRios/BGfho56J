@@ -30,12 +30,10 @@ func (w *Watchdog) Start() {
 		case <-time.After(time.Duration(w.duration) * time.Second):
 			{
 				w.task.ChangeState(w.state)
-				close(w.stopChan)
 				return
 			}
 		case <-w.stopChan:
 			{
-				close(w.stopChan)
 				return
 			}
 		}

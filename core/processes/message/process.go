@@ -5,7 +5,6 @@ import (
 	"geometris-go/core/interfaces"
 	process "geometris-go/core/processes"
 
-	"geometris-go/core/processes/message/states"
 	"geometris-go/core/processes/message/task"
 	"geometris-go/core/processes/response"
 	message "geometris-go/message/interfaces"
@@ -23,7 +22,6 @@ func New(_syncParam string) interfaces.IProcess {
 		},
 		syncParam: _syncParam,
 	}
-	p.CurrentTask.ChangeState(states.NewInProgressState())
 	return p
 }
 

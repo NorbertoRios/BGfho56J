@@ -3,11 +3,13 @@ package usecase
 import (
 	connInterfaces "geometris-go/connection/interfaces"
 	"geometris-go/core/device"
+	core "geometris-go/core/interfaces"
 	"geometris-go/core/sensors"
 	"geometris-go/message/interfaces"
 	"geometris-go/repository"
 	"geometris-go/storage"
 	"geometris-go/unitofwork"
+	uowInterfaces "geometris-go/unitofwork/interfaces"
 )
 
 //NewUDPMessageUseCase ...
@@ -24,17 +26,33 @@ type UDPMessageUseCase struct {
 }
 
 //Launch ...
-func (usecase *UDPMessageUseCase) Launch(message interfaces.IMessage, _channel connInterfaces.IChannel) {
-	dev := storage.Storage().Device(message.Identity())
+func (usecase *UDPMessageUseCase) Launch(_message interfaces.IMessage, _channel connInterfaces.IChannel) {
+	dev := storage.Storage().Device(_message.Identity())
+	uow := unitofwork.New(usecase.mysqlRepository, usecase.rabbitRepository)
 	if dev == nil {
-		dev = device.NewDevice(message.Identity(), "", make(map[string]sensors.ISensor), _channel)
+		dev = usecase.BuildDevice(_message, _channel, uow)
 	}
 	dev.NewChannel(_channel)
-	uow := unitofwork.New(usecase.mysqlRepository, usecase.rabbitRepository)
 	processes := dev.Processes().All()
 	for _, p := range processes {
-		processResp := p.MessageArrived(message, dev)
+		if p.Current() == nil {
+			continue
+		}
+		processResp := p.MessageArrived(_message, dev)
 		usecase.flushProcessResults(processResp, uow)
 	}
 	uow.Commit()
+}
+
+//BuildDevice ...
+func (usecase *UDPMessageUseCase) BuildDevice(_message interfaces.IMessage, _channel connInterfaces.IChannel, _uow uowInterfaces.IUnitOfWork) core.IDevice {
+	_syncParam := ""
+	dev := device.NewDevice(_message.Identity(), make(map[string]sensors.ISensor), _channel)
+	storage.Storage().AddDevice(dev)
+	processes := dev.BuildProcesses(_syncParam)
+	for _, process := range processes {
+		resp := process.NewRequest(_message, dev)
+		usecase.flushProcessResults(resp, _uow)
+	}
+	return dev
 }

@@ -2,7 +2,6 @@ package states
 
 import (
 	"container/list"
-	"fmt"
 	"geometris-go/core/interfaces"
 	"geometris-go/core/processes/commands"
 	"geometris-go/core/processes/states"
@@ -32,10 +31,11 @@ func (s *InProgress) NewMessageArrived(msg interface{}, _device interfaces.IDevi
 			ack, _ := msg.(*types.AckMessage)
 			if ack.Commands() == s.AckMessage {
 				s.Watchdog.Stop()
-				if _task.(interfaces.IConfigTask).CommandsManager().NextExist() {
-					command := fmt.Sprintf("SETPARAMS %v ACK", _task.(interfaces.IConfigTask).CommandsManager().Command())
-					cList.PushBack(commands.NewSendMessageCommand(command))
-					_task.ChangeState(NewInProgressState(command, 300, _task))
+				command := _task.(interfaces.IConfigTask).Command()
+				if command != "" {
+					cList.PushBack(commands.NewSendMessageCommand("SETPARAMS " + command + " ACK;"))
+					s.AckMessage = command
+					s.Watchdog.Start()
 				} else {
 					_task.ChangeState(states.NewDone(_task.Request().(interfaces.IRequest)))
 				}

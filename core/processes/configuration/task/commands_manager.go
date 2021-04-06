@@ -3,6 +3,7 @@ package task
 import (
 	"container/list"
 	"geometris-go/core/interfaces"
+	"geometris-go/logger"
 )
 
 //NewCommandsManager ...
@@ -25,20 +26,16 @@ type CommandsManager struct {
 
 //Command ...
 func (i *CommandsManager) Command() string {
-	command := ""
-	for cmd := i.curretn; cmd != nil; cmd = cmd.Next() {
-		strCommand, _ := cmd.Value.(string)
-		if len(command)+len(strCommand) <= 450 {
-			command = command + strCommand
-		} else {
-			i.curretn = cmd.Next()
-			break
-		}
+	if i.curretn != nil {
+		cmd := i.curretn.Value.(string)
+		i.curretn = i.curretn.Next()
+		return cmd
 	}
-	return command
+	logger.Logger().WriteToLog(logger.Info, "[CommandsManager | Command] Commands is over")
+	return ""
 }
 
 //NextExist ...
 func (i *CommandsManager) NextExist() bool {
-	return !(i.curretn == nil)
+	return !(i.curretn.Next() == nil)
 }

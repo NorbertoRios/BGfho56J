@@ -18,4 +18,5 @@ type IDevice interface {
 	New24Param(string)
 	Identity() string
 	Processes() IProcesses
+	BuildProcesses(string) []IProcess
 }

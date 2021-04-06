@@ -32,6 +32,9 @@ func (m *AckMessage) Parameters() map[string]string {
 	rawParams := strings.Split(m.commands, ";")
 	parameters := make(map[string]string)
 	for _, param := range rawParams {
+		if param == "" {
+			continue
+		}
 		keyValue := strings.Split(param, "=")
 		parameters[keyValue[0]] = keyValue[1]
 	}

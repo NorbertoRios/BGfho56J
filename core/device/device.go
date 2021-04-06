@@ -12,7 +12,7 @@ import (
 )
 
 //NewDevice ...
-func NewDevice(_identity string, _syncParam string, _sensors map[string]sensors.ISensor, _channel connInterfaces.IChannel) interfaces.IDevice {
+func NewDevice(_identity string, _sensors map[string]sensors.ISensor, _channel connInterfaces.IChannel) interfaces.IDevice {
 	return &Device{
 		DeviceIdentity:      _identity,
 		LastActivity:        time.Now().UTC(),
@@ -20,7 +20,6 @@ func NewDevice(_identity string, _syncParam string, _sensors map[string]sensors.
 		CurrentState:        NewState(_sensors),
 		UDPChannel:          _channel,
 		Mutex:               &sync.Mutex{},
-		DeviceProcesses:     manager.BuildProcesses(_syncParam),
 	}
 }
 
@@ -39,7 +38,7 @@ type Device struct {
 func (device *Device) Send(message string) bool {
 	err := device.UDPChannel.Send(message)
 	if err != nil {
-		logger.Logger().WriteToLog(logger.Error, "[Device"+device.Identity()+" | Send] Error:", err)
+		logger.Logger().WriteToLog(logger.Error, "[Device "+device.Identity()+" | Send] Error:", err)
 		return false
 	}
 	return true
@@ -93,6 +92,12 @@ func (device *Device) State() interfaces.IDeviceState {
 //Processes ...
 func (device *Device) Processes() interfaces.IProcesses {
 	return device.DeviceProcesses
+}
+
+//BuildProcesses ...
+func (device *Device) BuildProcesses(_syncParam string) []interfaces.IProcess {
+	device.DeviceProcesses = manager.BuildProcesses(_syncParam)
+	return device.Processes().All()
 }
 
 //New24Param ...
