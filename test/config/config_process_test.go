@@ -2,7 +2,10 @@ package test
 
 import (
 	"fmt"
+	"geometris-go/core/processes/configuration"
 	"geometris-go/core/processes/configuration/request"
+	"geometris-go/core/processes/message"
+	"geometris-go/core/processes/synchronization"
 	"geometris-go/core/usecase"
 	"geometris-go/message/factory"
 	"geometris-go/repository"
@@ -54,8 +57,29 @@ func TestConfigWorkflow(t *testing.T) {
 	}
 	processes := storage.Storage().Device("geometris_87A110550003").Processes().All()
 	for _, process := range processes {
-		if process.Current() != nil {
-			t.Error("All processes should be end")
+		switch process.(type) {
+		case *synchronization.Process:
+			{
+				if process.(*synchronization.Process).Current() != nil {
+					t.Error("Current task of synchronization process should be nil")
+				}
+			}
+		case *message.Process:
+			{
+				if process.(*message.Process).Current() == nil {
+					t.Error("Current task of location process cant be nil")
+				}
+			}
+		case *configuration.Process:
+			{
+				if process.(*configuration.Process).Current() != nil {
+					t.Error("Current task of config process should be nil")
+				}
+			}
+		default:
+			{
+				t.Error(fmt.Sprintf("Unexpected process %T", process))
+			}
 		}
 	}
 }

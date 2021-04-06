@@ -29,9 +29,9 @@ type BuildDevice struct {
 
 //Build ...
 func (b *BuildDevice) Build() interfaces.IDevice {
-	dev := NewDevice(b.message.Identity(), make(map[string]sensors.ISensor), b.channel)
+	dev := NewDevice(b.message.Identity(), b.syncParam, make(map[string]sensors.ISensor), b.channel)
 	storage.Storage().AddDevice(dev)
-	processes := dev.BuildProcesses(b.syncParam)
+	processes := dev.Processes().All()
 	for _, process := range processes {
 		_response := process.NewRequest(b.message, dev)
 		b.unitOfWork.AddDirtyStates(_response.States()...)

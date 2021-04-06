@@ -47,9 +47,9 @@ func (usecase *UDPMessageUseCase) Launch(_message interfaces.IMessage, _channel 
 //BuildDevice ...
 func (usecase *UDPMessageUseCase) BuildDevice(_message interfaces.IMessage, _channel connInterfaces.IChannel, _uow uowInterfaces.IUnitOfWork) core.IDevice {
 	_syncParam := ""
-	dev := device.NewDevice(_message.Identity(), make(map[string]sensors.ISensor), _channel)
+	dev := device.NewDevice(_message.Identity(), _syncParam, make(map[string]sensors.ISensor), _channel)
 	storage.Storage().AddDevice(dev)
-	processes := dev.BuildProcesses(_syncParam)
+	processes := dev.Processes().All()
 	for _, process := range processes {
 		resp := process.NewRequest(_message, dev)
 		usecase.flushProcessResults(resp, _uow)

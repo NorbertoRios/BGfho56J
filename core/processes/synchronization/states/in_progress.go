@@ -42,7 +42,7 @@ func (s *InProgress) NewMessageArrived(msg interface{}, _device interfaces.IDevi
 }
 
 func (s *InProgress) complete(_device interfaces.IDevice, _task interfaces.ITask, _param24 string) {
-	_device.New24Param(_param24)
+	_device.Processes().NewLocationProcess(_param24)
 	s.Watchdog.Stop()
 	_task.ChangeState(NewDone())
 }

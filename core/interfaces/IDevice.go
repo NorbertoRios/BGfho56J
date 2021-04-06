@@ -15,8 +15,6 @@ type IDevice interface {
 	NewChannel(connInterfaces.IChannel)
 	NewState([]sensors.ISensor)
 	ProcessCommands(*list.List)
-	New24Param(string)
 	Identity() string
 	Processes() IProcesses
-	BuildProcesses(string) []IProcess
 }

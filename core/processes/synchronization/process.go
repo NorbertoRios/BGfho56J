@@ -2,7 +2,6 @@ package synchronization
 
 import (
 	"container/list"
-	"context"
 	"geometris-go/core/interfaces"
 	process "geometris-go/core/processes"
 	"geometris-go/core/processes/response"
@@ -12,10 +11,9 @@ import (
 )
 
 //New ...
-func New(_canselFunc context.CancelFunc) interfaces.IProcess {
+func New() interfaces.IProcess {
 	process := &Process{}
 	process.History = list.New()
-	process.CuncelFunc = _canselFunc
 	return process
 }
 
@@ -41,6 +39,7 @@ func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.I
 		p.CurrentTask = nil
 		if p.CuncelFunc != nil {
 			p.CuncelFunc()
+			p.CuncelFunc = nil
 		}
 	}
 	return resp

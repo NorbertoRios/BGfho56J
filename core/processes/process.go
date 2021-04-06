@@ -25,6 +25,10 @@ func (p *Process) Start(_device interfaces.IDevice) {
 	p.CurrentTask.Start()
 }
 
+func (p *Process) NewFuncOnEnd(_cancelFunc context.CancelFunc) {
+	p.CuncelFunc = _cancelFunc
+}
+
 //Stop ...
 func (p *Process) Stop(_device interfaces.IDevice, _description string) {
 	if p.CurrentTask == nil {
@@ -77,6 +81,7 @@ func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.I
 		p.CurrentTask = nil
 		if p.CuncelFunc != nil {
 			p.CuncelFunc()
+			p.CuncelFunc = nil
 		}
 	}
 	return resp
