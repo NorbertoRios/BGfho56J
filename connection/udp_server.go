@@ -54,9 +54,21 @@ func (server *UDPServer) Listen() {
 	}
 }
 
+//SendString send string
+func (server *UDPServer) SendString(addr *net.UDPAddr, packet string) (int64, error) {
+	n, err := server.connection.WriteToUDP([]byte(packet), addr)
+	logger.Logger().WriteToLog(logger.Info, "[UDPServer | SendString] Bytes sent. ", []byte(packet))
+	if err != nil {
+		logger.Logger().WriteToLog(logger.Error, "[UDPServer | SendString] Error while sending string. ", err)
+		return 0, err
+	}
+	return int64(n), nil
+}
+
 //SendBytes send bytes
-func (server *UDPServer) SendBytes(addr interface{}, packet []byte) (int64, error) {
-	n, err := server.connection.WriteToUDP(packet, addr.(*net.UDPAddr))
+func (server *UDPServer) SendBytes(addr *net.UDPAddr, packet []byte) (int64, error) {
+	n, err := server.connection.WriteToUDP(packet, addr)
+	logger.Logger().WriteToLog(logger.Info, "[UDPServer | SendBytes] Bytes sent. ", packet)
 	if err != nil {
 		logger.Logger().WriteToLog(logger.Error, "[UDPServer | SendBytes] Error while sending bytes. ", err)
 		return 0, err

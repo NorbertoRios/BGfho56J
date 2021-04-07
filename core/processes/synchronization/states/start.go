@@ -20,8 +20,8 @@ type Start struct {
 //Start ...
 func (s *Start) Start(_task interfaces.ITask) *list.List {
 	cList := list.New()
-	cList.PushBack(commands.NewSendMessageCommand("DIAG PARAMS=12 VIAUDP"))
-	inProgress := NewInProgressState("DIAG PARAMS=12 VIAUDP", 300, _task)
+	cList.PushBack(commands.NewSendMessageCommand("DIAG PARAM=12 VIAUDP"))
+	inProgress := NewInProgressState("DIAG PARAM=12 VIAUDP", 60, _task)
 	inProgress.Run()
 	_task.ChangeState(inProgress)
 	return cList

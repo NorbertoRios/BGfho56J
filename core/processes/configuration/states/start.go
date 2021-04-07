@@ -33,7 +33,7 @@ func (s *Start) Start(_task interfaces.ITask) *list.List {
 		return cList
 	}
 	cList.PushBack(commands.NewSendMessageCommand("SETPARAMS " + command + " ACK;"))
-	inProgress := NewInProgressState(command, 300, _task)
+	inProgress := NewInProgressState(command, 60, _task)
 	_task.ChangeState(inProgress)
 	inProgress.Run()
 	return cList

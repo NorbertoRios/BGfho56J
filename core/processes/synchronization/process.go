@@ -11,9 +11,10 @@ import (
 )
 
 //New ...
-func New() interfaces.IProcess {
+func New(_symbol string) interfaces.IProcess {
 	process := &Process{}
 	process.History = list.New()
+	process.ProcessSymbol = _symbol
 	return process
 }
 
@@ -36,11 +37,8 @@ func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.I
 		logger.Logger().WriteToLog(logger.Info, "[Synchronization | MessageArrived] Synch task Is Closed")
 		resp.AppendDirtyTask(p.CurrentTask)
 		p.SaveTask(p.CurrentTask)
+		_device.Processes().ProcessComplete(p.Symbol())
 		p.CurrentTask = nil
-		if p.CuncelFunc != nil {
-			p.CuncelFunc()
-			p.CuncelFunc = nil
-		}
 	}
 	return resp
 }

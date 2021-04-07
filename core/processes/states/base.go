@@ -16,6 +16,7 @@ func (s *Base) NewMessageArrived(_message interface{}, _device interfaces.IDevic
 
 //Pause ...
 func (s *Base) Pause(_task interfaces.ITask) {
+	_task.ChangeState(NewPauseState(s))
 }
 
 //Resume ...

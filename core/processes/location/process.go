@@ -8,9 +8,10 @@ import (
 )
 
 //New ...
-func New() interfaces.IProcess {
+func New(_symbol string) interfaces.IProcess {
 	process := &Process{}
 	process.History = list.New()
+	process.ProcessSymbol = _symbol
 	return process
 }
 

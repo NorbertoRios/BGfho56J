@@ -2,8 +2,26 @@ package types
 
 import (
 	"fmt"
+	"geometris-go/logger"
 	"time"
 )
+
+//NewTimeFromString ...
+func NewTimeFromString(_json string) *JSONTime {
+	b := []byte(_json)
+	sd := string(b[1 : len(b)-1])
+	datetime, terr := time.Parse("2006-01-02T15:04:05Z", sd)
+	if terr != nil {
+		logger.Logger().WriteToLog(logger.Error, "[NewTimeFromString] Error while cteating new time value from string. ", _json)
+		return nil
+	}
+	return &JSONTime{Time: datetime}
+}
+
+//NewTime ...
+func NewTime(_unixTimeStamp int64) *JSONTime {
+	return &JSONTime{Time: time.Unix(_unixTimeStamp, 0)}
+}
 
 //JSONTime ...
 type JSONTime struct {
@@ -11,15 +29,6 @@ type JSONTime struct {
 }
 
 //MarshalJSON serialize timestamp
-func (t *JSONTime) MarshalJSON() ([]byte, error) {
-	stamp := fmt.Sprintf("\"%s\"", t.Format("2006-01-02T15:04:05Z"))
-	return []byte(stamp), nil
-}
-
-//UnmarshalJSON deserialize timestamp
-func (t *JSONTime) UnmarshalJSON(b []byte) error {
-	sd := string(b[1 : len(b)-1])
-	datetime, terr := time.Parse("2006-01-02T15:04:05Z", sd)
-	t.Time = datetime
-	return terr
+func (t *JSONTime) String() string {
+	return fmt.Sprintf("%s", t.Format("2006-01-02T15:04:05Z"))
 }

@@ -7,16 +7,27 @@ import (
 	"geometris-go/logger"
 	message "geometris-go/message/interfaces"
 	messageTypes "geometris-go/message/types"
+	"geometris-go/types"
 	"strings"
 )
 
 var parser *Parser
 
+//NewWithDiffConfig ...
+func NewWithDiffConfig(_dir, _file string) *Parser {
+	if parser == nil {
+		parser = &Parser{
+			reportConfig: configuration.ReportConfig(types.NewFileWithDir(_dir, _file)),
+		}
+	}
+	return parser
+}
+
 //New ...
 func New() *Parser {
 	if parser == nil {
 		parser = &Parser{
-			reportConfig: configuration.ReportConfig(),
+			reportConfig: configuration.ReportConfig(types.NewFile("/config/initialize/ReportConfiguration.xml")),
 		}
 	}
 	return parser

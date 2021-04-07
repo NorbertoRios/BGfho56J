@@ -24,7 +24,7 @@ type Start struct {
 func (s *Start) Start(_task interfaces.ITask) *list.List {
 	cList := list.New()
 	cList.PushBack(commands.NewSendMessageCommand("POLLQ VIAUDP"))
-	inProgress := NewInProgressState("POLLQ VIAUDP", 300, _task)
+	inProgress := NewInProgressState("POLLQ VIAUDP", 60, _task)
 	inProgress.Run()
 	_task.ChangeState(inProgress)
 	return cList

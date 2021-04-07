@@ -4,6 +4,7 @@ import (
 	"container/list"
 	"geometris-go/core/interfaces"
 	process "geometris-go/core/processes"
+	"geometris-go/logger"
 
 	"geometris-go/core/processes/message/task"
 	"geometris-go/core/processes/response"
@@ -14,11 +15,12 @@ import (
 )
 
 //New ...
-func New(_syncParam string) interfaces.IProcess {
+func New(_syncParam, _symbol string) interfaces.IProcess {
 	p := &Process{
 		Process: process.Process{
-			History:     list.New(),
-			CurrentTask: task.New(),
+			History:       list.New(),
+			CurrentTask:   task.New(),
+			ProcessSymbol: _symbol,
 		},
 		syncParam: _syncParam,
 	}
@@ -44,6 +46,7 @@ func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.I
 	}
 	messageParser := parser.New()
 	locationMessage := messageParser.Parse(_message, p.syncParam).(*messageTypes.LocationMessage)
+	logger.Logger().WriteToLog(logger.Info, "[Message Arrived] Arrived new location message: ", locationMessage)
 	commads := p.CurrentTask.NewMessageArrived(locationMessage, _device)
 	p.ExecuteCommands(commads, _device)
 	resp.AppendState(_device.State())

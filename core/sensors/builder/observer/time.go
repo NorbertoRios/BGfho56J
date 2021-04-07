@@ -3,13 +3,12 @@ package observer
 import (
 	"geometris-go/core/sensors"
 	"geometris-go/types"
-	"time"
 )
 
 //NewTimes ...
 func NewTimes() IObserver {
 	return &Times{
-		typeValue: "Time",
+		typeValue: "time",
 	}
 }
 
@@ -25,7 +24,8 @@ func (f *Times) Build(_key, _value, _type string) []sensors.ISensor {
 		return sensorsArr
 	}
 	strValue := types.NewString(_value)
-	sensorsArr = append(sensorsArr, sensors.NewSensor(_key, time.Unix(strValue.Int(64).(int64), 0)))
-	sensorsArr = append(sensorsArr, sensors.NewSensor("ReceivedTime", time.Now().Unix()))
+	intTimeValue := strValue.Int(32)
+	sensorValue := types.NewTime(int64(intTimeValue.(int32)))
+	sensorsArr = append(sensorsArr, sensors.NewSensor(_key, sensorValue.String()))
 	return sensorsArr
 }

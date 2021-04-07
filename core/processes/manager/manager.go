@@ -1,7 +1,6 @@
 package manager
 
 import (
-	"context"
 	"fmt"
 	"geometris-go/core/interfaces"
 	"geometris-go/core/processes/configuration"
@@ -12,9 +11,11 @@ import (
 	"sync"
 )
 
+//New ...
 func New(_syncParam string) interfaces.IProcesses {
 	manager := &Manager{
 		processes: make(map[string]interfaces.IProcess),
+		pauseMap:  make(map[string][]string),
 		mutex:     &sync.Mutex{},
 		paused:    make(map[string]int),
 	}
@@ -26,8 +27,10 @@ func New(_syncParam string) interfaces.IProcesses {
 	return manager
 }
 
+//Manager ...
 type Manager struct {
 	processes map[string]interfaces.IProcess
+	pauseMap  map[string][]string
 	mutex     *sync.Mutex
 	paused    map[string]int
 }
@@ -43,6 +46,7 @@ func (p *Manager) All() []interfaces.IProcess {
 	return processes
 }
 
+//Immobilizer ...
 func (p *Manager) Immobilizer(index int, trigger string) interfaces.IProcess {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
@@ -53,11 +57,12 @@ func (p *Manager) Immobilizer(index int, trigger string) interfaces.IProcess {
 	}
 	proc, f := p.processes[key]
 	if !f {
-		proc = immobilizer.New(index, trigger)
+		proc = immobilizer.New(index, trigger, key)
 	}
 	return proc
 }
 
+//LocationRequest ...
 func (p *Manager) LocationRequest() interfaces.IProcess {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
@@ -65,21 +70,24 @@ func (p *Manager) LocationRequest() interfaces.IProcess {
 	return p.getOrCreateProcess(key, configuration.New)
 }
 
+//NewSynchProcess ....
 func (p *Manager) NewSynchProcess() {
 	p.Synchronization()
 }
 
+//NewLocationProcess ...
 func (p *Manager) NewLocationProcess(_syncParam string) {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 	key := "location"
-	process := message.New(_syncParam)
+	process := message.New(_syncParam, key)
 	if _, f := p.paused[key]; f {
 		process.Pause()
 	}
 	p.processes[key] = process
 }
 
+//Configuration ...
 func (p *Manager) Configuration() interfaces.IProcess {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
@@ -87,6 +95,7 @@ func (p *Manager) Configuration() interfaces.IProcess {
 	return p.getOrCreateProcess(key, configuration.New)
 }
 
+//Synchronization ...
 func (p *Manager) Synchronization() interfaces.IProcess {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
@@ -94,8 +103,8 @@ func (p *Manager) Synchronization() interfaces.IProcess {
 	return p.getOrCreateProcess(key, synchronization.New)
 }
 
-func (p *Manager) puaseLocation() context.CancelFunc {
-	return p.pauseProcesses("location", "location_request")
+func (p *Manager) puaseLocation(_key string) {
+	p.pauseProcesses(_key, "location", "location_request")
 }
 
 func (p *Manager) appendToPaused(_key string) {
@@ -106,52 +115,56 @@ func (p *Manager) appendToPaused(_key string) {
 	}
 }
 
-func (p *Manager) getOrCreateProcess(_key string, _constructor func() interfaces.IProcess) interfaces.IProcess {
+func (p *Manager) getOrCreateProcess(_key string, _constructor func(string) interfaces.IProcess) interfaces.IProcess {
 	if _, f := p.paused[_key]; f {
 		logger.Logger().WriteToLog(logger.Info, "[Processes] Process "+_key+" is paused")
 		return nil
 	}
 	process, f := p.processes[_key]
 	if !f {
-		process = _constructor()
+		process = _constructor(_key)
 		p.processes[_key] = process
 	}
 	switch _key {
 	case "configuration", "synch":
 		{
-			process.NewFuncOnEnd(p.puaseLocation())
+			p.puaseLocation(_key)
 		}
 	}
 	return process
 }
 
-func (p *Manager) pauseProcesses(_keys ...string) context.CancelFunc {
-	cnt, cancelFunc := context.WithCancel(context.Background())
-	paused := []string{}
+func (p *Manager) pauseProcesses(_processKey string, _keys ...string) {
+	if _, f := p.pauseMap[_processKey]; !f {
+		p.pauseMap[_processKey] = []string{}
+	}
+	p.pauseMap[_processKey] = append(p.pauseMap[_processKey], _keys...)
 	for _, key := range _keys {
 		p.appendToPaused(key)
 		if process, f := p.processes[key]; f {
 			process.Pause()
-			paused = append(paused, key)
 		}
 	}
-	go p.listen(cnt, paused)
-	return cancelFunc
 }
 
-func (p *Manager) listen(_context context.Context, _keys []string) {
-	select {
-	case <-_context.Done():
-		{
-			p.mutex.Lock()
-			defer p.mutex.Unlock()
-			for _, key := range _keys {
-				p.paused[key]--
-				if p.paused[key] == 0 {
-					p.processes[key].Resume()
-				}
+//ProcessComplete ...
+func (p *Manager) ProcessComplete(_processKey string) {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+	processes, f := p.pauseMap[_processKey]
+	if !f {
+		return
+	}
+	for _, pr := range processes {
+		if _, f := p.paused[pr]; !f {
+			continue
+		}
+		p.paused[pr]--
+		if p.paused[pr] == 0 {
+			delete(p.paused, pr)
+			if p, f := p.processes[pr]; f {
+				p.Resume()
 			}
-			return
 		}
 	}
 }

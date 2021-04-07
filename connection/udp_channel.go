@@ -38,7 +38,7 @@ func (c *UDPChannel) Send(message interface{}) error {
 	switch message.(type) {
 	case string:
 		{
-			trs, err = c.ServerInstance.SendBytes(c.RemoteAddr(), []byte(message.(string)))
+			trs, err = c.ServerInstance.SendString(c.RemoteAddr(), message.(string))
 			break
 		}
 	default:
@@ -51,7 +51,7 @@ func (c *UDPChannel) Send(message interface{}) error {
 		logger.Logger().WriteToLog(logger.Error, fmt.Sprintf("[UDPChannel | Send] Error: %v", err))
 		return err
 	}
-	logger.Logger().WriteToLog(logger.Info, fmt.Sprintf("[UDPChannel | Send] Message: %v", message.(string)))
+	logger.Logger().WriteToLog(logger.Info, fmt.Sprintf("[UDPChannel | Send] Message(string): %v Message(byte): %v. TO: %v ", message.(string), []byte(message.(string)), c.clientAddr.String()))
 	c.AddTransmitted(trs)
 	return nil
 }

@@ -13,6 +13,12 @@ type InProgress struct {
 	Watchdog   interfaces.IWatchdog
 }
 
+//Pause ...
+func (s *InProgress) Pause(_task interfaces.ITask) {
+	s.Watchdog.Stop()
+	_task.ChangeState(NewPauseState(s))
+}
+
 //NewMessageArrived ...
 func (s *InProgress) NewMessageArrived(msg interface{}, _device interfaces.IDevice, _task interfaces.ITask) *list.List {
 	switch msg.(type) {

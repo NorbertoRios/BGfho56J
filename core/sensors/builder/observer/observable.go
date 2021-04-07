@@ -11,6 +11,7 @@ func NewObservable() *Observable {
 		NewString(),
 		NewTimes(),
 		NewUInt32(),
+		NewTimes(),
 	}
 	return &Observable{
 		observers: observers,

@@ -17,4 +17,5 @@ type ITask interface {
 	FacadeResponse() string
 	Pause()
 	Resume()
+	State() interface{}
 }

@@ -31,6 +31,7 @@ type MessageFactory struct {
 //BuildMessage ....
 func (factory *MessageFactory) BuildMessage(_packet []byte) interfaces.IMessage {
 	message := string(_packet)
+	logger.Logger().WriteToLog(logger.Info, fmt.Sprintf("[MessageFactory | BuildMessage] New message: String:%v", message))
 	for _, builder := range factory.builders {
 		if builder.IsParsable(_packet) {
 			return builder.Build(message)

@@ -9,9 +9,9 @@ import (
 var config *ReportConfiguration
 
 //ReportConfig ...
-func ReportConfig() *ReportConfiguration {
+func ReportConfig(_file types.IFile) *ReportConfiguration {
 	if config == nil {
-		file := types.NewFile("/config/initialize/ReportConfiguration.xml")
+		file := _file //types.NewFile("/config/initialize/ReportConfiguration.xml")
 		provider := ConstructXMLProvider(file)
 		config = constructReportConfiguration(provider)
 	}

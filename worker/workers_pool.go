@@ -22,6 +22,11 @@ type WorkersPool struct {
 
 //Flush ...
 func (wp *WorkersPool) Flush(rawData []byte, channel interfaces.IChannel) {
+	defer func() {
+		if r := recover(); r != nil {
+			logger.Logger().WriteToLog(logger.Error, "[WorkersPool | Recovered] Recovered with error: ", r)
+		}
+	}()
 	messageFactory := factory.New()
 	message := messageFactory.BuildMessage(rawData)
 	data := &EntryData{Message: message, Channel: channel}

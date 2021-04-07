@@ -38,6 +38,11 @@ func (t *Task) Stop(_description string) {
 	t.ChangeState(states.NewClose(t.FacadeRequest, _description))
 }
 
+//State ...
+func (t *Task) State() interface{} {
+	return t.CurrentState
+}
+
 //Resume ...
 func (t *Task) Resume() {
 	t.CurrentState.Resume(t)

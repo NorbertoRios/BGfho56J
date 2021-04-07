@@ -2,7 +2,6 @@ package process
 
 import (
 	"container/list"
-	"context"
 	"geometris-go/core/interfaces"
 	"geometris-go/core/processes/response"
 	"geometris-go/logger"
@@ -12,9 +11,9 @@ import (
 
 //Process ...
 type Process struct {
-	History     *list.List
-	CurrentTask interfaces.ITask
-	CuncelFunc  context.CancelFunc
+	History       *list.List
+	CurrentTask   interfaces.ITask
+	ProcessSymbol string
 }
 
 //Start ...
@@ -25,8 +24,9 @@ func (p *Process) Start(_device interfaces.IDevice) {
 	p.CurrentTask.Start()
 }
 
-func (p *Process) NewFuncOnEnd(_cancelFunc context.CancelFunc) {
-	p.CuncelFunc = _cancelFunc
+//Symbol ...
+func (p *Process) Symbol() string {
+	return p.ProcessSymbol
 }
 
 //Stop ...
@@ -39,12 +39,16 @@ func (p *Process) Stop(_device interfaces.IDevice, _description string) {
 
 //Pause ...
 func (p *Process) Pause() {
-	p.CurrentTask.Pause()
+	if p.CurrentTask != nil {
+		p.CurrentTask.Pause()
+	}
 }
 
 //Resume ...
 func (p *Process) Resume() {
-	p.CurrentTask.Resume()
+	if p.CurrentTask != nil {
+		p.CurrentTask.Resume()
+	}
 }
 
 //TasksCompetitiveness ...
@@ -78,11 +82,8 @@ func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.I
 		logger.Logger().WriteToLog(logger.Info, "[Process | MessageArrived] Task with id "+p.CurrentTask.Request().CallbackID()+". Is Closed")
 		resp.AppendDirtyTask(p.CurrentTask)
 		p.SaveTask(p.CurrentTask)
+		_device.Processes().ProcessComplete(p.Symbol())
 		p.CurrentTask = nil
-		if p.CuncelFunc != nil {
-			p.CuncelFunc()
-			p.CuncelFunc = nil
-		}
 	}
 	return resp
 }

@@ -8,12 +8,13 @@ import (
 )
 
 //New ...
-func New(_index int, _trigger string) interfaces.IProcess {
+func New(_index int, _trigger, _symbol string) interfaces.IProcess {
 	process := &Process{
 		index:   _index,
 		trigger: _trigger,
 	}
 	process.History = list.New()
+	process.ProcessSymbol = _symbol
 	return process
 }
 
