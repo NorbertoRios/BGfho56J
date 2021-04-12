@@ -8,6 +8,6 @@ import (
 type IUnitOfWork interface {
 	AddNewTasks(...interfaces.ITask)
 	AddDirtyTasks(...interfaces.ITask)
-	AddDirtyStates(...interfaces.IDeviceState)
+	AddDirtyStates(...interfaces.IDirtyState)
 	Commit()
 }

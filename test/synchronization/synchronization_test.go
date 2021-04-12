@@ -3,6 +3,7 @@ package test
 import (
 	"fmt"
 	"geometris-go/core/processes/configuration/request"
+	locationStates "geometris-go/core/processes/message/states"
 	"geometris-go/core/processes/states"
 	"geometris-go/core/usecase"
 	"geometris-go/message/factory"
@@ -10,8 +11,8 @@ import (
 	"geometris-go/storage"
 	"geometris-go/test/mock"
 	"geometris-go/unitofwork"
+	"os"
 	"testing"
-	"time"
 )
 
 var mockMysqlRepo repository.IRepository = mock.NewRepository()
@@ -46,6 +47,7 @@ func TestSynchronizationComplete(t *testing.T) {
 }
 
 func TestMultisync(t *testing.T) {
+	os.Args[1] = ".."
 	SetUP("12=65.28.9.36.3.4.7.8.11.12.14.17.24.50.56.51.55.70.71.72.73.74.75.76.77.80.81.82;")
 	commands := []string{
 		"1=1440;",
@@ -56,7 +58,6 @@ func TestMultisync(t *testing.T) {
 		"7=device;",
 		"13=test@geometris.com;",
 	}
-	time.Sleep(1 * time.Second)
 	request := request.NewConfigRequest("geometris_87A110550003", "cfg05042021", commands)
 	device := storage.Storage().Device("geometris_87A110550003")
 	if device == nil {
@@ -101,9 +102,8 @@ func TestMultisync(t *testing.T) {
 			currentTask := process.Current()
 			if currentTask != nil {
 				switch currentTask.State().(type) {
-				case *states.InProgress:
+				case *locationStates.InProgress:
 					{
-
 					}
 				default:
 					{
@@ -113,4 +113,6 @@ func TestMultisync(t *testing.T) {
 			}
 		}
 	}
+	message := messageFactory.BuildMessage([]byte("87A110550003,F001,OFF_PERIODIC,1616773466,48.746404,37.591212,33,9,0,40,0,310,0.0,4,,0,0,,,,,,,0:0,,0,0,."))
+	messageUseCase.Launch(message, nil)
 }

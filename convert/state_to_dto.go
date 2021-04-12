@@ -20,8 +20,8 @@ type StateToDTO struct {
 //Convert ...
 func (std *StateToDTO) Convert() dto.IMessage {
 	dtoMessage := dto.NewMessage()
-	for key, value := range std.state.State() {
-		dtoMessage.SetValue(key, value.Value())
+	for _, value := range std.state.State() {
+		dtoMessage.SetValue(value.Symbol(), value.Value())
 	}
 	return dtoMessage
 }

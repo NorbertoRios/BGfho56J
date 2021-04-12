@@ -29,7 +29,7 @@ type BuildDevice struct {
 
 //Build ...
 func (b *BuildDevice) Build() interfaces.IDevice {
-	dev := NewDevice(b.message.Identity(), b.syncParam, make(map[string]sensors.ISensor), b.channel)
+	dev := NewDevice(b.message.Identity(), b.syncParam, []sensors.ISensor{}, b.channel)
 	storage.Storage().AddDevice(dev)
 	processes := dev.Processes().All()
 	for _, process := range processes {

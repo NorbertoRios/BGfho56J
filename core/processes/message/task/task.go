@@ -9,7 +9,7 @@ import (
 //New ...
 func New() interfaces.ITask {
 	task := &Task{}
-	task.CurrentState = states.NewStartState()
+	task.CurrentState = states.NewInProgressState()
 	return task
 }
 

@@ -20,7 +20,7 @@ func ReportConfig(_file types.IFile) *ReportConfiguration {
 
 //ReportConfiguration represents report config
 type ReportConfiguration struct {
-	Fields []Field
+	fields []Field
 }
 
 //ConstructReportConfiguration create report config instance
@@ -30,14 +30,19 @@ func constructReportConfiguration(provider IReportConfigProvider) *ReportConfigu
 		logger.Logger().WriteToLog(logger.Fatal, "[ReportConfiguration | constructReportConfiguration] Error while constructing report configuration. Error: ", err)
 	}
 	configuration := &ReportConfiguration{
-		Fields: fields,
+		fields: fields,
 	}
 	return configuration
 }
 
+//Fields ...
+func (reportConfiguration *ReportConfiguration) Fields() []Field {
+	return reportConfiguration.fields
+}
+
 //GetFieldByID returns description for field by id
 func (reportConfiguration *ReportConfiguration) GetFieldByID(id string) (*Field, error) {
-	for _, reportField := range reportConfiguration.Fields {
+	for _, reportField := range reportConfiguration.fields {
 		if reportField.ID == id {
 			return &reportField, nil
 		}

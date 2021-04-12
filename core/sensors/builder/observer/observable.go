@@ -11,7 +11,6 @@ func NewObservable() *Observable {
 		NewString(),
 		NewTimes(),
 		NewUInt32(),
-		NewTimes(),
 	}
 	return &Observable{
 		observers: observers,
@@ -21,6 +20,15 @@ func NewObservable() *Observable {
 //Observable ...
 type Observable struct {
 	observers []IObserver
+}
+
+//Convert ...
+func (o *Observable) Convert(_key, _value, _type string) []sensors.ISensor {
+	sensorsArr := []sensors.ISensor{}
+	for _, observer := range o.observers {
+		sensorsArr = append(sensorsArr, observer.Convert(_key, _value, _type)...)
+	}
+	return sensorsArr
 }
 
 //Build ...

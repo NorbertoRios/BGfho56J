@@ -9,7 +9,7 @@ func NewProcessResponse() interfaces.IProcessResponse {
 	return &ProcessResponse{
 		newTasks:   []interfaces.ITask{},
 		dirtyTasks: []interfaces.ITask{},
-		states:     []interfaces.IDeviceState{},
+		states:     []interfaces.IDirtyState{},
 	}
 }
 
@@ -17,16 +17,16 @@ func NewProcessResponse() interfaces.IProcessResponse {
 type ProcessResponse struct {
 	newTasks   []interfaces.ITask
 	dirtyTasks []interfaces.ITask
-	states     []interfaces.IDeviceState
+	states     []interfaces.IDirtyState
 }
 
 //States ...
-func (r *ProcessResponse) States() []interfaces.IDeviceState {
+func (r *ProcessResponse) States() []interfaces.IDirtyState {
 	return r.states
 }
 
 //AppendState ...
-func (r *ProcessResponse) AppendState(_state ...interfaces.IDeviceState) {
+func (r *ProcessResponse) AppendState(_state ...interfaces.IDirtyState) {
 	r.states = append(r.states, _state...)
 }
 

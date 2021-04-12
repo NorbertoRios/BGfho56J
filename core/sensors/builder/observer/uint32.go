@@ -17,6 +17,11 @@ type UInt32 struct {
 	typeValue string
 }
 
+//Convert ...
+func (f *UInt32) Convert(_key, _value, _type string) []sensors.ISensor {
+	return f.Build(_key, _value, _type)
+}
+
 //Build ...
 func (f *UInt32) Build(_key, _value, _type string) []sensors.ISensor {
 	sensorsArr := []sensors.ISensor{}

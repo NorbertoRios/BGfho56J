@@ -5,6 +5,7 @@ import (
 	"geometris-go/core/interfaces"
 	process "geometris-go/core/processes"
 	"geometris-go/core/processes/immobilizer/task"
+	"sync"
 )
 
 //New ...
@@ -15,6 +16,7 @@ func New(_index int, _trigger, _symbol string) interfaces.IProcess {
 	}
 	process.History = list.New()
 	process.ProcessSymbol = _symbol
+	process.Mutex = &sync.Mutex{}
 	return process
 }
 

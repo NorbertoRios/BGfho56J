@@ -5,6 +5,7 @@ import (
 	"geometris-go/core/interfaces"
 	"geometris-go/core/processes/configuration"
 	"geometris-go/core/processes/immobilizer"
+	"geometris-go/core/processes/location"
 	"geometris-go/core/processes/message"
 	"geometris-go/core/processes/synchronization"
 	"geometris-go/logger"
@@ -67,7 +68,7 @@ func (p *Manager) LocationRequest() interfaces.IProcess {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 	key := "location_request"
-	return p.getOrCreateProcess(key, configuration.New)
+	return p.getOrCreateProcess(key, location.New)
 }
 
 //NewSynchProcess ....

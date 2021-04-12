@@ -17,6 +17,11 @@ type Bytes struct {
 	typeValue string
 }
 
+//Convert ...
+func (f *Bytes) Convert(_key, _value, _type string) []sensors.ISensor {
+	return f.Build(_key, _value, _type)
+}
+
 //Build ...
 func (f *Bytes) Build(_key, _value, _type string) []sensors.ISensor {
 	sensorsArr := []sensors.ISensor{}

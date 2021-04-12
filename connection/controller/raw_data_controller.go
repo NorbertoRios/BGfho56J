@@ -6,7 +6,7 @@ import (
 )
 
 //NewRawDataController ...
-func NewRawDataController(wp worker.IWorkerPool) *RawDataController {
+func NewRawDataController(wp worker.IWorkerPool) interfaces.IController {
 	return &RawDataController{
 		workersPool: wp,
 	}

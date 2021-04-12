@@ -9,13 +9,22 @@ import (
 )
 
 //NewInProgressState ..
-func NewInProgressState() interfaces.ITaskState {
+func NewInProgressState() interfaces.IInProgressState {
 	return &InProgress{}
 }
 
 //InProgress ...
 type InProgress struct {
-	states.Base
+	states.InProgress
+}
+
+//Pause ...
+func (s *InProgress) Pause(_task interfaces.ITask) {
+	_task.ChangeState(states.NewPauseState(s))
+}
+
+//Run ...
+func (s *InProgress) Run() {
 }
 
 //NewMessageArrived ...

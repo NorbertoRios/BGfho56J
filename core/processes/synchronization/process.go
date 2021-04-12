@@ -8,6 +8,7 @@ import (
 	"geometris-go/core/processes/synchronization/task"
 	"geometris-go/logger"
 	message "geometris-go/message/interfaces"
+	"sync"
 )
 
 //New ...
@@ -15,6 +16,7 @@ func New(_symbol string) interfaces.IProcess {
 	process := &Process{}
 	process.History = list.New()
 	process.ProcessSymbol = _symbol
+	process.Mutex = &sync.Mutex{}
 	return process
 }
 
@@ -30,6 +32,8 @@ func (p *Process) NewRequest(_request interface{}, _device interfaces.IDevice) i
 
 //MessageArrived ...
 func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.IDevice) interfaces.IProcessResponse {
+	p.Mutex.Lock()
+	defer p.Mutex.Unlock()
 	resp := response.NewProcessResponse()
 	commands := p.CurrentTask.NewMessageArrived(_message, _device)
 	p.ExecuteCommands(commands, _device)

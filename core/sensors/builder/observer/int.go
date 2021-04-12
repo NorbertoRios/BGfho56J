@@ -17,6 +17,11 @@ type Ints struct {
 	typeValue string
 }
 
+//Convert ...
+func (f *Ints) Convert(_key, _value, _type string) []sensors.ISensor {
+	return f.Build(_key, _value, _type)
+}
+
 //Build ...
 func (f *Ints) Build(_key, _value, _type string) []sensors.ISensor {
 	sensorsArr := []sensors.ISensor{}

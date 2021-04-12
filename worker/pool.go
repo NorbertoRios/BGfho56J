@@ -1,37 +1,52 @@
 package worker
 
 import (
+	"container/list"
 	"geometris-go/repository"
+	"sync"
 )
 
 //NewPool ...
 func NewPool(workersCount int, _mysql, rabbit repository.IRepository) *Pool {
-	_workers := []IWorker{}
+	_workers := list.New()
 	for i := 0; i < workersCount; i++ {
 		w := NewWorker(_mysql, rabbit)
 		go w.Run()
-		_workers = append(_workers, w)
+		_workers.PushBack(w)
 	}
 	return &Pool{
-		currentNum: 0,
-		Workers:    _workers,
+		current: _workers.Front(),
+		workers: _workers,
+		mutex:   &sync.Mutex{},
 	}
 }
 
 //Pool ...
 type Pool struct {
-	currentNum int
-	Workers    []IWorker
+	current *list.Element
+	workers *list.List
+	mutex   *sync.Mutex
 }
 
 func (p *Pool) all() []IWorker {
-	return p.Workers
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+	workers := []IWorker{}
+	for w := p.workers.Front(); w != nil; w = w.Next() {
+		workers = append(workers, w.Value.(IWorker))
+	}
+	return workers
 }
 
 func (p *Pool) next() IWorker {
-	defer func() { p.currentNum++ }()
-	if p.currentNum == len(p.Workers) {
-		p.currentNum = 0
-	}
-	return p.Workers[p.currentNum]
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+	defer func() {
+		if v := p.current.Next(); v != nil {
+			p.current = p.current.Next()
+		} else {
+			p.current = p.workers.Front()
+		}
+	}()
+	return p.current.Value.(IWorker)
 }

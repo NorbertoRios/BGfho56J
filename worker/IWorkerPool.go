@@ -7,5 +7,4 @@ import (
 //IWorkerPool ...
 type IWorkerPool interface {
 	Flush([]byte, interfaces.IChannel)
-	Run()
 }

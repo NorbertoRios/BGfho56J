@@ -1,6 +1,9 @@
 package mock
 
-import "geometris-go/repository"
+import (
+	"geometris-go/repository"
+	"geometris-go/repository/models"
+)
 
 //NewRepository ...
 func NewRepository() repository.IRepository {
@@ -17,6 +20,6 @@ func (r *Repository) Save(values ...interface{}) error {
 }
 
 //Load ...
-func (r *Repository) Load(_identity string) interface{} {
-	return _identity
+func (r *Repository) Load(_identity string) *models.DeviceActivity {
+	return &models.DeviceActivity{}
 }

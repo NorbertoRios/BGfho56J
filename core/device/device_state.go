@@ -1,30 +1,39 @@
 package device
 
 import (
+	"geometris-go/core/interfaces"
 	"geometris-go/core/sensors"
 	"geometris-go/logger"
 	"sync"
 	"time"
 )
 
-//NewSensorState ...
-func NewSensorState(_lastState *State, deviceSensors []sensors.ISensor) *State {
-	hash := _lastState.State()
+//NewStateBasedState ...
+func NewStateBasedState(_lastState interfaces.IDeviceState, deviceSensors []sensors.ISensor) interfaces.IDeviceState {
+	hash := _lastState.StateMap()
 	for _, sensor := range deviceSensors {
 		if sensor.Symbol() == "" {
-			logger.Logger().WriteToLog(logger.Error, "[NewSensorState] Cant find symbol for sensor. Sensor: ", sensor)
+			logger.Logger().WriteToLog(logger.Error, "[NewStateBasedState] Cant find symbol for sensor. Sensor: ", sensor)
 			continue
 		}
 		hash[sensor.Symbol()] = sensor
 	}
-	return NewState(hash)
+	return newState(hash)
 }
 
-//NewState ...
-func NewState(deviceSensors map[string]sensors.ISensor) *State {
+//NewSensorBasedState ...
+func NewSensorBasedState(_sensors []sensors.ISensor) interfaces.IDeviceState {
+	deviceSensors := make(map[string]sensors.ISensor)
+	for _, sensor := range _sensors {
+		deviceSensors[sensor.Symbol()] = sensor
+	}
+	return newState(deviceSensors)
+}
+
+func newState(_sensorMap map[string]sensors.ISensor) interfaces.IDeviceState {
 	return &State{
 		mutex:         &sync.Mutex{},
-		deviceSensors: deviceSensors,
+		deviceSensors: _sensorMap,
 		updateTime:    time.Now().UTC(),
 	}
 }
@@ -36,15 +45,15 @@ type State struct {
 	updateTime    time.Time
 }
 
-//State ...
-func (s *State) State() map[string]sensors.ISensor {
+//StateMap ...
+func (s *State) StateMap() map[string]sensors.ISensor {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	return s.deviceSensors
 }
 
-//Sensors ...
-func (s *State) Sensors() []sensors.ISensor {
+//State ...
+func (s *State) State() []sensors.ISensor {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	deviceSensors := []sensors.ISensor{}

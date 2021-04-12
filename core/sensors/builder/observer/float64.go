@@ -17,6 +17,11 @@ type Float64 struct {
 	typeValue string
 }
 
+//Convert ...
+func (f *Float64) Convert(_key, _value, _type string) []sensors.ISensor {
+	return f.Build(_key, _value, _type)
+}
+
 //Build ...
 func (f *Float64) Build(_key, _value, _type string) []sensors.ISensor {
 	sensorsArr := []sensors.ISensor{}

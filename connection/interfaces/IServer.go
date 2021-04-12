@@ -1,7 +1,9 @@
 package interfaces
 
+import "net"
+
 //IServer ...
 type IServer interface {
 	Listen()
-	SendBytes(interface{}, []byte) (int64, error)
+	Send(*net.UDPAddr, string) (int64, error)
 }

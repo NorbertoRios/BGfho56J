@@ -3,13 +3,13 @@ package connection
 import (
 	"encoding/hex"
 	"fmt"
-	"geometris-go/connection/controller"
+	"geometris-go/connection/interfaces"
 	"geometris-go/logger"
 	"net"
 )
 
 //ConstructUDPServer returns new UDP server
-func ConstructUDPServer(host string, port int, _controller *controller.RawDataController) *UDPServer {
+func ConstructUDPServer(host string, port int, _controller interfaces.IController) interfaces.IServer {
 	addr := fmt.Sprintf("%v:%v", host, port)
 	logger.Logger().WriteToLog(logger.Info, "[UDPServer] Start at: ", addr)
 	udpAddr, err := net.ResolveUDPAddr("udp", addr)
@@ -23,7 +23,6 @@ func ConstructUDPServer(host string, port int, _controller *controller.RawDataCo
 		logger.Logger().WriteToLog(logger.Fatal, "Create udp server error: ", err.Error())
 		return nil
 	}
-
 	server := &UDPServer{
 		port:       port,
 		connection: udpConn,
@@ -36,7 +35,7 @@ func ConstructUDPServer(host string, port int, _controller *controller.RawDataCo
 type UDPServer struct {
 	port       int
 	connection *net.UDPConn
-	controller *controller.RawDataController
+	controller interfaces.IController
 }
 
 //Listen incoming packet
@@ -54,21 +53,10 @@ func (server *UDPServer) Listen() {
 	}
 }
 
-//SendString send string
-func (server *UDPServer) SendString(addr *net.UDPAddr, packet string) (int64, error) {
-	n, err := server.connection.WriteToUDP([]byte(packet), addr)
-	logger.Logger().WriteToLog(logger.Info, "[UDPServer | SendString] Bytes sent. ", []byte(packet))
-	if err != nil {
-		logger.Logger().WriteToLog(logger.Error, "[UDPServer | SendString] Error while sending string. ", err)
-		return 0, err
-	}
-	return int64(n), nil
-}
-
-//SendBytes send bytes
-func (server *UDPServer) SendBytes(addr *net.UDPAddr, packet []byte) (int64, error) {
-	n, err := server.connection.WriteToUDP(packet, addr)
-	logger.Logger().WriteToLog(logger.Info, "[UDPServer | SendBytes] Bytes sent. ", packet)
+//Send send bytes
+func (server *UDPServer) Send(addr *net.UDPAddr, message string) (int64, error) {
+	n, err := server.connection.WriteToUDP([]byte(message), addr)
+	logger.Logger().WriteToLog(logger.Info, "[UDPServer | SendBytes] Bytes sent. ", []byte(message), "to :", addr.String())
 	if err != nil {
 		logger.Logger().WriteToLog(logger.Error, "[UDPServer | SendBytes] Error while sending bytes. ", err)
 		return 0, err

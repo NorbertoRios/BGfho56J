@@ -1,6 +1,10 @@
 package models
 
 import (
+	"geometris-go/configuration"
+	"geometris-go/convert"
+	"geometris-go/core/sensors"
+	"geometris-go/types"
 	"time"
 )
 
@@ -22,4 +26,10 @@ type DeviceActivity struct {
 //TableName for DeviceActivity model
 func (DeviceActivity) TableName() string {
 	return "ats.tblDeviceActivityInfo"
+}
+
+//Sate ...
+func (d *DeviceActivity) Sate() []sensors.ISensor {
+	convertor := convert.NewDTOToState(d.LastMessage, configuration.ReportConfig(types.NewFile("/config/initialize/ReportConfiguration.xml")))
+	return convertor.Convert()
 }

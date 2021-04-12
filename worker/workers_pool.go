@@ -6,27 +6,32 @@ import (
 	"geometris-go/logger"
 	"geometris-go/message/factory"
 	"geometris-go/repository"
+	"sync"
 )
 
 //NewWorkerPool ...
 func NewWorkerPool(workersCount int, _mysql, _rabbit repository.IRepository) IWorkerPool {
 	return &WorkersPool{
-		Pool: NewPool(workersCount, _mysql, _rabbit),
+		Pool:  NewPool(workersCount, _mysql, _rabbit),
+		mutex: &sync.Mutex{},
 	}
 }
 
 //WorkersPool ...
 type WorkersPool struct {
-	Pool *Pool
+	Pool  *Pool
+	mutex *sync.Mutex
 }
 
 //Flush ...
 func (wp *WorkersPool) Flush(rawData []byte, channel interfaces.IChannel) {
+	wp.mutex.Lock()
 	defer func() {
 		if r := recover(); r != nil {
 			logger.Logger().WriteToLog(logger.Error, "[WorkersPool | Recovered] Recovered with error: ", r)
 		}
 	}()
+	defer wp.mutex.Unlock()
 	messageFactory := factory.New()
 	message := messageFactory.BuildMessage(rawData)
 	data := &EntryData{Message: message, Channel: channel}
@@ -40,11 +45,4 @@ func (wp *WorkersPool) Flush(rawData []byte, channel interfaces.IChannel) {
 	worker := wp.Pool.next()
 	worker.NewDevice(message.Identity())
 	worker.Push(data)
-}
-
-//Run ...
-func (wp *WorkersPool) Run() {
-	for _, worker := range wp.Pool.Workers {
-		go worker.Run()
-	}
 }

@@ -1,9 +1,11 @@
 package repository
 
 import (
-	"fmt"
+	"encoding/json"
+	"geometris-go/convert"
 	"geometris-go/core/interfaces"
 	"geometris-go/logger"
+	"geometris-go/repository/models"
 )
 
 //NewConsoleRepository ....
@@ -24,20 +26,18 @@ func (repo *ConsoleRepository) Save(values ...interface{}) error {
 		states, s := value.([]interfaces.IDeviceState)
 		if s {
 			for _, state := range states {
-				content := ""
-				for _, value := range state.State() {
-					content = fmt.Sprintf("%v%v;", content, value)
-				}
-				logger.Logger().WriteToLog(logger.Info, "[ConsoleRepository_"+repo.repoType+" | Save] ", content)
+				convertor := convert.NewStateToDTO(state.(interfaces.IDeviceState))
+				dtoMessage := convertor.Convert()
+				jMessage, _ := json.Marshal(dtoMessage)
+				logger.Logger().WriteToLog(logger.Info, "[ConsoleRepository_"+repo.repoType+" | Save] ", string(jMessage))
 			}
-			return nil
 		}
 	}
 	return nil
 }
 
 //Load ...
-func (repo *ConsoleRepository) Load(key string) interface{} {
+func (repo *ConsoleRepository) Load(key string) *models.DeviceActivity {
 	logger.Logger().WriteToLog(logger.Info, "[ConsoleRepository_"+repo.repoType+" | Load] For ", key)
 	return nil
 }

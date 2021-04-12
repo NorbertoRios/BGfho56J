@@ -12,27 +12,25 @@ import (
 )
 
 //NewDevice ...
-func NewDevice(_identity, _syncParameter string, _sensors map[string]sensors.ISensor, _channel connInterfaces.IChannel) interfaces.IDevice {
+func NewDevice(_identity, _syncParameter string, _sensors []sensors.ISensor, _channel connInterfaces.IChannel) interfaces.IDevice {
 	return &Device{
-		DeviceIdentity:      _identity,
-		LastActivity:        time.Now().UTC(),
-		LastStateUpdateTime: time.Now().UTC(),
-		CurrentState:        NewState(_sensors),
-		UDPChannel:          _channel,
-		Mutex:               &sync.Mutex{},
-		DeviceProcesses:     manager.New(_syncParameter),
+		DeviceIdentity:  _identity,
+		LastActivity:    time.Now().UTC(),
+		CurrentState:    NewSensorBasedState(_sensors),
+		UDPChannel:      _channel,
+		Mutex:           &sync.Mutex{},
+		DeviceProcesses: manager.New(_syncParameter),
 	}
 }
 
 //Device struct
 type Device struct {
-	DeviceIdentity      string
-	LastStateUpdateTime time.Time
-	LastActivity        time.Time
-	CurrentState        *State
-	UDPChannel          connInterfaces.IChannel
-	Mutex               *sync.Mutex
-	DeviceProcesses     interfaces.IProcesses
+	DeviceIdentity  string
+	LastActivity    time.Time
+	CurrentState    interfaces.IDeviceState
+	UDPChannel      connInterfaces.IChannel
+	Mutex           *sync.Mutex
+	DeviceProcesses interfaces.IProcesses
 }
 
 //Send send command to device
@@ -65,8 +63,7 @@ func (device *Device) ProcessCommands(commands *list.List) {
 
 //NewState ...
 func (device *Device) NewState(messageSensors []sensors.ISensor) {
-	device.LastStateUpdateTime = time.Now().UTC()
-	device.CurrentState = NewSensorState(device.CurrentState, messageSensors)
+	device.CurrentState = NewStateBasedState(device.CurrentState, messageSensors)
 }
 
 //Identity ...

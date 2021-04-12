@@ -14,7 +14,7 @@ func New(_mysql, _rabbit repository.IRepository) unitofwork.IUnitOfWork {
 		rabbitRepository: _rabbit,
 		newTasks:         []interfaces.ITask{},
 		dirtyTasks:       []interfaces.ITask{},
-		dirtyStates:      []interfaces.IDeviceState{},
+		dirtyStates:      []interfaces.IDirtyState{},
 		mutex:            &sync.Mutex{},
 	}
 }
@@ -25,7 +25,7 @@ type UnitOfWork struct {
 	rabbitRepository repository.IRepository
 	newTasks         []interfaces.ITask
 	dirtyTasks       []interfaces.ITask
-	dirtyStates      []interfaces.IDeviceState
+	dirtyStates      []interfaces.IDirtyState
 	mutex            *sync.Mutex
 }
 
@@ -44,7 +44,7 @@ func (uow *UnitOfWork) AddDirtyTasks(task ...interfaces.ITask) {
 }
 
 //AddDirtyStates ...
-func (uow *UnitOfWork) AddDirtyStates(states ...interfaces.IDeviceState) {
+func (uow *UnitOfWork) AddDirtyStates(states ...interfaces.IDirtyState) {
 	uow.mutex.Lock()
 	defer uow.mutex.Unlock()
 	uow.dirtyStates = append(uow.dirtyStates, states...)
@@ -60,7 +60,7 @@ func (uow *UnitOfWork) Commit() {
 	uow.mysqlRepository.Save(uow.dirtyStates)
 	uow.mysqlRepository.Save(uow.dirtyTasks)
 	uow.mysqlRepository.Save(uow.newTasks)
-	uow.dirtyStates = []interfaces.IDeviceState{}
+	uow.dirtyStates = []interfaces.IDirtyState{}
 	uow.dirtyTasks = []interfaces.ITask{}
 	uow.newTasks = []interfaces.ITask{}
 }

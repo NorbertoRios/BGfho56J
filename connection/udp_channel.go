@@ -2,13 +2,14 @@ package connection
 
 import (
 	"fmt"
+	"geometris-go/connection/interfaces"
 	"geometris-go/logger"
 	"net"
 	"time"
 )
 
 //ConstructUDPChannel returns new channel
-func ConstructUDPChannel(addr *net.UDPAddr, server *UDPServer) *UDPChannel {
+func ConstructUDPChannel(addr *net.UDPAddr, server *UDPServer) interfaces.IChannel {
 	return &UDPChannel{
 		ServerInstance: server,
 		ConnectedAt:    time.Now().UTC(),
@@ -32,26 +33,15 @@ func (c *UDPChannel) Received() int64 {
 }
 
 //Send message to device by UDP
-func (c *UDPChannel) Send(message interface{}) error {
+func (c *UDPChannel) Send(message string) error {
 	var err error
 	var trs int64
-	switch message.(type) {
-	case string:
-		{
-			trs, err = c.ServerInstance.SendString(c.RemoteAddr(), message.(string))
-			break
-		}
-	default:
-		{
-			trs, err = c.ServerInstance.SendBytes(c.RemoteAddr(), message.([]byte))
-			break
-		}
-	}
+	trs, err = c.ServerInstance.Send(c.clientAddr, message)
 	if err != nil {
 		logger.Logger().WriteToLog(logger.Error, fmt.Sprintf("[UDPChannel | Send] Error: %v", err))
 		return err
 	}
-	logger.Logger().WriteToLog(logger.Info, fmt.Sprintf("[UDPChannel | Send] Message(string): %v Message(byte): %v. TO: %v ", message.(string), []byte(message.(string)), c.clientAddr.String()))
+	logger.Logger().WriteToLog(logger.Info, fmt.Sprintf("[UDPChannel | Send] Message(string): %v . TO: %v ", string(message), c.clientAddr.String()))
 	c.AddTransmitted(trs)
 	return nil
 }

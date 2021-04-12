@@ -1,17 +1,15 @@
 package main
 
 import (
-	"geometris-go/connection"
-	"geometris-go/connection/controller"
 	"geometris-go/repository"
-	"geometris-go/worker"
 )
+
+var instanse *ServiceInstanse
 
 func main() {
 	_mysqlRepo := repository.NewConsoleRepository("mysql")
 	_rabbitPero := repository.NewConsoleRepository("rabbit")
-	workers := worker.NewWorkerPool(2, _mysqlRepo, _rabbitPero)
-	controller := controller.NewRawDataController(workers)
-	udpServer := connection.ConstructUDPServer("", 10064, controller)
-	udpServer.Listen()
+	instanse = NewService(10, _mysqlRepo, _rabbitPero)
+	instanse.AddServer("172.16.0.44", 10064)
+	instanse.Start()
 }

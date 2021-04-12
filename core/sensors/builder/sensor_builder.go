@@ -21,3 +21,8 @@ type SensorBuilder struct {
 func (sb *SensorBuilder) Build(_key, _value, _type string) []sensors.ISensor {
 	return sb.observable.Build(_key, _value, _type)
 }
+
+//Convert ...
+func (sb *SensorBuilder) Convert(_key, _value, _type string) []sensors.ISensor {
+	return sb.observable.Convert(_key, _value, _type)
+}

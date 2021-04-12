@@ -2,17 +2,20 @@ package process
 
 import (
 	"container/list"
+	"fmt"
 	"geometris-go/core/interfaces"
 	"geometris-go/core/processes/response"
 	"geometris-go/logger"
 	message "geometris-go/message/interfaces"
 	"reflect"
+	"sync"
 )
 
 //Process ...
 type Process struct {
 	History       *list.List
 	CurrentTask   interfaces.ITask
+	Mutex         *sync.Mutex
 	ProcessSymbol string
 }
 
@@ -75,6 +78,8 @@ func (p *Process) TasksCompetitiveness(_newTask interfaces.ITask, _device interf
 
 //MessageArrived ...
 func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.IDevice) interfaces.IProcessResponse {
+	p.Mutex.Lock()
+	defer p.Mutex.Unlock()
 	resp := response.NewProcessResponse()
 	commands := p.CurrentTask.NewMessageArrived(_message, _device)
 	p.ExecuteCommands(commands, _device)
@@ -92,6 +97,7 @@ func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.I
 func (p *Process) ExecuteCommands(_commands *list.List, _device interfaces.IDevice) {
 	for _commands.Len() > 0 {
 		cmd := _commands.Front()
+		logger.Logger().WriteToLog(logger.Info, fmt.Sprintf("[ExecuteCommands] Start executing command %v", cmd))
 		command, valid := cmd.Value.(interfaces.ICommand)
 		if valid {
 			nList := command.Execute(_device)

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ReportConfiguration>
 
-  <Fields>        
+  <Fields>    
     <Field id="3" name="Latitude" type="float64" />
     <Field id="4" name="Longitude" type="float64" />
     <Field id="7" name="SequenceID" type="uint32" />
@@ -37,6 +37,6 @@
     <Field id="77" name="ThrottlePosition" type="byte" />
     <Field id="80" name="CumulativeFuelEconomy" type="byte" />
     <Field id="81" name="TripFuelEconomy" type="byte" />
-    <Field id="82" name="CurrentFuelEconomy" type="byte" />    
+    <Field id="82" name="CurrentFuelEconomy" type="byte" />
   </Fields>
 </ReportConfiguration>

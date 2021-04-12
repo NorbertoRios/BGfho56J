@@ -20,7 +20,7 @@ var mockRabbitRepo repository.IRepository = mock.NewRepository()
 
 func SetUP() {
 	messageFactory := factory.New()
-	message := messageFactory.BuildMessage([]byte("87A110550003,F001,OFF_PERIODIC,1616773466,48.746404,37.591212,33,9,0,40,0,310,0.0,4,,0,0,,,,,,,0:0,,0,0,."))
+	message := messageFactory.BuildMessage([]byte("87A110550003,F001,OFF_PERIODIC,1616773466,48.746404,37.591212,33,9,0,40,0,310,0.0,4,,0,0,,,,,,,0:0,,0,0,"))
 	mock.NewDeviceBuilder(message, nil, "", unitofwork.New(mockMysqlRepo, mockRabbitRepo)).Build()
 }
 
