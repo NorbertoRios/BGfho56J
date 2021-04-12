@@ -39,6 +39,6 @@ func (f *Times) Build(_key, _value, _type string) []sensors.ISensor {
 	if _key == "TimeStamp" {
 		sensorsArr = append(sensorsArr, sensors.NewSensor("Ack", intTimeValue))
 	}
-	sensorsArr = append(sensorsArr, sensors.NewSensor(_key, sensorValue.String()))
+	sensorsArr = append(sensorsArr, sensors.NewSensor(_key, sensorValue))
 	return sensorsArr
 }

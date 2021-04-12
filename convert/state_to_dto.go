@@ -1,12 +1,12 @@
 package convert
 
 import (
-	"geometris-go/core/interfaces"
+	"geometris-go/core/sensors"
 	"geometris-go/dto"
 )
 
 //NewStateToDTO ...
-func NewStateToDTO(_state interfaces.IDeviceState) *StateToDTO {
+func NewStateToDTO(_state []sensors.ISensor) *StateToDTO {
 	return &StateToDTO{
 		state: _state,
 	}
@@ -14,13 +14,13 @@ func NewStateToDTO(_state interfaces.IDeviceState) *StateToDTO {
 
 //StateToDTO ...
 type StateToDTO struct {
-	state interfaces.IDeviceState
+	state []sensors.ISensor
 }
 
 //Convert ...
 func (std *StateToDTO) Convert() dto.IMessage {
 	dtoMessage := dto.NewMessage()
-	for _, value := range std.state.State() {
+	for _, value := range std.state {
 		dtoMessage.SetValue(value.Symbol(), value.Value())
 	}
 	return dtoMessage

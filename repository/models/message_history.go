@@ -8,6 +8,8 @@ import (
 //NewMessageHistory ...
 func NewMessageHistory(_device interfaces.IDevice) *MessageHistory {
 	return &MessageHistory{}
+
+	// Тут нужно сделать Wrapper над IDirtyState чтобы достать нужные поля.
 }
 
 //MessageHistory struct

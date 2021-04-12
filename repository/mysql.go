@@ -1,9 +1,7 @@
 package repository
 
 import (
-	"encoding/json"
 	"errors"
-	"geometris-go/convert"
 	"geometris-go/core/interfaces"
 	"geometris-go/logger"
 	"geometris-go/repository/models"
@@ -44,16 +42,25 @@ func (repo *MySQL) Load(_identity string) *models.DeviceActivity {
 
 //Save ...
 func (repo *MySQL) Save(values ...interface{}) error {
-	for _, value := range values {
-		states, s := value.([]interfaces.IDirtyState)
-		if s {
-			for _, state := range states {
-				convertor := convert.NewStateToDTO(state.(interfaces.IDirtyState).State())
-				dtoMessage := convertor.Convert()
-				jMessage, _ := json.Marshal(dtoMessage)
-				activity := models.DeviceActivity
-			}
-		}
-	}
+	// for _, value := range values {
+	// 	states, s := value.([]interfaces.IDirtyState)
+	// 	if s {
+	// 		for _, state := range states {
+	// 			convertor := convert.NewStateToDTO(state.(interfaces.IDirtyState).State())
+	// 			dtoMessage := convertor.Convert()
+	// 			jMessage, _ := json.Marshal(dtoMessage)
+	// 			activity := models.DeviceActivity
+	// 		}
+	// 	}
+	// }
+	// return nil
 	return nil
+}
+
+func (repo *MySQL) saveActivity(_dirtyStates []interfaces.IDirtyState) {
+
+}
+
+func (repo *MySQL) saveHistory() uint64 {
+	return 0
 }
