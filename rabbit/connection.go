@@ -8,73 +8,33 @@ import (
 	"github.com/streadway/amqp"
 )
 
-var conn *RabbitConnection
+var connection *amqp.Connection
+var channel *amqp.Channel
 
-//Connection ..
-func Connection() *RabbitConnection {
-	if conn == nil {
-		logger.Logger().WriteToLog(logger.Fatal, "[rabbit | RabbitConnection] RabbitMQ RabbitConnection not established")
+//Connection ...
+func Connection(_config *configuration.RabbitCredentials) *amqp.Connection {
+	if connection == nil {
+		connectionStr := fmt.Sprintf("amqp://%v:%v@%v:%v/", _config.Username, _config.Password, _config.Host, _config.Port)
+		conn, err := amqp.Dial(connectionStr)
+		if err != nil {
+			logger.Logger().WriteToLog(logger.Fatal, "[Rabbit | Connection] Error while create connection. Error", err)
+			return nil
+		}
+		connection = conn
 	}
-	return conn
+	return connection
 }
 
-//InitializeRabbitRabbitConnection ...
-func InitializeRabbitRabbitConnection(_config *configuration.RabbitCredentials) {
-	conn = connect(_config)
-}
-
-func connect(_config *configuration.RabbitCredentials) *RabbitConnection {
-	RabbitConnectionStr := fmt.Sprintf("amqp://%v:%v@%v:%v/", _config.Username, _config.Password, _config.Host, _config.Port)
-	conn, err := amqp.Dial(RabbitConnectionStr)
-	failOnError(err, "Failed to connect to RabbitMQ; RabbitConnection string:"+RabbitConnectionStr)
-	if err != nil {
-		return nil
+//Channel ...
+func Channel(_config *configuration.RabbitCredentials) *amqp.Channel {
+	if channel == nil {
+		connection := Connection(_config)
+		ch, err := connection.Channel()
+		if err != nil {
+			logger.Logger().WriteToLog(logger.Fatal, "[Rabbit | Channel] Error while create channel. Error", err)
+			return nil
+		}
+		channel = ch
 	}
-	ch, err := conn.Channel()
-	failOnError(err, "Failed to open a channel")
-	if err != nil {
-		return nil
-	}
-
-	return &RabbitConnection{
-		RabbitConnection: conn,
-		channel:          ch,
-	}
-}
-
-//RabbitConnection ...
-type RabbitConnection struct {
-	RabbitConnection *amqp.Connection
-	channel          *amqp.Channel
-}
-
-//Publish ..
-func (c *RabbitConnection) Publish(message, exchange, routingKey string, retry int) {
-	if retry == 0 {
-		logger.Logger().WriteToLog(logger.Fatal, "[RabbitConnection | Publish] Number of republishing exhausted")
-	}
-	err := c.channel.Publish(
-		exchange,
-		routingKey,
-		false,
-		false,
-		amqp.Publishing{
-			ContentType:     "application/json",
-			ContentEncoding: "utf-8",
-			DeliveryMode:    2,
-			Headers:         make(amqp.Table, 0),
-			Body:            []byte(message),
-		})
-	logger.Logger().WriteToLog(logger.Info, "[RabbitConnection | Publish] Publish ", message, " to ", exchange, ":", routingKey, ".")
-	if err != nil {
-		logger.Logger().WriteToLog(logger.Info, "[RabbitConnection | Publish] Error while publishing ", message, " to ", exchange, ":", routingKey, ". Error: ", err)
-		retry = retry - 1
-		c.Publish(message, exchange, routingKey, retry)
-	}
-}
-
-func failOnError(err error, msg string) {
-	if err != nil {
-		logger.Logger().WriteToLog(logger.Fatal, msg)
-	}
+	return channel
 }

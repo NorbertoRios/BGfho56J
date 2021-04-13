@@ -1,42 +1,28 @@
-package rabbitLogger
+package rabbitlogger
 
 import (
-	"fmt"
-	"geometris-go/configuration"
-	"geometris-go/logger"
-	"geometris-go/rabbit"
+	"geometris-go/repository"
 )
 
 var rLogger *rabbitLogger
 
+//BuildRabbitLogger ...
+func BuildRabbitLogger(_rabbitRepository repository.IRepository) {
+	rLogger = &rabbitLogger{
+		rabbitRepo: _rabbitRepository,
+	}
+}
+
 //Logger ...
 func Logger() *rabbitLogger {
-	if rLogger == nil {
-		rLogger = buildRabbitLogger()
-	}
 	return rLogger
 }
 
 type rabbitLogger struct {
-	exchange   string
-	routingKey string
-	retry      int
-	connection *rabbit.RabbitConnection
-}
-
-func buildRabbitLogger() *rabbitLogger {
-	var config *configuration.ServiceCredentials
-	return &rabbitLogger{
-		exchange:   config.FacadeCallbackExchange,
-		routingKey: config.FacadeCallbackRoutingKey,
-		connection: rabbit.Connection(),
-		retry:      10,
-	}
+	rabbitRepo repository.IRepository
 }
 
 //WriteToLog write content to log
-func (l *rabbitLogger) Publish(content ...interface{}) {
-	strContent := fmt.Sprintln(content...)
-	logger.Logger().WriteToLog(logger.Info, "[rabbitLogger | Publish] Publish message to BO socket: ", strContent)
-	l.connection.Publish(strContent, l.exchange, l.routingKey, l.retry)
+func (l *rabbitLogger) Log(message string) {
+	l.rabbitRepo.Save(message)
 }

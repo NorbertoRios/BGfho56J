@@ -1,15 +1,25 @@
 package main
 
 import (
+	"geometris-go/configuration"
+	"geometris-go/logger"
+	"geometris-go/rabbitlogger"
 	"geometris-go/repository"
+	"geometris-go/types"
 )
 
 var instanse *ServiceInstanse
 
 func main() {
-	_mysqlRepo := repository.NewConsoleRepository("mysql")
-	_rabbitPero := repository.NewConsoleRepository("rabbit")
-	instanse = NewService(10, _mysqlRepo, _rabbitPero)
-	instanse.AddServer("172.16.0.44", 10064)
+	serviceConfig := configuration.ConstructCredentialsJSONProvider(types.NewFile("/config/initialize/credentials.example.json"))
+	credentials, err := serviceConfig.ProvideCredentials()
+	if err != nil {
+		logger.Logger().WriteToLog(logger.Fatal, "[Main] Error while read credentials. Error: ", err.Error())
+	}
+	rabbitPero := repository.NewRabbit(credentials.Rabbit)
+	rabbitlogger.BuildRabbitLogger(rabbitPero)
+	mysqRepo := repository.NewMySQL(credentials.MysqDeviceMasterConnectionString)
+	instanse = NewService(credentials.WorkersCount, rabbitPero, mysqRepo)
+	instanse.AddServer(credentials.UDPHost, credentials.UDPPort)
 	instanse.Start()
 }

@@ -22,7 +22,7 @@ func TestConvertor(t *testing.T) {
 	messageParser := parser.NewWithDiffConfig("..", "/config/initialize/ReportConfiguration.xml")
 	parsedMessage := messageParser.Parse(rawMessage, "12=28.60.65.9.36.3.4.7.8.11.12.14.17.24.50.56.51.55.70.71.72.73.74.75.76.77.80.81.82")
 	state := device.NewSensorBasedState([]sensors.ISensor{})
-	conv := convert.NewStateToDTO(device.NewStateBasedState(state, parsedMessage.(*types.LocationMessage).Sensors()))
+	conv := convert.NewStateToDTO(device.NewStateBasedState(state, parsedMessage.(*types.LocationMessage).Sensors()).State())
 	dtoMessage := conv.Convert()
 	strMess, jerr := json.Marshal(dtoMessage)
 	if jerr != nil {

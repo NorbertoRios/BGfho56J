@@ -44,7 +44,8 @@ func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.I
 	p.Mutex.Lock()
 	defer p.Mutex.Unlock()
 	resp := response.NewProcessResponse()
-	if _, s := _message.(*types.RawLocationMessage); !s {
+	rawLocationMessage, s := _message.(*types.RawLocationMessage)
+	if !s {
 		return resp
 	}
 	messageParser := parser.New()
@@ -52,7 +53,7 @@ func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.I
 	logger.Logger().WriteToLog(logger.Info, fmt.Sprintf("[Message Arrived] Arrived new location message: %v", locationMessage.Sensors()))
 	commads := p.CurrentTask.NewMessageArrived(locationMessage, _device)
 	p.ExecuteCommands(commads, _device)
-	dirtyState := response.NewDirtyState(_device.Identity(), p.syncParam, _device.State())
+	dirtyState := response.NewDirtyState(_device.Identity(), p.syncParam, _device.State(), rawLocationMessage.RawByteData())
 	resp.AppendState(dirtyState)
 	return resp
 }

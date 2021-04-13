@@ -9,11 +9,11 @@ import (
 )
 
 //NewConsoleRepository ....
-func NewConsoleRepository(_repoType string) IRepository {
-	return &ConsoleRepository{
-		repoType: _repoType,
-	}
-}
+// func NewConsoleRepository(_repoType string) IRepository {
+// 	return &ConsoleRepository{
+// 		repoType: _repoType,
+// 	}
+// }
 
 //ConsoleRepository ...
 type ConsoleRepository struct {

@@ -15,7 +15,7 @@
     <Field id="15" name="Speed" type="byte" />
     <Field id="17" name="Heading" type="int" />    
     <Field id="23" name="Odometer" type="uint32" />    
-    <Field id="24" name="OdometerMIl" type="uint32" />        
+    <Field id="24" name="OdometerMIl" type="uint32" />
     <Field id="36" name="TimeStamp" type="time" />
     <Field id="43" name="BLEClientState" type="byte" />
     <Field id="48" name="PacketCount" type="int" />

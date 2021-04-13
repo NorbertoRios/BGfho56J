@@ -3,6 +3,7 @@ package states
 import (
 	"geometris-go/core/interfaces"
 	"geometris-go/core/processes/states"
+	"geometris-go/core/processes/states/response"
 )
 
 //NewDone ...
@@ -18,4 +19,10 @@ type Done struct {
 //IsClosed ...
 func (s *Done) IsClosed() bool {
 	return true
+}
+
+//FacadeResponse ...
+func (s *Done) FacadeResponse() string {
+	response := response.NewFacadeResponse("synchronization", "Done", true)
+	return response.String()
 }

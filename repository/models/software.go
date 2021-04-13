@@ -19,6 +19,7 @@ type Software struct {
 	Firmware  string `json:"firmware"`
 }
 
+//Marshal ...
 func (s *Software) Marshal() string {
 	jSoft, jErr := json.Marshal(s)
 	if jErr != nil {

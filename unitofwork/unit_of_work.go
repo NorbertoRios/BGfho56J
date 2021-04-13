@@ -56,7 +56,7 @@ func (uow *UnitOfWork) Commit() {
 	defer uow.mutex.Unlock()
 	uow.rabbitRepository.Save(uow.dirtyStates)
 	uow.rabbitRepository.Save(uow.dirtyTasks)
-	uow.rabbitRepository.Save(uow.newTasks)
+	//uow.rabbitRepository.Save(uow.newTasks)
 	uow.mysqlRepository.Save(uow.dirtyStates)
 	uow.mysqlRepository.Save(uow.dirtyTasks)
 	uow.mysqlRepository.Save(uow.newTasks)
