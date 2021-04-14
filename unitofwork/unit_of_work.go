@@ -3,6 +3,7 @@ package unitofwork
 import (
 	"geometris-go/core/interfaces"
 	"geometris-go/repository"
+	"geometris-go/repository/wrapper"
 	unitofwork "geometris-go/unitofwork/interfaces"
 	"sync"
 )
@@ -54,12 +55,14 @@ func (uow *UnitOfWork) AddDirtyStates(states ...interfaces.IDirtyState) {
 func (uow *UnitOfWork) Commit() {
 	uow.mutex.Lock()
 	defer uow.mutex.Unlock()
-	uow.rabbitRepository.Save(uow.dirtyStates)
-	uow.rabbitRepository.Save(uow.dirtyTasks)
-	//uow.rabbitRepository.Save(uow.newTasks)
-	uow.mysqlRepository.Save(uow.dirtyStates)
+	var states []wrapper.IDirtyStateWrapper
+	for _, ds := range uow.dirtyStates {
+		states = append(states, wrapper.NewDirtyStateWrapper(ds))
+	}
+	uow.mysqlRepository.Save(states)
 	uow.mysqlRepository.Save(uow.dirtyTasks)
-	uow.mysqlRepository.Save(uow.newTasks)
+	uow.rabbitRepository.Save(states)
+	uow.rabbitRepository.Save(uow.dirtyTasks)
 	uow.dirtyStates = []interfaces.IDirtyState{}
 	uow.dirtyTasks = []interfaces.ITask{}
 	uow.newTasks = []interfaces.ITask{}

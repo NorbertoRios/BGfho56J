@@ -1,12 +1,14 @@
 package wrapper
 
-import "time"
+import (
+	"geometris-go/dto"
+)
 
 //IDirtyStateWrapper ..
 type IDirtyStateWrapper interface {
 	Identity() string
-	StringMessage() string
-	Firmware() string
-	TimeStamp() time.Time
+	SyncParam() string
 	RawData() []byte
+	DTOMessage() dto.IMessage
+	ValueByKey(string) interface{}
 }

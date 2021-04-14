@@ -1,37 +1,50 @@
 package main
 
 import (
+	"geometris-go/api/server"
+	"geometris-go/configuration"
 	"geometris-go/connection"
 	"geometris-go/connection/controller"
 	"geometris-go/connection/interfaces"
-	"geometris-go/logger"
+	"geometris-go/rabbitlogger"
 	"geometris-go/repository"
 	"geometris-go/worker"
 )
 
+func buildUDPServers(_credentials *configuration.ServiceCredentials, _controller interfaces.IController) []interfaces.IServer {
+	servers := []interfaces.IServer{}
+	for id, host := range _credentials.UDPHost {
+		servers = append(servers, connection.ConstructUDPServer(host, _credentials.UDPPort[id], _controller))
+	}
+	return servers
+}
+
 //NewService ...
-func NewService(_workerCount int, _mysqlRepo, _rabbitPero repository.IRepository) *ServiceInstanse {
+func NewService(_credentials *configuration.ServiceCredentials) *ServiceInstanse {
+	rabbitPero := repository.NewRabbit(_credentials.Rabbit)
+	mysqlRepo := repository.NewMySQL(_credentials.MysqDeviceMasterConnectionString)
+	messageController := controller.NewRawDataController(worker.NewWorkerPool(_credentials.WorkersCount, mysqlRepo, rabbitPero))
 	return &ServiceInstanse{
-		udpServers:       []interfaces.IServer{},
-		serverController: controller.NewRawDataController(worker.NewWorkerPool(_workerCount, _mysqlRepo, _rabbitPero)),
+		mysqlRepo:  mysqlRepo,
+		rabbitPero: rabbitPero,
+		udpServers: buildUDPServers(_credentials, messageController),
+		apiServer:  server.New(mysqlRepo, rabbitPero, _credentials.WebAPIPort),
 	}
 }
 
 //ServiceInstanse ...
 type ServiceInstanse struct {
-	udpServers       []interfaces.IServer
-	serverController interfaces.IController
-}
-
-//AddServer ...
-func (si *ServiceInstanse) AddServer(_host string, _port int) {
-	si.udpServers = append(si.udpServers, connection.ConstructUDPServer(_host, _port, si.serverController))
+	mysqlRepo  repository.IRepository
+	rabbitPero repository.IRepository
+	udpServers []interfaces.IServer
+	apiServer  server.IServer
 }
 
 //Start ...
 func (si *ServiceInstanse) Start() {
+	rabbitlogger.BuildRabbitLogger(si.rabbitPero)
 	for _, server := range si.udpServers {
-		server.Listen()
+		go server.Listen()
 	}
-	logger.Logger().WriteToLog(logger.Info, "[ServiceInstanse | Start] Servers are started")
+	si.apiServer.Start()
 }

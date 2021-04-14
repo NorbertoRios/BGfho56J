@@ -62,9 +62,9 @@ func (r *Rabbit) Load(string) *models.DeviceActivity {
 func (r *Rabbit) Save(values ...interface{}) error {
 	for _, value := range values {
 		switch value.(type) {
-		case []interfaces.IDirtyState:
+		case []wrapper.IDirtyStateWrapper:
 			{
-				return r.saveDeviceState(value.([]interfaces.IDirtyState))
+				return r.saveDeviceState(value.([]wrapper.IDirtyStateWrapper))
 			}
 		case []interfaces.ITask:
 			{
@@ -93,10 +93,10 @@ func (r *Rabbit) saveTasks(_tasks []interfaces.ITask) error {
 	return nil
 }
 
-func (r *Rabbit) saveDeviceState(_states []interfaces.IDirtyState) error {
+func (r *Rabbit) saveDeviceState(_states []wrapper.IDirtyStateWrapper) error {
 	for _, state := range _states {
-		stateWrapper := wrapper.NewDirtyStateWrapper(state)
-		err := r.publish(stateWrapper.StringMessage(), r.config.DeviceStatesExchange, stateWrapper.Identity()[len(stateWrapper.Identity())-2:], r.retry)
+		dtoMessage := state.DTOMessage()
+		err := r.publish(dtoMessage.Marshal(), r.config.DeviceStatesExchange, state.Identity()[len(state.Identity())-2:], r.retry)
 		if err != nil {
 			return err
 		}

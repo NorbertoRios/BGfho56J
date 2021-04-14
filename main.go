@@ -3,8 +3,6 @@ package main
 import (
 	"geometris-go/configuration"
 	"geometris-go/logger"
-	"geometris-go/rabbitlogger"
-	"geometris-go/repository"
 	"geometris-go/types"
 )
 
@@ -16,10 +14,6 @@ func main() {
 	if err != nil {
 		logger.Logger().WriteToLog(logger.Fatal, "[Main] Error while read credentials. Error: ", err.Error())
 	}
-	rabbitPero := repository.NewRabbit(credentials.Rabbit)
-	rabbitlogger.BuildRabbitLogger(rabbitPero)
-	mysqRepo := repository.NewMySQL(credentials.MysqDeviceMasterConnectionString)
-	instanse = NewService(credentials.WorkersCount, rabbitPero, mysqRepo)
-	instanse.AddServer(credentials.UDPHost, credentials.UDPPort)
+	instanse = NewService(credentials)
 	instanse.Start()
 }

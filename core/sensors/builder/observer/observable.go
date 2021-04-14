@@ -6,11 +6,10 @@ import "geometris-go/core/sensors"
 func NewObservable() *Observable {
 	observers := []IObserver{
 		NewBytes(),
-		NewFloat64(),
-		NewInts(),
+		NewFloat32(),
 		NewString(),
 		NewTimes(),
-		NewUInt32(),
+		NewInt32(),
 	}
 	return &Observable{
 		observers: observers,

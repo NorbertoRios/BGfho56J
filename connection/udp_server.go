@@ -24,7 +24,6 @@ func ConstructUDPServer(host string, port int, _controller interfaces.IControlle
 		return nil
 	}
 	server := &UDPServer{
-		port:       port,
 		connection: udpConn,
 		controller: _controller,
 	}
@@ -33,13 +32,13 @@ func ConstructUDPServer(host string, port int, _controller interfaces.IControlle
 
 //UDPServer for genx service
 type UDPServer struct {
-	port       int
 	connection *net.UDPConn
 	controller interfaces.IController
 }
 
 //Listen incoming packet
 func (server *UDPServer) Listen() {
+	logger.Logger().WriteToLog(logger.Info, "[UDPServer | Listen] Start udp listening ", server.connection.LocalAddr().String())
 	for {
 		var buf [4096]byte
 		n, addr, err := server.connection.ReadFromUDP(buf[0:])
@@ -56,7 +55,6 @@ func (server *UDPServer) Listen() {
 //Send send bytes
 func (server *UDPServer) Send(addr *net.UDPAddr, message string) (int64, error) {
 	n, err := server.connection.WriteToUDP([]byte(message), addr)
-	logger.Logger().WriteToLog(logger.Info, "[UDPServer | SendBytes] Bytes sent. ", []byte(message), "to :", addr.String())
 	if err != nil {
 		logger.Logger().WriteToLog(logger.Error, "[UDPServer | SendBytes] Error while sending bytes. ", err)
 		return 0, err

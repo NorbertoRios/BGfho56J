@@ -4,7 +4,6 @@ import (
 	connInterfaces "geometris-go/connection/interfaces"
 	"geometris-go/core/device"
 	core "geometris-go/core/interfaces"
-	"geometris-go/core/sensors"
 	"geometris-go/message/interfaces"
 	"geometris-go/repository"
 	"geometris-go/storage"
@@ -46,8 +45,8 @@ func (usecase *UDPMessageUseCase) Launch(_message interfaces.IMessage, _channel 
 
 //BuildDevice ...
 func (usecase *UDPMessageUseCase) BuildDevice(_message interfaces.IMessage, _channel connInterfaces.IChannel, _uow uowInterfaces.IUnitOfWork) core.IDevice {
-	_syncParam := ""
-	dev := device.NewDevice(_message.Identity(), _syncParam, []sensors.ISensor{}, _channel)
+	activity := usecase.mysqlRepository.Load(_message.Identity())
+	dev := device.NewDevice(activity.Identity, activity.Software.SyncParam, activity.LastMessageID, activity.State(), _channel)
 	storage.Storage().AddDevice(dev)
 	processes := dev.Processes().All()
 	for _, process := range processes {

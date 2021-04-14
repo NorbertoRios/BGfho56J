@@ -12,8 +12,9 @@ import (
 )
 
 //NewDevice ...
-func NewDevice(_identity, _syncParameter string, _sensors []sensors.ISensor, _channel connInterfaces.IChannel) interfaces.IDevice {
+func NewDevice(_identity, _syncParameter string, _sid uint64, _sensors []sensors.ISensor, _channel connInterfaces.IChannel) interfaces.IDevice {
 	return &Device{
+		sourseID:        _sid,
 		DeviceIdentity:  _identity,
 		LastActivity:    time.Now().UTC(),
 		CurrentState:    NewSensorBasedState(_sensors),
@@ -25,6 +26,7 @@ func NewDevice(_identity, _syncParameter string, _sensors []sensors.ISensor, _ch
 
 //Device struct
 type Device struct {
+	sourseID        uint64
 	DeviceIdentity  string
 	LastActivity    time.Time
 	CurrentState    interfaces.IDeviceState
@@ -41,6 +43,16 @@ func (device *Device) Send(message string) bool {
 		return false
 	}
 	return true
+}
+
+//SourseID ...
+func (device *Device) SourseID() uint64 {
+	return device.sourseID
+}
+
+//NewSourseID ...
+func (device *Device) NewSourseID(_id uint64) {
+	device.sourseID = _id
 }
 
 //ProcessCommands process commands

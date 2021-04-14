@@ -1,39 +1,74 @@
 package models
 
 import (
-	"geometris-go/core/interfaces"
 	"geometris-go/repository/wrapper"
+	"geometris-go/types"
 	"time"
 
 	"gorm.io/gorm"
 )
 
-//NewMessageHistory ...
-func NewMessageHistory(_deviceState interfaces.IDirtyState) *MessageHistory {
-	deviceStateWrapper := wrapper.NewDirtyStateWrapper(_deviceState)
-	return &MessageHistory{
-		DevID:           deviceStateWrapper.Identity(),
-		EntryData:       deviceStateWrapper.RawData(),
-		ParsedEntryData: []byte(deviceStateWrapper.StringMessage()),
-		Time:            deviceStateWrapper.TimeStamp(),
-		RecievedTime:    time.Now().UTC(),
-		//ReportClass: ,
-		//ReportType
-		//Reason: ,
-		//Latitude: ,
-		//Longitude: ,
-		//Speed: ,
-		//ValidFix: ,
-		//Altitude: ,
-		//Heading: ,
-		//IgnitionState: ,
-		//Odometer: ,
-		//Satellites: ,
-		//Supply: ,
-		//GPIO: ,
-		//Relay: ,
+func buildMessageHistory(_deviceState wrapper.IDirtyStateWrapper) *MessageHistory {
+	message := _deviceState.DTOMessage()
+	h := &MessageHistory{}
+	h.DevID = _deviceState.Identity()
+	h.EntryData = _deviceState.RawData()
+	h.ParsedEntryData = []byte(message.Marshal())
+	if v := _deviceState.ValueByKey("TimeStamp"); v != nil {
+		h.Time = v.(*types.JSONTime).Time
 	}
-	// Тут нужно дополнить Wrapper над IDirtyState чтобы достать нужные поля.
+	h.RecievedTime = time.Now().UTC()
+	if v := _deviceState.ValueByKey("ReportClass"); v != nil {
+		h.ReportClass = v.(string)
+	}
+	if v := _deviceState.ValueByKey("ReportType"); v != nil {
+		h.ReportType = v.(int32)
+	}
+	if v, f := message.GetValue("Reason"); f {
+		h.Reason = v.(int32)
+	}
+	if v, f := message.GetValue("Latitude"); f {
+		h.Latitude = v.(float32)
+	}
+	if v, f := message.GetValue("Longitude"); f {
+		h.Longitude = v.(float32)
+	}
+	if v, f := message.GetValue("Speed"); f {
+		h.Speed = v.(float32)
+	}
+	if v, f := message.GetValue("GpsValidity"); f {
+		h.ValidFix = v.(byte)
+	}
+	if v, f := message.GetValue("Altitude"); f {
+		h.Altitude = v.(float32)
+	}
+	if v, f := message.GetValue("Heading"); f {
+		h.Heading = v.(float32)
+	}
+	if v, f := message.GetValue("IgnitionState"); f {
+		h.IgnitionState = v.(byte)
+	}
+	if v, f := message.GetValue("Odometer"); f {
+		h.Odometer = v.(int32)
+	}
+	if v, f := message.GetValue("Satellites"); f {
+		h.Satellites = v.(int32)
+	}
+	if v, f := message.GetValue("Supply"); f {
+		h.Supply = v.(int32)
+	}
+	if v, f := message.GetValue("GPIO"); f {
+		h.GPIO = v.(byte)
+	}
+	if v, f := message.GetValue("Relay"); f {
+		h.Relay = v.(byte)
+	}
+	return h
+}
+
+//NewMessageHistory ...
+func NewMessageHistory(_deviceState wrapper.IDirtyStateWrapper) *MessageHistory {
+	return buildMessageHistory(_deviceState)
 }
 
 //MessageHistory struct
@@ -55,7 +90,7 @@ type MessageHistory struct {
 	Heading         float32   `gorm:"column:Heading"`
 	IgnitionState   byte      `gorm:"column:IgnitionState"`
 	Odometer        int32     `gorm:"column:Odometer"`
-	Satellites      byte      `gorm:"column:Satellites"`
+	Satellites      int32     `gorm:"column:Satellites"`
 	Supply          int32     `gorm:"column:Supply"`
 	GPIO            byte      `gorm:"column:GPIO"`
 	Relay           byte      `gorm:"column:Relay"`
@@ -68,56 +103,3 @@ func MessageHistoryTable(h *MessageHistory) func(tx *gorm.DB) *gorm.DB {
 		return tx.Table(tableName)
 	}
 }
-
-//CreateMessageHistoryTable creates new table if table not exists detected
-// func CreateMessageHistoryTable(tableName string) error {
-// 	return rawdb.Exec("CREATE TABLE IF NOT EXISTS  raw_data.`" + tableName + "` ( " +
-// 		"`Id` bigint(20) NOT NULL AUTO_INCREMENT, " +
-// 		"`DevId` varchar(100) NOT NULL, " +
-// 		"`EntryData` blob, " +
-// 		"`ParsedEntryData` blob, " +
-// 		"`Time` datetime NOT NULL, " +
-// 		"`RecievedTime` datetime NOT NULL, " +
-// 		"`ReportClass` varchar(100) DEFAULT NULL, " +
-// 		"`ReportType` int(11) DEFAULT NULL, " +
-// 		"`Reason` varchar(5) DEFAULT NULL, " +
-// 		"`Latitude` double DEFAULT NULL COMMENT 'degrees', " +
-// 		"`Longitude` double DEFAULT NULL COMMENT 'degrees', " +
-// 		"`Speed` double DEFAULT NULL, " +
-// 		"`ValidFix` int(11) DEFAULT NULL, " +
-// 		"`Altitude` double DEFAULT NULL, " +
-// 		"`Heading` double DEFAULT NULL, " +
-// 		"`IgnitionState` int(11) DEFAULT NULL, " +
-// 		"`Odometer` int(10) DEFAULT NULL COMMENT 'm', " +
-// 		"`Satellites` tinyint(3) unsigned DEFAULT NULL, " +
-// 		"`Supply` int(10) DEFAULT NULL, " +
-// 		"`GPIO` int(10) DEFAULT NULL COMMENT 'Input ports state', " +
-// 		"`Relay` int(10) DEFAULT NULL COMMENT 'Output ports state', " +
-// 		"`msg_id` binary(16) DEFAULT NULL, " +
-// 		"`Extra` text, " +
-// 		"`BatteryLow` double DEFAULT NULL, " +
-// 		" PRIMARY KEY (`Id`,`Time`,`DevId`), " +
-// 		"KEY `IX_RecievedTime` (`RecievedTime`,`DevId`) " +
-// 		")" +
-// 		"ENGINE = INNODB " +
-// 		"AVG_ROW_LENGTH = 8192 " +
-// 		"CHARACTER SET utf8 " +
-// 		"COLLATE utf8_general_ci " +
-// 		"PARTITION BY RANGE (to_days(Time)) " +
-// 		"(" +
-// 		"PARTITION p180201 VALUES LESS THAN (737091) ENGINE = InnoDB, " +
-// 		"PARTITION p180301 VALUES LESS THAN (737119) ENGINE = InnoDB, " +
-// 		"PARTITION p180401 VALUES LESS THAN (737150) ENGINE = InnoDB, " +
-// 		"PARTITION p180501 VALUES LESS THAN (737180) ENGINE = InnoDB, " +
-// 		"PARTITION p180601 VALUES LESS THAN (737211) ENGINE = InnoDB, " +
-// 		"PARTITION p180701 VALUES LESS THAN (737241) ENGINE = InnoDB, " +
-// 		"PARTITION p180801 VALUES LESS THAN (737272) ENGINE = InnoDB, " +
-// 		"PARTITION p180901 VALUES LESS THAN (737303) ENGINE = InnoDB, " +
-// 		"PARTITION p181001 VALUES LESS THAN (737333) ENGINE = InnoDB, " +
-// 		"PARTITION p181101 VALUES LESS THAN (737364) ENGINE = InnoDB, " +
-// 		"PARTITION p181201 VALUES LESS THAN (737394) ENGINE = InnoDB, " +
-// 		"PARTITION p190101 VALUES LESS THAN (737425) ENGINE = InnoDB, " +
-// 		"PARTITION p190201 VALUES LESS THAN (737456) ENGINE = InnoDB, " +
-// 		"PARTITION p_cur VALUES LESS THAN MAXVALUE ENGINE = InnoDB " +
-// 		");").Error
-// }

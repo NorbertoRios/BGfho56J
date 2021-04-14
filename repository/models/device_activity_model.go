@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"geometris-go/configuration"
 	"geometris-go/convert"
-	"geometris-go/core/interfaces"
 	"geometris-go/core/sensors"
 	"geometris-go/logger"
 	"geometris-go/repository/wrapper"
@@ -15,17 +14,20 @@ import (
 )
 
 //NewDeviceActivity ...
-func NewDeviceActivity(_dirtyState interfaces.IDirtyState, _sourseID uint64) *DeviceActivity {
-	deviceStateWrapper := wrapper.NewDirtyStateWrapper(_dirtyState)
-	software := NewSoftware(_dirtyState.SyncParam(), deviceStateWrapper.Firmware())
+func NewDeviceActivity(_dirtyState wrapper.IDirtyStateWrapper, _sourseID uint64) *DeviceActivity {
+	firmware := ""
+	if v := _dirtyState.ValueByKey("Firmware"); v != nil {
+		firmware = v.(string)
+	}
+	software := NewSoftware(_dirtyState.SyncParam(), firmware)
 	return &DeviceActivity{
-		Identity:           deviceStateWrapper.Identity(),
-		MessageTime:        deviceStateWrapper.TimeStamp(),
+		Identity:           _dirtyState.Identity(),
+		MessageTime:        _dirtyState.ValueByKey("TimeStamp").(*types.JSONTime).Time,
 		LastUpdateTime:     time.Now().UTC(),
-		LastMessage:        deviceStateWrapper.StringMessage(),
+		LastMessage:        _dirtyState.DTOMessage().Marshal(),
 		LastMessageID:      _sourseID,
 		SerializedSoftware: software.Marshal(),
-		software:           software,
+		Software:           software,
 	}
 }
 
@@ -37,7 +39,7 @@ type DeviceActivity struct {
 	LastMessageID      uint64    `gorm:"column:daiLastMessageId"`
 	LastMessage        string    `gorm:"column:daiLastMessage"`
 	SerializedSoftware string    `gorm:"column:daiSoftware"`
-	software           *Software `gorm:"-" sql:"-"`
+	Software           *Software `gorm:"-" sql:"-"`
 }
 
 //TableName for DeviceActivity model
@@ -47,7 +49,7 @@ func (DeviceActivity) TableName() string {
 
 //BeforeUpdate unmarshal string to struct
 func (activity *DeviceActivity) BeforeUpdate(tx *gorm.DB) error {
-	activity.SerializedSoftware = activity.software.Marshal()
+	activity.SerializedSoftware = activity.Software.Marshal()
 	return nil
 }
 
@@ -55,7 +57,7 @@ func (activity *DeviceActivity) BeforeUpdate(tx *gorm.DB) error {
 func (activity *DeviceActivity) AfterFind(tx *gorm.DB) error {
 	software := &Software{}
 	err := json.Unmarshal([]byte(activity.SerializedSoftware), software)
-	activity.software = software
+	activity.Software = software
 	if err != nil {
 		logger.Logger().WriteToLog(logger.Error, "[DeviceActivity | AfterFind] Error while unmarshaling software. ", err)
 		return err

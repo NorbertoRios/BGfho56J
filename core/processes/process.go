@@ -2,7 +2,6 @@ package process
 
 import (
 	"container/list"
-	"fmt"
 	"geometris-go/core/interfaces"
 	"geometris-go/core/processes/response"
 	"geometris-go/logger"
@@ -97,7 +96,6 @@ func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.I
 func (p *Process) ExecuteCommands(_commands *list.List, _device interfaces.IDevice) {
 	for _commands.Len() > 0 {
 		cmd := _commands.Front()
-		logger.Logger().WriteToLog(logger.Info, fmt.Sprintf("[ExecuteCommands] Start executing command %v", cmd))
 		command, valid := cmd.Value.(interfaces.ICommand)
 		if valid {
 			nList := command.Execute(_device)

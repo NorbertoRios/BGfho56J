@@ -2,10 +2,8 @@ package message
 
 import (
 	"container/list"
-	"fmt"
 	"geometris-go/core/interfaces"
 	process "geometris-go/core/processes"
-	"geometris-go/logger"
 	"sync"
 
 	"geometris-go/core/processes/message/task"
@@ -36,7 +34,7 @@ type Process struct {
 
 //NewRequest ...
 func (p *Process) NewRequest(_request interface{}, _device interfaces.IDevice) interfaces.IProcessResponse {
-	return p.TasksCompetitiveness(task.New(), _device)
+	return response.NewProcessResponse()
 }
 
 //MessageArrived ...
@@ -50,7 +48,6 @@ func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.I
 	}
 	messageParser := parser.New()
 	locationMessage := messageParser.Parse(_message, p.syncParam).(*messageTypes.LocationMessage)
-	logger.Logger().WriteToLog(logger.Info, fmt.Sprintf("[Message Arrived] Arrived new location message: %v", locationMessage.Sensors()))
 	commads := p.CurrentTask.NewMessageArrived(locationMessage, _device)
 	p.ExecuteCommands(commads, _device)
 	dirtyState := response.NewDirtyState(_device.Identity(), p.syncParam, _device.State(), rawLocationMessage.RawByteData())

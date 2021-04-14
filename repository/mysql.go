@@ -2,9 +2,10 @@ package repository
 
 import (
 	"errors"
-	"geometris-go/core/interfaces"
 	"geometris-go/logger"
 	"geometris-go/repository/models"
+	"geometris-go/repository/wrapper"
+	"geometris-go/storage"
 
 	"github.com/go-sql-driver/mysql"
 	sqlDriver "gorm.io/driver/mysql"
@@ -44,20 +45,24 @@ func (repo *MySQL) Load(_identity string) *models.DeviceActivity {
 //Save ...
 func (repo *MySQL) Save(values ...interface{}) error {
 	for _, value := range values {
-		states, s := value.([]interfaces.IDirtyState)
+		states, s := value.([]wrapper.IDirtyStateWrapper)
 		if s {
 			repo.connection.Transaction(func(tx *gorm.DB) error {
 				for _, state := range states {
+					device := storage.Storage().Device(state.Identity())
+					state.DTOMessage().SetValue("PrevSourceId", device.SourseID())
 					id, err := repo.saveHistory(state)
 					if err != nil {
 						logger.Logger().WriteToLog(logger.Fatal, "[MySQL | Save] Error in transaction while save message history. Error", err)
 						return err
 					}
+					state.DTOMessage().NewSID(id)
 					err = repo.saveActivity(id, state)
 					if err != nil {
 						logger.Logger().WriteToLog(logger.Fatal, "[MySQL | Save] Error in transaction while save device activity. Error", err)
 						return err
 					}
+					device.NewSourseID(id)
 				}
 				return nil
 			})
@@ -66,7 +71,7 @@ func (repo *MySQL) Save(values ...interface{}) error {
 	return nil
 }
 
-func (repo *MySQL) saveActivity(_sid uint64, _dirtyState interfaces.IDirtyState) error {
+func (repo *MySQL) saveActivity(_sid uint64, _dirtyState wrapper.IDirtyStateWrapper) error {
 	deviceActivity := models.NewDeviceActivity(_dirtyState, _sid)
 	db := repo.connection.Model(&deviceActivity).Where("daiDeviceIdentity=?", deviceActivity.Identity).Updates(&deviceActivity)
 	if db.RowsAffected == 0 {
@@ -75,7 +80,7 @@ func (repo *MySQL) saveActivity(_sid uint64, _dirtyState interfaces.IDirtyState)
 	return db.Error
 }
 
-func (repo *MySQL) saveHistory(_dirtyState interfaces.IDirtyState) (uint64, error) {
+func (repo *MySQL) saveHistory(_dirtyState wrapper.IDirtyStateWrapper) (uint64, error) {
 	messageHistory := models.NewMessageHistory(_dirtyState)
 	err := repo.connection.Scopes(models.MessageHistoryTable(messageHistory)).Create(messageHistory).Error
 	if err != nil {

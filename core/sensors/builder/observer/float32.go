@@ -5,10 +5,10 @@ import (
 	"geometris-go/types"
 )
 
-//NewFloat64 ...
-func NewFloat64() IObserver {
+//NewFloat32 ...
+func NewFloat32() IObserver {
 	return &Float64{
-		typeValue: "float64",
+		typeValue: "float32",
 	}
 }
 
@@ -27,7 +27,7 @@ func (f *Float64) Build(_key, _value, _type string) []sensors.ISensor {
 	sensorsArr := []sensors.ISensor{}
 	if _type == f.typeValue {
 		strValue := types.NewString(_value)
-		sensorsArr = append(sensorsArr, sensors.NewSensor(_key, strValue.Float(64)))
+		sensorsArr = append(sensorsArr, sensors.NewSensor(_key, strValue.Float(32)))
 	}
 	return sensorsArr
 }
