@@ -57,6 +57,7 @@ var doc = `{
                         "items": {
                             "type": "string"
                         },
+                        "collectionFormat": "multi",
                         "description": "config",
                         "name": "config",
                         "in": "formData",

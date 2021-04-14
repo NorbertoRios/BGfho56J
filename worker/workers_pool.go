@@ -34,6 +34,9 @@ func (wp *WorkersPool) Flush(rawData []byte, channel interfaces.IChannel) {
 	defer wp.mutex.Unlock()
 	messageFactory := factory.New()
 	message := messageFactory.BuildMessage(rawData)
+	if message == nil {
+		return
+	}
 	data := &EntryData{Message: message, Channel: channel}
 	for id, worker := range wp.Pool.all() {
 		if worker.DeviceExist(message.Identity()) {

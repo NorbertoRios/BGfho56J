@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"geometris-go/core/processes/configuration/request"
 	"geometris-go/core/usecase"
+
 	_ "geometris-go/docs"
 	"geometris-go/logger"
 	"geometris-go/repository"
@@ -37,7 +38,7 @@ type Config struct {
 // @Produce  json
 // @Param identity formData string true "identity"
 // @Param callback_id formData string true "callback_id"
-// @Param config formData []string true "config"
+// @Param config formData []string true "config" collectionFormat(multi)
 // @Success 200 {object} response.FacadeResponse
 // @Failure 404 {object} response.FacadeResponse
 // @Router /device/update_config [post]
