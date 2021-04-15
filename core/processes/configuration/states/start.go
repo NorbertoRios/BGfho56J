@@ -32,8 +32,9 @@ func (s *Start) Start(_task interfaces.ITask) *list.List {
 		_task.ChangeState(states.NewClose(s.request, "Commands is empty"))
 		return cList
 	}
-	cList.PushBack(commands.NewSendMessageCommand("SETPARAMS " + command + " ACK;"))
-	inProgress := NewInProgressState(command, 60, _task)
+	command = "SETPARAMS " + command + " ACK"
+	cList.PushBack(commands.NewSendMessageCommand(command))
+	inProgress := NewInProgressState(command, 30, _task)
 	_task.ChangeState(inProgress)
 	inProgress.Run()
 	return cList

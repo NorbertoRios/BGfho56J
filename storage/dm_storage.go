@@ -22,6 +22,14 @@ type DMStorage struct {
 	mutex   *sync.Mutex
 }
 
+//DeviceExist ..
+func (storage *DMStorage) DeviceExist(_identity string) bool {
+	storage.mutex.Lock()
+	defer storage.mutex.Unlock()
+	_, f := storage.devices[_identity]
+	return f
+}
+
 //Device ..
 func (storage *DMStorage) Device(_identity string) interfaces.IDevice {
 	storage.mutex.Lock()

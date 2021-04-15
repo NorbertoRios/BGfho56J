@@ -11,11 +11,13 @@ import (
 
 //NewDirtyStateWrapper ...
 func NewDirtyStateWrapper(_state interfaces.IDirtyState) IDirtyStateWrapper {
+	dto := convert.NewStateToDTO(_state.State().State()).Convert()
+	dto.SetValue("DevId", _state.Identity())
 	return &DirtyStateWrapper{
 		state:      _state,
 		sensors:    _state.State().StateMap(),
 		mutex:      &sync.Mutex{},
-		dtoMessage: convert.NewStateToDTO(_state.State().State()).Convert(),
+		dtoMessage: dto,
 	}
 }
 

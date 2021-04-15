@@ -25,7 +25,7 @@ type AnyMessageState struct {
 func (s *AnyMessageState) NewMessageArrived(_message interface{}, _device interfaces.IDevice, _task interfaces.ITask) *list.List {
 	cList := list.New()
 	cList.PushBack(commands.NewSendMessageCommand(s.message))
-	inProgress := s.constructor(s.message, 60, _task)
+	inProgress := s.constructor(s.message, 30, _task)
 	inProgress.Run()
 	_task.ChangeState(inProgress)
 	return cList

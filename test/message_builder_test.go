@@ -91,3 +91,20 @@ func TestBuildRawLocationMessage(t *testing.T) {
 		t.Error("Unexpected raw data in message")
 	}
 }
+
+func TestBuildRawLocationMessage2(t *testing.T) {
+	messageFactory := factory.New()
+	strMessage := "87A110550003,6,187110520:159:55,9F81,EA16,OFF_PERIODIC,1618490166,48.746670,37.591180,9909,747,0,10146,0,301,39626.5,0,,1046,0,,,,,,,0:0,,0,0,"
+	message := messageFactory.BuildMessage([]byte(strMessage))
+	locationMessage, f := message.(*types.RawLocationMessage)
+	if !f {
+		t.Error("Unexpected type of message")
+	}
+	if message.Identity() != "geometris_87A110550003" {
+		t.Error("Unexpected identity")
+	}
+	testSlise := []string{"F001", "OFF_PERIODIC", "1616773466", "48.746404", "37.591212", "33", "9", "0", "40", "0", "310", "0.0", "4", "", "0", "0", "", "", "", "", "", "", "0:0", "", "0", "0"}
+	if !reflect.DeepEqual(testSlise, locationMessage.RawData()) {
+		t.Error("Unexpected raw data in message")
+	}
+}

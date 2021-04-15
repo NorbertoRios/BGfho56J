@@ -8,13 +8,12 @@ import (
 
 //NewRawLocationMessage ...
 func NewRawLocationMessage(_serial, _data string) interfaces.IMessage {
-	return &RawLocationMessage{
-		Base: Base{
-			identity: fmt.Sprintf("geometris_%v", _serial),
-		},
+	message := &RawLocationMessage{
 		rawData: strings.Split(_data, ","),
 		data:    _data,
 	}
+	message.identity = fmt.Sprintf("geometris_%v", _serial)
+	return message
 }
 
 //RawLocationMessage ...

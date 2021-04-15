@@ -11,7 +11,7 @@ import (
 //New returns raw message factory
 func New() *MessageFactory {
 	location, _ := regexp.Compile("^(?P<Serial>[a-zA-Z0-9]{12}),(?P<Data>(.*))$")
-	ack, _ := regexp.Compile("^(?P<Serial>[a-zA-Z0-9]{12}) ACK <SETPARAMS (?P<Command>(.*)) ACK;>$")
+	ack, _ := regexp.Compile("^(?P<Serial>[a-zA-Z0-9]{12}) ACK <(?P<Command>(.*))>")
 	diagParameters, _ := regexp.Compile("^(?P<Serial>[a-zA-Z0-9]{12}) PARAMETERS (?P<Parameters>(.*));$")
 	factory := &MessageFactory{
 		builders: []interfaces.IBuilder{

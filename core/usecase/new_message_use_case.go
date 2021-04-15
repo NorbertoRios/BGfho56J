@@ -46,7 +46,7 @@ func (usecase *UDPMessageUseCase) Launch(_message interfaces.IMessage, _channel 
 //BuildDevice ...
 func (usecase *UDPMessageUseCase) BuildDevice(_message interfaces.IMessage, _channel connInterfaces.IChannel, _uow uowInterfaces.IUnitOfWork) core.IDevice {
 	activity := usecase.mysqlRepository.Load(_message.Identity())
-	dev := device.NewDevice(activity.Identity, activity.Software.SyncParam, activity.LastMessageID, activity.State(), _channel)
+	dev := device.NewDevice(_message.Identity(), activity.Software.SyncParam, activity.LastMessageID, activity.State(), _channel)
 	storage.Storage().AddDevice(dev)
 	processes := dev.Processes().All()
 	for _, process := range processes {

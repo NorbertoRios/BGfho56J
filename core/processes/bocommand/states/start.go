@@ -8,7 +8,7 @@ import (
 )
 
 //NewStartState ...
-func NewStartState(_request interfaces.IRequest) interfaces.ITaskState {
+func NewStartState(_request interfaces.IBOCommandRequest) interfaces.ITaskState {
 	return &Start{
 		request: _request,
 	}
@@ -17,15 +17,13 @@ func NewStartState(_request interfaces.IRequest) interfaces.ITaskState {
 //Start ...
 type Start struct {
 	states.Base
-	request interfaces.IRequest
+	request interfaces.IBOCommandRequest
 }
 
 //Start ...
 func (s *Start) Start(_task interfaces.ITask) *list.List {
 	cList := list.New()
-	cList.PushBack(commands.NewSendMessageCommand("POLLQ VIAUDP"))
-	inProgress := NewInProgressState("POLLQ VIAUDP", 30, _task)
-	inProgress.Run()
-	_task.ChangeState(inProgress)
+	cList.PushBack(commands.NewSendMessageCommand(s.request.Command()))
+	_task.ChangeState(states.NewDone(s.request))
 	return cList
 }

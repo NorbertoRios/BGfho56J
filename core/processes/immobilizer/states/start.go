@@ -26,7 +26,7 @@ func (s *Start) Start(_task interfaces.ITask) *list.List {
 	cList := list.New()
 	relay := relaydrive.NewSetRelayDrive(s.request)
 	cList.PushBack(commands.NewSendMessageCommand(relay.String()))
-	inProgress := NewInProgressState(relay.String(), 60, _task)
+	inProgress := NewInProgressState(relay.String(), 30, _task)
 	inProgress.Run()
 	_task.ChangeState(inProgress)
 	return cList

@@ -49,8 +49,10 @@ func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.I
 	messageParser := parser.New()
 	locationMessage := messageParser.Parse(_message, p.syncParam).(*messageTypes.LocationMessage)
 	commads := p.CurrentTask.NewMessageArrived(locationMessage, _device)
-	p.ExecuteCommands(commads, _device)
-	dirtyState := response.NewDirtyState(_device.Identity(), p.syncParam, _device.State(), rawLocationMessage.RawByteData())
-	resp.AppendState(dirtyState)
+	if commads.Len() != 0 {
+		p.ExecuteCommands(commads, _device)
+		dirtyState := response.NewDirtyState(_device.Identity(), p.syncParam, _device.State(), rawLocationMessage.RawByteData())
+		resp.AppendState(dirtyState)
+	}
 	return resp
 }

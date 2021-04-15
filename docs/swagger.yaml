@@ -17,6 +17,81 @@ definitions:
 info:
   contact: {}
 paths:
+  /device/identity_exists:
+    get:
+      consumes:
+      - application/json
+      description: Checks device by device identity
+      parameters:
+      - description: identity
+        in: query
+        name: identity
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Found
+          schema:
+            $ref: '#/definitions/response.FacadeResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.FacadeResponse'
+      summary: Checks device is currently connected to service
+      tags:
+      - device
+  /device/locate:
+    get:
+      consumes:
+      - application/json
+      description: Returns locate command
+      parameters:
+      - description: identity
+        in: query
+        name: identity
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Found
+          schema:
+            $ref: '#/definitions/response.FacadeResponse'
+      summary: Get locate command
+      tags:
+      - device
+    post:
+      consumes:
+      - multipart/form-data
+      description: Enqueue location request to device
+      parameters:
+      - description: identity
+        in: formData
+        name: identity
+        required: true
+        type: string
+      - description: callback_id
+        in: formData
+        name: callback_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Found
+          schema:
+            $ref: '#/definitions/response.FacadeResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.FacadeResponse'
+      summary: Send locate request
+      tags:
+      - device
   /device/update_config:
     post:
       consumes:

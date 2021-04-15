@@ -3,6 +3,7 @@ package manager
 import (
 	"fmt"
 	"geometris-go/core/interfaces"
+	"geometris-go/core/processes/bocommand"
 	"geometris-go/core/processes/configuration"
 	"geometris-go/core/processes/immobilizer"
 	"geometris-go/core/processes/location"
@@ -47,6 +48,27 @@ func (p *Manager) All() []interfaces.IProcess {
 	return processes
 }
 
+//RemoveProcess ...
+func (p *Manager) RemoveProcess(_key string) {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+	delete(p.processes, _key)
+}
+
+//BOCommand ...
+func (p *Manager) BOCommand(_command string) interfaces.IProcess {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+	key := fmt.Sprintf("boCommand_%v", _command)
+	if _, f := p.paused[key]; f {
+		logger.Logger().WriteToLog(logger.Info, "[Processes] Process "+key+" is paused")
+		return nil
+	}
+	proc := bocommand.New(key)
+	p.processes[key] = proc
+	return proc
+}
+
 //Immobilizer ...
 func (p *Manager) Immobilizer(index int, trigger string) interfaces.IProcess {
 	p.mutex.Lock()
@@ -59,6 +81,7 @@ func (p *Manager) Immobilizer(index int, trigger string) interfaces.IProcess {
 	proc, f := p.processes[key]
 	if !f {
 		proc = immobilizer.New(index, trigger, key)
+		p.processes[key] = proc
 	}
 	return proc
 }

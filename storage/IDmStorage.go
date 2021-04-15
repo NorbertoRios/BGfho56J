@@ -6,4 +6,5 @@ import "geometris-go/core/interfaces"
 type IDmStorage interface {
 	AddDevice(interfaces.IDevice)
 	Device(string) interfaces.IDevice
+	DeviceExist(string) bool
 }

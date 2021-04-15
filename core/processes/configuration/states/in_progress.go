@@ -11,7 +11,9 @@ import (
 
 //NewInProgressState ...
 func NewInProgressState(_ackMessage string, _timeout int, _task interfaces.ITask) interfaces.IInProgressState {
-	state := &InProgress{}
+	state := &InProgress{
+		timeout: _timeout,
+	}
 	state.AckMessage = _ackMessage
 	state.Watchdog = watchdog.New(_task, states.NewAnyMessageState(_ackMessage, NewInProgressState), _timeout)
 	return state
@@ -20,6 +22,7 @@ func NewInProgressState(_ackMessage string, _timeout int, _task interfaces.ITask
 //InProgress ...
 type InProgress struct {
 	states.InProgress
+	timeout int
 }
 
 //NewMessageArrived ...
@@ -32,10 +35,15 @@ func (s *InProgress) NewMessageArrived(msg interface{}, _device interfaces.IDevi
 			if ack.Commands() == s.AckMessage {
 				s.Watchdog.Stop()
 				command := _task.(interfaces.IConfigTask).Command()
+				if value, f := ack.Parameters()["12"]; f {
+					_device.Processes().NewLocationProcess(value)
+				}
 				if command != "" {
-					cList.PushBack(commands.NewSendMessageCommand("SETPARAMS " + command + " ACK;"))
+					command = "SETPARAMS " + command + " ACK"
+					cList.PushBack(commands.NewSendMessageCommand(command))
 					s.AckMessage = command
-					s.Watchdog.Start()
+					s.Watchdog = watchdog.New(_task, states.NewAnyMessageState(s.AckMessage, NewInProgressState), s.timeout)
+					s.Run()
 				} else {
 					_task.ChangeState(states.NewDone(_task.Request().(interfaces.IRequest)))
 				}

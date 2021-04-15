@@ -34,7 +34,7 @@ type MySQL struct {
 
 //Load ...
 func (repo *MySQL) Load(_identity string) *models.DeviceActivity {
-	d := &models.DeviceActivity{}
+	d := &models.DeviceActivity{Software: &models.Software{}}
 	err := repo.connection.Where("daiDeviceIdentity=?", _identity).Find(d).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		logger.Logger().WriteToLog(logger.Info, "[MySQL | Load] Device "+_identity+" not found")

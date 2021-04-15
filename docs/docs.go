@@ -24,6 +24,119 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/device/identity_exists": {
+            "get": {
+                "description": "Checks device by device identity",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "device"
+                ],
+                "summary": "Checks device is currently connected to service",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identity",
+                        "name": "identity",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "302": {
+                        "description": "Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.FacadeResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.FacadeResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/device/locate": {
+            "get": {
+                "description": "Returns locate command",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "device"
+                ],
+                "summary": "Get locate command",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identity",
+                        "name": "identity",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "302": {
+                        "description": "Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.FacadeResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Enqueue location request to device",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "device"
+                ],
+                "summary": "Send locate request",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identity",
+                        "name": "identity",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "callback_id",
+                        "name": "callback_id",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "302": {
+                        "description": "Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.FacadeResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.FacadeResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/device/update_config": {
             "post": {
                 "description": "Enqueue configuration to device",
