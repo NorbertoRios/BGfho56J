@@ -34,9 +34,9 @@ func (usecase *UDPMessageUseCase) Launch(_message interfaces.IMessage, _channel 
 	dev.NewChannel(_channel)
 	processes := dev.Processes().All()
 	for _, p := range processes {
-		if p.Current() == nil {
-			continue
-		}
+		// if p.Current() == nil {
+		// 	continue
+		// }
 		processResp := p.MessageArrived(_message, dev)
 		usecase.flushProcessResults(processResp, uow)
 	}
@@ -46,7 +46,7 @@ func (usecase *UDPMessageUseCase) Launch(_message interfaces.IMessage, _channel 
 //BuildDevice ...
 func (usecase *UDPMessageUseCase) BuildDevice(_message interfaces.IMessage, _channel connInterfaces.IChannel, _uow uowInterfaces.IUnitOfWork) core.IDevice {
 	activity := usecase.mysqlRepository.Load(_message.Identity())
-	dev := device.NewDevice(_message.Identity(), activity.Software.SyncParam, activity.LastMessageID, activity.State(), _channel)
+	dev := device.NewDevice(_message.Identity(), activity.Software.SyncParams, activity.LastMessageID, activity.State(), _channel)
 	storage.Storage().AddDevice(dev)
 	processes := dev.Processes().All()
 	for _, process := range processes {

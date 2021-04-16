@@ -10,11 +10,11 @@ import (
 )
 
 //NewDeviceBuilder ...
-func NewDeviceBuilder(_message interface{}, _channel connInterfaces.IChannel, _syncParam string, _unitOfWork unitofwork.IUnitOfWork) *BuildDevice {
+func NewDeviceBuilder(_message interface{}, _channel connInterfaces.IChannel, _syncParams map[string]string, _unitOfWork unitofwork.IUnitOfWork) *BuildDevice {
 	return &BuildDevice{
 		message:    _message,
 		channel:    _channel,
-		syncParam:  _syncParam,
+		syncParams: _syncParams,
 		unitOfWork: _unitOfWork,
 	}
 }
@@ -23,7 +23,7 @@ func NewDeviceBuilder(_message interface{}, _channel connInterfaces.IChannel, _s
 type BuildDevice struct {
 	message    interface{}
 	channel    connInterfaces.IChannel
-	syncParam  string
+	syncParams map[string]string
 	unitOfWork unitofwork.IUnitOfWork
 }
 
@@ -33,7 +33,7 @@ func (b *BuildDevice) Build() interfaces.IDevice {
 	if !s {
 		return nil
 	}
-	dev := NewDevice(deviceMessage.Identity(), b.syncParam, []sensors.ISensor{}, b.channel)
+	dev := NewDevice(deviceMessage.Identity(), b.syncParams, []sensors.ISensor{}, b.channel)
 	storage.Storage().AddDevice(dev)
 	processes := dev.Processes().All()
 	for _, process := range processes {

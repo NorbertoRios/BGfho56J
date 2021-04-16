@@ -7,13 +7,14 @@ import (
 )
 
 //New ...
-func New() interfaces.ITask {
-	task := &Task{}
-	task.CurrentState = states.NewStartState()
+func New(_crc string) interfaces.ITask {
+	task := &Task{crc: _crc}
+	task.CurrentState = states.NewStartState(_crc)
 	return task
 }
 
 //Task ...
 type Task struct {
 	task.Task
+	crc string
 }

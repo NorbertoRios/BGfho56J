@@ -38,10 +38,6 @@ func (s *Base) Stop(_task interfaces.ITask) *list.List {
 	return list.New()
 }
 
-//TimeExpired ...
-func (s *Base) TimeExpired(_task interfaces.ITask) {
-}
-
 //FacadeResponse ...
 func (s *Base) FacadeResponse() string {
 	return ""

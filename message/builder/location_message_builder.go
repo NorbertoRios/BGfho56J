@@ -25,9 +25,10 @@ type LocationMessageBuilder struct {
 func (builder *LocationMessageBuilder) Build(_message string) interfaces.IMessage {
 	serial := builder.extractKeys("Serial", _message)
 	rawData := builder.extractKeys("Data", _message)
+	crc := builder.extractKeys("Crc", _message)
 	if serial == "" || rawData == "" {
 		logger.Logger().WriteToLog(logger.Error, "[LocationMessageBuilder | Build] \"Serial\" or \"RawData\" values are empty. Message : "+_message)
 		return nil
 	}
-	return types.NewRawLocationMessage(serial, rawData)
+	return types.NewRawLocationMessage(serial, rawData, crc)
 }

@@ -2,25 +2,23 @@ package message
 
 import (
 	"container/list"
+	"fmt"
 	"geometris-go/core/interfaces"
 	process "geometris-go/core/processes"
+	"geometris-go/logger"
 	"sync"
 
 	"geometris-go/core/processes/message/task"
 	"geometris-go/core/processes/response"
 	message "geometris-go/message/interfaces"
 	"geometris-go/message/types"
-	messageTypes "geometris-go/message/types"
-	"geometris-go/parser"
 )
 
 //New ...
-func New(_syncParam, _symbol string) interfaces.IProcess {
-	p := &Process{
-		syncParam: _syncParam,
-	}
+func New(_symbol string, _synchParams map[string]string) interfaces.IProcess {
+	p := &Process{}
 	p.History = list.New()
-	p.CurrentTask = task.New()
+	p.CurrentTask = task.New(_synchParams)
 	p.ProcessSymbol = _symbol
 	p.Mutex = &sync.Mutex{}
 	return p
@@ -39,20 +37,13 @@ func (p *Process) NewRequest(_request interface{}, _device interfaces.IDevice) i
 
 //MessageArrived ...
 func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.IDevice) interfaces.IProcessResponse {
-	p.Mutex.Lock()
-	defer p.Mutex.Unlock()
 	resp := response.NewProcessResponse()
 	rawLocationMessage, s := _message.(*types.RawLocationMessage)
 	if !s {
+		logger.Logger().WriteToLog(logger.Info, fmt.Sprintf("[Process | MessageArrived] Unexpected message type %t", _message))
 		return resp
 	}
-	messageParser := parser.New()
-	locationMessage := messageParser.Parse(_message, p.syncParam).(*messageTypes.LocationMessage)
-	commads := p.CurrentTask.NewMessageArrived(locationMessage, _device)
-	if commads.Len() != 0 {
-		p.ExecuteCommands(commads, _device)
-		dirtyState := response.NewDirtyState(_device.Identity(), p.syncParam, _device.State(), rawLocationMessage.RawByteData())
-		resp.AppendState(dirtyState)
-	}
+	commands := p.CurrentTask.(interfaces.ILocationTask).NewLocationMessageArrived(rawLocationMessage, resp, _device)
+	p.ExecuteCommands(commands, _device)
 	return resp
 }

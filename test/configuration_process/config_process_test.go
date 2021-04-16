@@ -5,9 +5,12 @@ import (
 	"geometris-go/core/processes/configuration"
 	"geometris-go/core/processes/configuration/request"
 	"geometris-go/core/processes/message"
+	messageStates "geometris-go/core/processes/message/states"
+	"geometris-go/core/processes/states"
 	"geometris-go/core/processes/synchronization"
 	"geometris-go/core/usecase"
 	"geometris-go/message/factory"
+	"geometris-go/rabbitlogger"
 	"geometris-go/repository"
 	"geometris-go/storage"
 	"geometris-go/test/mock"
@@ -21,7 +24,8 @@ var mockRabbitRepo repository.IRepository = mock.NewRepository()
 func SetUP() {
 	messageFactory := factory.New()
 	message := messageFactory.BuildMessage([]byte("87A110550003,F001,OFF_PERIODIC,1616773466,48.746404,37.591212,33,9,0,40,0,310,0.0,4,,0,0,,,,,,,0:0,,0,0,"))
-	mock.NewDeviceBuilder(message, nil, "", unitofwork.New(mockMysqlRepo, mockRabbitRepo)).Build()
+	mock.NewDeviceBuilder(message, nil, make(map[string]string), unitofwork.New(mockMysqlRepo, mockRabbitRepo)).Build()
+	rabbitlogger.BuildRabbitLogger(mock.NewRepository())
 }
 
 func TestConfigWorkflow(t *testing.T) {
@@ -52,7 +56,7 @@ func TestConfigWorkflow(t *testing.T) {
 	messageUseCase := usecase.NewUDPMessageUseCase(mockMysqlRepo, mockRabbitRepo)
 	messageFactory := factory.New()
 	for _, command := range commands {
-		ackMessage := messageFactory.BuildMessage([]byte(fmt.Sprintf("87A110550003 ACK <SETPARAMS %v ACK;>", command)))
+		ackMessage := messageFactory.BuildMessage([]byte(fmt.Sprintf("87A110550003 ACK <SETPARAMS %v ACK>", command)))
 		messageUseCase.Launch(ackMessage, nil)
 	}
 	processes := storage.Storage().Device("geometris_87A110550003").Processes().All()
@@ -60,20 +64,23 @@ func TestConfigWorkflow(t *testing.T) {
 		switch process.(type) {
 		case *synchronization.Process:
 			{
-				if process.(*synchronization.Process).Current() != nil {
-					t.Error("Current task of synchronization process should be nil")
+				_, s := process.(*synchronization.Process).Current().State().(*states.Done)
+				if !s {
+					t.Error("Current synch state should be done")
 				}
 			}
 		case *message.Process:
 			{
-				if process.(*message.Process).Current() == nil {
-					t.Error("Current task of location process cant be nil")
+				_, s := process.(*message.Process).Current().State().(*messageStates.InProgress)
+				if !s {
+					t.Error("Current message state should be done")
 				}
 			}
 		case *configuration.Process:
 			{
-				if process.(*configuration.Process).Current() != nil {
-					t.Error("Current task of config process should be nil")
+				_, s := process.(*configuration.Process).Current().State().(*states.Done)
+				if !s {
+					t.Error("Current config state should be done")
 				}
 			}
 		default:

@@ -12,6 +12,5 @@ type ITaskState interface {
 	Stop(ITask) *list.List
 	Resume(ITask)
 	Pause(ITask)
-	TimeExpired(ITask)
 	FacadeResponse() string
 }

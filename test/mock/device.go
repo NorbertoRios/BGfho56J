@@ -11,14 +11,14 @@ import (
 )
 
 //NewDevice ...
-func NewDevice(_identity, _syncParam string, _sensors []sensors.ISensor, _channel connInterfaces.IChannel) *Device {
+func NewDevice(_identity string, _syncParams map[string]string, _sensors []sensors.ISensor, _channel connInterfaces.IChannel) *Device {
 	d := &Device{}
 	d.DeviceIdentity = _identity
 	d.LastActivity = time.Now().UTC()
 	d.CurrentState = device.NewSensorBasedState(_sensors)
 	d.UDPChannel = _channel
 	d.Mutex = &sync.Mutex{}
-	d.DeviceProcesses = manager.New(_syncParam)
+	d.DeviceProcesses = manager.New(_syncParams)
 	return d
 }
 

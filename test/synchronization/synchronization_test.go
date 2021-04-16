@@ -21,7 +21,7 @@ var mockRabbitRepo repository.IRepository = mock.NewRepository()
 func SetUP(_syncParam string) {
 	messageFactory := factory.New()
 	message := messageFactory.BuildMessage([]byte("87A110550003,F001,OFF_PERIODIC,1616773466,48.746404,37.591212,33,9,0,40,0,310,0.0,4,,0,0,,,,,,,0:0,,0,0,."))
-	mock.NewDeviceBuilder(message, nil, _syncParam, unitofwork.New(mockMysqlRepo, mockRabbitRepo)).Build()
+	mock.NewDeviceBuilder(message, nil, make(map[string]string), unitofwork.New(mockMysqlRepo, mockRabbitRepo)).Build()
 }
 
 func TestSynchronizationProcess(t *testing.T) {

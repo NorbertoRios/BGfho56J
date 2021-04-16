@@ -2,19 +2,29 @@ package states
 
 import (
 	"container/list"
+	"fmt"
 	"geometris-go/core/interfaces"
 	"geometris-go/core/processes/commands"
+	"geometris-go/core/processes/response"
 	"geometris-go/core/processes/states"
+	"geometris-go/logger"
 	"geometris-go/message/types"
+	"geometris-go/parser"
+	"sync"
 )
 
 //NewInProgressState ..
-func NewInProgressState() interfaces.IInProgressState {
-	return &InProgress{}
+func NewInProgressState(_synchParams map[string]string) interfaces.ILocationInProgressState {
+	return &InProgress{
+		synchParams: _synchParams,
+		mutex:       &sync.Mutex{},
+	}
 }
 
 //InProgress ...
 type InProgress struct {
+	mutex       *sync.Mutex
+	synchParams map[string]string
 	states.InProgress
 }
 
@@ -23,18 +33,31 @@ func (s *InProgress) Pause(_task interfaces.ITask) {
 	_task.ChangeState(states.NewPauseState(s))
 }
 
-//Run ...
-func (s *InProgress) Run() {
+//NewSynchParameter ...
+func (s *InProgress) NewSynchParameter(crc, syncParam string) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	s.synchParams[crc] = syncParam
 }
 
-//NewMessageArrived ...
-func (s *InProgress) NewMessageArrived(msg interface{}, _device interfaces.IDevice, _task interfaces.ITask) *list.List {
-	locationMessage, f := msg.(*types.LocationMessage)
+//NewLocationMessageArrived ...
+func (s *InProgress) NewLocationMessageArrived(msg *types.RawLocationMessage, resp interfaces.IProcessResponse, _device interfaces.IDevice) *list.List {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 	cList := list.New()
-	if !f || locationMessage == nil {
+	synchParameter, f := s.synchParams[msg.CRC()]
+	if !f {
+		logger.Logger().WriteToLog(logger.Info, fmt.Sprintf("[NewLocationMessageArrived] Cant find sync parameter for message: %v", msg.RawData()))
 		return cList
 	}
+	messageParser := parser.New()
+	locationMessage := messageParser.Parse(msg, synchParameter).(*types.LocationMessage)
 	_device.NewState(locationMessage.Sensors())
+	resp.AppendState(response.NewDirtyState(msg.Identity(), s.synchParams, _device.State(), msg.RawByteData()))
 	cList.PushBack(commands.NewSendMessageCommand(locationMessage.Ack()))
 	return cList
+}
+
+//Run ...
+func (s *InProgress) Run() {
 }

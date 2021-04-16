@@ -41,8 +41,8 @@ func (dsw *DirtyStateWrapper) ValueByKey(_key string) interface{} {
 }
 
 //SyncParam ...
-func (dsw *DirtyStateWrapper) SyncParam() string {
-	return dsw.state.SyncParam()
+func (dsw *DirtyStateWrapper) SyncParams() map[string]string {
+	return dsw.state.SyncParams()
 }
 
 //RawData ...

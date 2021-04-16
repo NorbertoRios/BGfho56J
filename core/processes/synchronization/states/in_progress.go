@@ -9,15 +9,16 @@ import (
 )
 
 //NewInProgressState ..
-func NewInProgressState(_paramMessage string, _duration int, _task interfaces.ITask) interfaces.IInProgressState {
-	state := &InProgress{}
-	state.Watchdog = watchdog.New(_task, states.NewAnyMessageState(_paramMessage, NewInProgressState), _duration)
+func NewInProgressState(_crc, _paramMessage string, _duration int, _task interfaces.ITask) interfaces.IInProgressState {
+	state := &InProgress{crc: _crc}
+	state.Watchdog = watchdog.New(_task, NewAnyMessageState(_crc, _paramMessage), _duration)
 	return state
 }
 
 //InProgress ...
 type InProgress struct {
 	states.InProgress
+	crc string
 }
 
 //NewMessageArrived ...
@@ -42,7 +43,7 @@ func (s *InProgress) NewMessageArrived(msg interface{}, _device interfaces.IDevi
 }
 
 func (s *InProgress) complete(_device interfaces.IDevice, _task interfaces.ITask, _param24 string) {
-	_device.Processes().NewLocationProcess("12=" + _param24)
+	_device.Processes().NewSynchParameter(s.crc, _param24)
 	s.Watchdog.Stop()
 	_task.ChangeState(NewDone())
 }

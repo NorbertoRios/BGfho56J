@@ -14,18 +14,14 @@ import (
 )
 
 //New ...
-func New(_syncParam string) interfaces.IProcesses {
+func New(_syncParams map[string]string) interfaces.IProcesses {
 	manager := &Manager{
 		processes: make(map[string]interfaces.IProcess),
 		pauseMap:  make(map[string][]string),
 		mutex:     &sync.Mutex{},
 		paused:    make(map[string]int),
 	}
-	if _syncParam == "" {
-		manager.NewSynchProcess()
-	} else {
-		manager.NewLocationProcess(_syncParam)
-	}
+	manager.newLocationProcess(_syncParams)
 	return manager
 }
 
@@ -35,6 +31,16 @@ type Manager struct {
 	pauseMap  map[string][]string
 	mutex     *sync.Mutex
 	paused    map[string]int
+}
+
+//NewSynchParameter ...
+func (p *Manager) NewSynchParameter(crc, syncParam string) {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+	key := "location"
+	if process, f := p.processes[key]; f {
+		process.Current().(interfaces.ILocationTask).NewSyncParam(crc, syncParam)
+	}
 }
 
 //All ...
@@ -94,17 +100,11 @@ func (p *Manager) LocationRequest() interfaces.IProcess {
 	return p.getOrCreateProcess(key, location.New)
 }
 
-//NewSynchProcess ....
-func (p *Manager) NewSynchProcess() {
-	p.Synchronization()
-}
-
-//NewLocationProcess ...
-func (p *Manager) NewLocationProcess(_syncParam string) {
+func (p *Manager) newLocationProcess(_syncParams map[string]string) {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 	key := "location"
-	process := message.New(_syncParam, key)
+	process := message.New(key, _syncParams)
 	if _, f := p.paused[key]; f {
 		process.Pause()
 	}

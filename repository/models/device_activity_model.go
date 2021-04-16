@@ -19,7 +19,7 @@ func NewDeviceActivity(_dirtyState wrapper.IDirtyStateWrapper, _sourseID uint64)
 	if v := _dirtyState.ValueByKey("Firmware"); v != nil {
 		firmware = v.(string)
 	}
-	software := NewSoftware(_dirtyState.SyncParam(), firmware)
+	software := NewSoftware(_dirtyState.SyncParams(), firmware)
 	return &DeviceActivity{
 		Identity:           _dirtyState.Identity(),
 		MessageTime:        _dirtyState.ValueByKey("TimeStamp").(*types.JSONTime).Time,

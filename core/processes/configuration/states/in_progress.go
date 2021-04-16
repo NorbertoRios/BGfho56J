@@ -35,15 +35,12 @@ func (s *InProgress) NewMessageArrived(msg interface{}, _device interfaces.IDevi
 			if ack.Commands() == s.AckMessage {
 				s.Watchdog.Stop()
 				command := _task.(interfaces.IConfigTask).Command()
-				if value, f := ack.Parameters()["12"]; f {
-					_device.Processes().NewLocationProcess(value)
-				}
 				if command != "" {
 					command = "SETPARAMS " + command + " ACK"
 					cList.PushBack(commands.NewSendMessageCommand(command))
 					s.AckMessage = command
 					s.Watchdog = watchdog.New(_task, states.NewAnyMessageState(s.AckMessage, NewInProgressState), s.timeout)
-					s.Run()
+					s.Watchdog.Start()
 				} else {
 					_task.ChangeState(states.NewDone(_task.Request().(interfaces.IRequest)))
 				}

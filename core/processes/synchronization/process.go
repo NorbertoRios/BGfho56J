@@ -27,7 +27,8 @@ type Process struct {
 
 //NewRequest ...
 func (p *Process) NewRequest(_request interface{}, _device interfaces.IDevice) interfaces.IProcessResponse {
-	return p.TasksCompetitiveness(task.New(), _device)
+	request, _ := _request.(string)
+	return p.TasksCompetitiveness(task.New(request), _device)
 }
 
 //MessageArrived ...

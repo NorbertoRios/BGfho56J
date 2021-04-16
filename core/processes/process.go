@@ -20,9 +20,9 @@ type Process struct {
 
 //Start ...
 func (p *Process) Start(_device interfaces.IDevice) {
-	if p.CurrentTask == nil {
-		return
-	}
+	//if p.CurrentTask == nil {
+	//	return
+	//}
 	p.CurrentTask.Start()
 }
 
@@ -33,17 +33,17 @@ func (p *Process) Symbol() string {
 
 //Stop ...
 func (p *Process) Stop(_device interfaces.IDevice, _description string) {
-	if p.CurrentTask == nil {
-		return
-	}
+	//if p.CurrentTask == nil {
+	//	return
+	//}
 	p.CurrentTask.Stop(_description)
 }
 
 //Pause ...
 func (p *Process) Pause() {
-	if p.CurrentTask != nil {
-		p.CurrentTask.Pause()
-	}
+	//if p.CurrentTask != nil {
+	p.CurrentTask.Pause()
+	//}
 }
 
 //Resume ...
@@ -87,7 +87,6 @@ func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.I
 		resp.AppendDirtyTask(p.CurrentTask)
 		p.SaveTask(p.CurrentTask)
 		_device.Processes().ProcessComplete(p.Symbol())
-		p.CurrentTask = nil
 	}
 	return resp
 }

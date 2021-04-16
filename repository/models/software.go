@@ -6,17 +6,17 @@ import (
 )
 
 //NewSoftware ...
-func NewSoftware(_syncParam, _firmware string) *Software {
+func NewSoftware(_syncParam map[string]string, _firmware string) *Software {
 	return &Software{
-		SyncParam: _syncParam,
-		Firmware:  _firmware,
+		SyncParams: _syncParam,
+		Firmware:   _firmware,
 	}
 }
 
 //Software ...
 type Software struct {
-	SyncParam string `json:"syncParam"`
-	Firmware  string `json:"firmware"`
+	SyncParams map[string]string `json:"syncParams"`
+	Firmware   string            `json:"firmware"`
 }
 
 //Marshal ...

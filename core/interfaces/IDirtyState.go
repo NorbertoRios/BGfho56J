@@ -3,7 +3,7 @@ package interfaces
 //IDirtyState ...
 type IDirtyState interface {
 	State() IDeviceState
-	SyncParam() string
+	SyncParams() map[string]string
 	Identity() string
 	RawData() []byte
 }

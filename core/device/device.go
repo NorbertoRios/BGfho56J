@@ -12,7 +12,7 @@ import (
 )
 
 //NewDevice ...
-func NewDevice(_identity, _syncParameter string, _sid uint64, _sensors []sensors.ISensor, _channel connInterfaces.IChannel) interfaces.IDevice {
+func NewDevice(_identity string, _syncParameters map[string]string, _sid uint64, _sensors []sensors.ISensor, _channel connInterfaces.IChannel) interfaces.IDevice {
 	return &Device{
 		sourseID:        _sid,
 		DeviceIdentity:  _identity,
@@ -20,7 +20,7 @@ func NewDevice(_identity, _syncParameter string, _sid uint64, _sensors []sensors
 		CurrentState:    NewSensorBasedState(_sensors),
 		UDPChannel:      _channel,
 		Mutex:           &sync.Mutex{},
-		DeviceProcesses: manager.New(_syncParameter),
+		DeviceProcesses: manager.New(_syncParameters),
 	}
 }
 
@@ -75,6 +75,9 @@ func (device *Device) ProcessCommands(commands *list.List) {
 
 //NewState ...
 func (device *Device) NewState(messageSensors []sensors.ISensor) {
+	if len(messageSensors) == 0 {
+		return
+	}
 	device.CurrentState = NewStateBasedState(device.CurrentState, messageSensors)
 }
 
