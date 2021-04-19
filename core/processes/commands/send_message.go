@@ -24,7 +24,7 @@ type SendMessageCommand struct {
 //Execute ...
 func (c *SendMessageCommand) Execute(_device interfaces.IDevice) *list.List {
 	go func() {
-		time.Sleep(time.Millisecond * 700)
+		time.Sleep(time.Millisecond * 500)
 		if !_device.Send(c.command) {
 			logger.Logger().WriteToLog(logger.Error, "[SendMessageCommand | Execute] Something went wrong while sending message "+c.command)
 		}

@@ -7,4 +7,5 @@ type IDmStorage interface {
 	AddDevice(interfaces.IDevice)
 	Device(string) interfaces.IDevice
 	DeviceExist(string) bool
+	Devices() map[string]interfaces.IDevice
 }

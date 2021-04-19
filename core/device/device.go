@@ -86,6 +86,11 @@ func (device *Device) Identity() string {
 	return device.DeviceIdentity
 }
 
+//Channel ...
+func (device *Device) Channel() connInterfaces.IChannel {
+	return device.UDPChannel
+}
+
 //NewChannel ...
 func (device *Device) NewChannel(_channel connInterfaces.IChannel) {
 	device.UDPChannel = _channel

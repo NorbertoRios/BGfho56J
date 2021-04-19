@@ -10,6 +10,7 @@ func NewObservable() *Observable {
 		NewString(),
 		NewTimes(),
 		NewInt32(),
+		NewReason(),
 	}
 	return &Observable{
 		observers: observers,

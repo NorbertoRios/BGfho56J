@@ -8,6 +8,6 @@ import (
 //ILocationTask ...
 type ILocationTask interface {
 	ITask
-	NewLocationMessageArrived(*types.RawLocationMessage, IProcessResponse, IDevice) *list.List
+	NewLocationMessageArrived(*types.RawLocationMessage, IDevice) (*list.List, IProcessResponse)
 	NewSyncParam(string, string)
 }

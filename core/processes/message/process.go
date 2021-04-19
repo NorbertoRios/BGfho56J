@@ -2,10 +2,8 @@ package message
 
 import (
 	"container/list"
-	"fmt"
 	"geometris-go/core/interfaces"
 	process "geometris-go/core/processes"
-	"geometris-go/logger"
 	"sync"
 
 	"geometris-go/core/processes/message/task"
@@ -37,13 +35,11 @@ func (p *Process) NewRequest(_request interface{}, _device interfaces.IDevice) i
 
 //MessageArrived ...
 func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.IDevice) interfaces.IProcessResponse {
-	resp := response.NewProcessResponse()
 	rawLocationMessage, s := _message.(*types.RawLocationMessage)
 	if !s {
-		logger.Logger().WriteToLog(logger.Info, fmt.Sprintf("[Process | MessageArrived] Unexpected message type %t", _message))
-		return resp
+		return response.NewProcessResponse()
 	}
-	commands := p.CurrentTask.(interfaces.ILocationTask).NewLocationMessageArrived(rawLocationMessage, resp, _device)
+	commands, resp := p.CurrentTask.(interfaces.ILocationTask).NewLocationMessageArrived(rawLocationMessage, _device)
 	p.ExecuteCommands(commands, _device)
 	return resp
 }

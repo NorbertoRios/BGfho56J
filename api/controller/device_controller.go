@@ -2,9 +2,11 @@ package controller
 
 import (
 	"fmt"
+	boCommandRequest "geometris-go/core/processes/bocommand/request"
 	"geometris-go/core/processes/configuration/request"
 	baseRequest "geometris-go/core/processes/request"
 	"geometris-go/core/usecase"
+	"net"
 
 	_ "geometris-go/docs"
 	"geometris-go/logger"
@@ -29,6 +31,75 @@ func NewDeviceController(_mysql, _rabbit repository.IRepository) *DeviceControll
 type DeviceController struct {
 	mysql  repository.IRepository
 	rabbit repository.IRepository
+}
+
+// SendCommand godoc
+// @Summary Send command to device
+// @Description Enqueue command to device
+// @Tags device
+// @Accept  json
+// @Produce  json
+// @Param identity formData string true "identity"
+// @Param command formData string true "command"
+// @Param callback_id formData string true "callback_id"
+// @Success 302 {object} response.FacadeResponse
+// @Failure 404 {object} response.FacadeResponse
+// @Router /device/command [post]
+func (c *DeviceController) SendCommand(ctx *gin.Context) {
+	identity := ctx.Request.PostFormValue("identity")
+	callbackID := ctx.Request.PostFormValue("callback_id")
+	command := ctx.Request.PostFormValue("command")
+	if !storage.Storage().DeviceExist(identity) {
+		resp := &response.FacadeResponse{
+			CreatedAt: time.Now().UTC(),
+			Success:   false,
+		}
+		ctx.JSON(http.StatusNotFound, resp)
+	}
+	device := storage.Storage().Device(identity)
+	request := boCommandRequest.NewBOCommandRequest(identity, callbackID, command)
+	commandUseCase := usecase.NewAPIRequestUseCase(c.mysql, c.rabbit)
+	commandUseCase.Launch(request, device, device.Processes().BOCommand(command))
+	resp := &response.FacadeResponse{
+		CreatedAt:       time.Now().UTC(),
+		Success:         true,
+		ExecutedCommand: command,
+		Code:            command,
+	}
+	ctx.JSON(http.StatusFound, resp)
+}
+
+// SendCommandDirect godoc
+// @Summary Send command to IP and port using UDP protocol
+// @Description Send packet to IP:port
+// @Tags device
+// @Accept  json
+// @Produce  json
+// @Param ip formData string true "ip"
+// @Param port formData int true "port"
+// @Param command formData string true "command"
+// @Success 200 {object} response.FacadeResponse
+// @Failure 500 {object} response.FacadeResponse
+// @Router /device/directcommand [post]
+func (c *DeviceController) SendCommandDirect(ctx *gin.Context) {
+	ipAddress := ctx.Request.PostFormValue("ip")
+	port := ctx.Request.PostFormValue("port")
+	command := ctx.Request.PostFormValue("command")
+
+	conn, err := net.Dial("udp", fmt.Sprintf("%v:%v", ipAddress, port))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, "")
+		return
+	}
+	defer conn.Close()
+	fmt.Fprintf(conn, command)
+	response := &response.FacadeResponse{
+		CreatedAt:       time.Now().UTC(),
+		Code:            fmt.Sprintf("Address:%v:%v; Command:%v", ipAddress, port, command),
+		ExecutedCommand: command,
+		Success:         true,
+	}
+	ctx.JSON(http.StatusOK, response)
 }
 
 // GetLocateCommand godoc

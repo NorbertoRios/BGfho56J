@@ -14,8 +14,12 @@ import (
 //New ...
 func New(_mysql, _rabbit repository.IRepository, _port int) IServer {
 	ginEngine := gin.Default()
-	ginEngine.POST("/device/update_config", controller.NewDeviceController(_mysql, _rabbit).UpdateConfig)
+	deviceController := controller.NewDeviceController(_mysql, _rabbit)
+	stat := &controller.StatsController{}
+	ginEngine.POST("/device/update_config", deviceController.UpdateConfig)
 	ginEngine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	ginEngine.GET("/device/stats", stat.GetServiceStats)
+
 	return &Server{
 		server: ginEngine,
 		port:   _port,

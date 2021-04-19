@@ -127,10 +127,6 @@ func (p *Manager) Synchronization() interfaces.IProcess {
 	return p.getOrCreateProcess(key, synchronization.New)
 }
 
-func (p *Manager) puaseLocation(_key string) {
-	p.pauseProcesses(_key, "location", "location_request")
-}
-
 func (p *Manager) appendToPaused(_key string) {
 	if _, f := p.paused[_key]; f {
 		p.paused[_key]++
@@ -152,7 +148,7 @@ func (p *Manager) getOrCreateProcess(_key string, _constructor func(string) inte
 	switch _key {
 	case "configuration", "synch":
 		{
-			p.puaseLocation(_key)
+			p.pauseProcesses(_key, "location_request")
 		}
 	}
 	return process

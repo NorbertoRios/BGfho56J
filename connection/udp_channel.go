@@ -19,12 +19,11 @@ func ConstructUDPChannel(addr *net.UDPAddr, server *UDPServer) interfaces.IChann
 
 //UDPChannel cahnnel for device
 type UDPChannel struct {
-	ServerInstance   *UDPServer
-	ConnectedAt      time.Time
-	received         int64
-	transmitted      int64
-	onProcessMessage func()
-	clientAddr       *net.UDPAddr
+	ServerInstance *UDPServer
+	ConnectedAt    time.Time
+	received       int64
+	transmitted    int64
+	clientAddr     *net.UDPAddr
 }
 
 //Received received bytes
@@ -44,6 +43,11 @@ func (c *UDPChannel) Send(message string) error {
 	logger.Logger().WriteToLog(logger.Info, fmt.Sprintf("[UDPChannel | Send] Message(string): %v . TO: %v ", string(message), c.clientAddr.String()))
 	c.AddTransmitted(trs)
 	return nil
+}
+
+//Type ...
+func (c *UDPChannel) Type() string {
+	return "udp"
 }
 
 //Transmitted transmitted bytes

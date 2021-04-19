@@ -34,9 +34,9 @@ func (usecase *UDPMessageUseCase) Launch(_message interfaces.IMessage, _channel 
 	dev.NewChannel(_channel)
 	processes := dev.Processes().All()
 	for _, p := range processes {
-		// if p.Current() == nil {
-		// 	continue
-		// }
+		if p.Current() == nil {
+			continue
+		}
 		processResp := p.MessageArrived(_message, dev)
 		usecase.flushProcessResults(processResp, uow)
 	}

@@ -21,8 +21,8 @@ type Task struct {
 }
 
 //NewLocationMessageArrived ...
-func (t *Task) NewLocationMessageArrived(_message *types.RawLocationMessage, _response interfaces.IProcessResponse, _device interfaces.IDevice) *list.List {
-	return t.CurrentState.(interfaces.ILocationInProgressState).NewLocationMessageArrived(_message, _response, _device)
+func (t *Task) NewLocationMessageArrived(_message *types.RawLocationMessage, _device interfaces.IDevice) (*list.List, interfaces.IProcessResponse) {
+	return t.CurrentState.(interfaces.ILocationInProgressState).NewLocationMessageArrived(_message, _device)
 }
 
 //NewSyncParam ...

@@ -51,12 +51,11 @@ func (p *Parser) Parse(_rawMessage message.IMessage, _param12 string) message.IM
 		return _rawMessage
 	}
 	sb := builder.NewSensorBuilder()
-	keyValue := strings.Split(_param12, "=")
-	fields := p.reportConfig.GetFieldsByIds(strings.Split(keyValue[1], "."))
+	fields := p.reportConfig.GetFieldsByIds(strings.Split(_param12, "."))
 	messageSensors := []sensors.ISensor{}
 	values := rawMessage.RawData()
-	for i, field := range fields {
-		value := values[i]
+	for i, value := range values {
+		field := fields[i]
 		messageSensors = append(messageSensors, sb.Build(field.Name, value, field.ValueType)...)
 	}
 	return messageTypes.NewLocationMessage(_rawMessage.Identity(), messageSensors)

@@ -14,6 +14,7 @@ type IDevice interface {
 	State() IDeviceState
 	LastActivityTime() time.Time
 	NewChannel(connInterfaces.IChannel)
+	Channel() connInterfaces.IChannel
 	NewState([]sensors.ISensor)
 	ProcessCommands(*list.List)
 	Identity() string

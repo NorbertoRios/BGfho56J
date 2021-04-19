@@ -6,8 +6,8 @@ import (
 	"geometris-go/core/processes/configuration/request"
 	"geometris-go/core/processes/message"
 	messageStates "geometris-go/core/processes/message/states"
-	"geometris-go/core/processes/states"
 	"geometris-go/core/processes/synchronization"
+	synchStates "geometris-go/core/processes/synchronization/states"
 	"geometris-go/core/usecase"
 	"geometris-go/message/factory"
 	"geometris-go/rabbitlogger"
@@ -16,6 +16,7 @@ import (
 	"geometris-go/test/mock"
 	"geometris-go/unitofwork"
 	"testing"
+	"time"
 )
 
 var mockMysqlRepo repository.IRepository = mock.NewRepository()
@@ -56,6 +57,7 @@ func TestConfigWorkflow(t *testing.T) {
 	messageUseCase := usecase.NewUDPMessageUseCase(mockMysqlRepo, mockRabbitRepo)
 	messageFactory := factory.New()
 	for _, command := range commands {
+		time.Sleep(500 * time.Millisecond)
 		ackMessage := messageFactory.BuildMessage([]byte(fmt.Sprintf("87A110550003 ACK <SETPARAMS %v ACK>", command)))
 		messageUseCase.Launch(ackMessage, nil)
 	}
@@ -64,8 +66,7 @@ func TestConfigWorkflow(t *testing.T) {
 		switch process.(type) {
 		case *synchronization.Process:
 			{
-				_, s := process.(*synchronization.Process).Current().State().(*states.Done)
-				if !s {
+				if process.(*synchronization.Process).Current() != nil {
 					t.Error("Current synch state should be done")
 				}
 			}
@@ -78,14 +79,52 @@ func TestConfigWorkflow(t *testing.T) {
 			}
 		case *configuration.Process:
 			{
-				_, s := process.(*configuration.Process).Current().State().(*states.Done)
-				if !s {
+				if process.(*configuration.Process).Current() != nil {
 					t.Error("Current config state should be done")
 				}
 			}
 		default:
 			{
 				t.Error(fmt.Sprintf("Unexpected process %T", process))
+			}
+		}
+	}
+	difCRCMessage := messageFactory.BuildMessage([]byte("87A110550003,F002,OFF_PERIODIC,1616773466,48.746404,37.591212,33,9,0,40,0,310,0.0,4,,0,0,,,,,,,0:0,,0,0,"))
+	messageUseCase = usecase.NewUDPMessageUseCase(mockMysqlRepo, mockRabbitRepo)
+	messageUseCase.Launch(difCRCMessage, nil)
+	processes = storage.Storage().Device("geometris_87A110550003").Processes().All()
+	for _, process := range processes {
+		switch process.(type) {
+		case *synchronization.Process:
+			{
+				_, s := process.(*synchronization.Process).Current().State().(*synchStates.InProgress)
+				if !s {
+					t.Error("Current synch state should be InProgress")
+				}
+			}
+		}
+	}
+	for i := 0; i < 5; i++ {
+		messageUseCase.Launch(difCRCMessage, nil)
+	}
+	paramCRCMessage := messageFactory.BuildMessage([]byte([]byte("87A110550003 PARAMETERS 12=65.28.9.36.3.4.7.8.11.12.14.17.24.50.56.51.55.70.71.72.73.74.75.76.77.80.81.82;")))
+	messageUseCase = usecase.NewUDPMessageUseCase(mockMysqlRepo, mockRabbitRepo)
+	messageUseCase.Launch(paramCRCMessage, nil)
+	processes = storage.Storage().Device("geometris_87A110550003").Processes().All()
+	for _, process := range processes {
+		switch process.(type) {
+		case *synchronization.Process:
+			{
+				if process.(*synchronization.Process).Current() != nil {
+					t.Error("Current synch state should be done")
+				}
+			}
+		case *message.Process:
+			{
+				_, s := process.(*message.Process).Current().State().(*messageStates.InProgress)
+				if !s {
+					t.Error("Current message state should be in progress.")
+				}
 			}
 		}
 	}

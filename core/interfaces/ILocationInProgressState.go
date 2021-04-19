@@ -8,6 +8,6 @@ import (
 //ILocationInProgressState ...
 type ILocationInProgressState interface {
 	ITaskState
-	NewLocationMessageArrived(*types.RawLocationMessage, IProcessResponse, IDevice) *list.List
+	NewLocationMessageArrived(*types.RawLocationMessage, IDevice) (*list.List, IProcessResponse)
 	NewSynchParameter(string, string)
 }
