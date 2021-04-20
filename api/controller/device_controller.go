@@ -37,7 +37,7 @@ type DeviceController struct {
 // @Summary Send command to device
 // @Description Enqueue command to device
 // @Tags device
-// @Accept  json
+// @Accept  multipart/form-data
 // @Produce  json
 // @Param identity formData string true "identity"
 // @Param command formData string true "command"
@@ -73,7 +73,7 @@ func (c *DeviceController) SendCommand(ctx *gin.Context) {
 // @Summary Send command to IP and port using UDP protocol
 // @Description Send packet to IP:port
 // @Tags device
-// @Accept  json
+// @Accept  multipart/form-data
 // @Produce  json
 // @Param ip formData string true "ip"
 // @Param port formData int true "port"
@@ -106,7 +106,7 @@ func (c *DeviceController) SendCommandDirect(ctx *gin.Context) {
 // @Summary Get locate command
 // @Description Returns locate command
 // @Tags device
-// @Accept  json
+// @Accept  multipart/form-data
 // @Produce  json
 // @Param identity query string true "identity"
 // @Success 302 {object} response.FacadeResponse

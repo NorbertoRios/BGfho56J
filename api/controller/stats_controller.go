@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"expvar"
+	"fmt"
 	"geometris-go/response"
 	"geometris-go/stats"
 	"geometris-go/storage"
@@ -11,18 +13,46 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//StatsController ...
-type StatsController struct {
+//NewStatsController ...
+func NewStatsController() *StatsController {
+	return &StatsController{
+		serviceInfo: expvar.NewMap("Service"),
+	}
 }
 
-// GetServiceStats godoc
-// @Summary Get service statistics
-// @Description Returns service statistics
-// @Tags device
-// @Accept  json
-// @Produce  json
-// @Success 200 {object} response.ServiceStatistics
-// @Router /device/stats [get]
+//StatsController ...
+type StatsController struct {
+	serviceInfo *expvar.Map
+}
+
+// MetricsHandler ...
+func (c *StatsController) MetricsHandler(ctx *gin.Context) {
+	c.updateServiceInfo()
+	w := ctx.Writer
+	ctx.Header("Content-Type", "application/json; charset=utf-8")
+	w.Write([]byte("{\n"))
+	first := true
+	expvar.Do(func(kv expvar.KeyValue) {
+		if !first {
+			w.Write([]byte(",\n"))
+		}
+		first = false
+		fmt.Fprintf(w, "%q: %s", kv.Key, kv.Value)
+	})
+	w.Write([]byte("\n}\n"))
+	ctx.AbortWithStatus(200)
+}
+
+func (c *StatsController) updateServiceInfo() {
+	devices := storage.Storage().Devices()
+	c.serviceInfo.Set("ManagedConnections", MetricIntValue{len(devices)})
+	c.serviceInfo.Set("TotalCountByWorkers", MetricIntValue{len(devices)})
+	c.serviceInfo.Set("UnregisteredConnectionsCount", MetricIntValue{0})
+	c.serviceInfo.Set("UDPConnectionsCount", MetricIntValue{storage.Storage().ConnectionTypeCount("udp")})
+	c.serviceInfo.Set("TCPConnectionsCount", MetricIntValue{storage.Storage().ConnectionTypeCount("tcp")})
+}
+
+// GetServiceStats ...
 func (c *StatsController) GetServiceStats(ctx *gin.Context) {
 	p := stats.NewProcessStat()
 	p.Pid = int32(os.Getpid())
@@ -32,22 +62,12 @@ func (c *StatsController) GetServiceStats(ctx *gin.Context) {
 		p.CPUPercent = percentage
 	}
 	devices := storage.Storage().Devices()
-	udpCount := 0
-	tcpCount := 0
-	for _, d := range devices {
-		switch d.Channel().Type() {
-		case "udp":
-			udpCount++
-		case "tcp":
-			tcpCount++
-		}
-	}
 	resp := &response.ServiceStatistic{
 		TotalDeviceCount:             len(devices),
 		TotalCountByWorkers:          len(devices),
 		UnregisteredConnectionsCount: 0,
-		UDPConnectionsCount:          udpCount,
-		TCPConnectionsCount:          tcpCount,
+		UDPConnectionsCount:          storage.Storage().ConnectionTypeCount("udp"),
+		TCPConnectionsCount:          storage.Storage().ConnectionTypeCount("tcp"),
 		ProcessInfo:                  p,
 	}
 	ctx.JSON(http.StatusOK, resp)

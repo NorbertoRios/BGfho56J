@@ -17,6 +17,76 @@ definitions:
 info:
   contact: {}
 paths:
+  /device/command:
+    post:
+      consumes:
+      - application/json
+      description: Enqueue command to device
+      parameters:
+      - description: identity
+        in: formData
+        name: identity
+        required: true
+        type: string
+      - description: command
+        in: formData
+        name: command
+        required: true
+        type: string
+      - description: callback_id
+        in: formData
+        name: callback_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Found
+          schema:
+            $ref: '#/definitions/response.FacadeResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.FacadeResponse'
+      summary: Send command to device
+      tags:
+      - device
+  /device/directcommand:
+    post:
+      consumes:
+      - application/json
+      description: Send packet to IP:port
+      parameters:
+      - description: ip
+        in: formData
+        name: ip
+        required: true
+        type: string
+      - description: port
+        in: formData
+        name: port
+        required: true
+        type: integer
+      - description: command
+        in: formData
+        name: command
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.FacadeResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.FacadeResponse'
+      summary: Send command to IP and port using UDP protocol
+      tags:
+      - device
   /device/identity_exists:
     get:
       consumes:

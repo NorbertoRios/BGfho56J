@@ -5,7 +5,6 @@ import (
 	"geometris-go/core/interfaces"
 	"geometris-go/core/sensors"
 	"geometris-go/dto"
-	"geometris-go/logger"
 	"sync"
 )
 
@@ -36,7 +35,6 @@ func (dsw *DirtyStateWrapper) ValueByKey(_key string) interface{} {
 	if value, found := dsw.sensors[_key]; found {
 		return value.Value()
 	}
-	logger.Logger().WriteToLog(logger.Error, "[DirtyStateWrapper | DirtyStateWrapper] Cant find value by key ", _key)
 	return nil
 }
 

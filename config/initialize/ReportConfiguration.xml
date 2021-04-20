@@ -4,12 +4,13 @@
 <!-- 12=28.10.66.60.65.9.36.3.4.7.8.11.12.14.17.24.50.56.51.55.70.71.72.73.74.75.76.77.80.81.82; -->
 
   <Fields>    
+    <Field id="1" name="ICCID" type="string" /> <!--Requirement-->
     <Field id="3" name="Latitude" type="float32" /> <!--Requirement-->
     <Field id="4" name="Longitude" type="float32" /> <!--Requirement-->
     <Field id="7" name="SequenceID" type="int32" /> 
     <Field id="8" name="LocationAge" type="int32" /> <!--Requirement-->
     <Field id="9" name="ReportClass" type="string" /> 
-    <Field id="10" name="Reasone" type="reason" /> <!--Requirement-->
+    <Field id="10" name="Reason" type="reason" /> <!--Requirement-->
     <Field id="11" name="IgnitionState" type="byte" /> <!--Requirement-->
     <Field id="12" name="Duration" type="int32" />    
     <Field id="14" name="SpeedMPH" type="byte" />    

@@ -7,7 +7,7 @@ import (
 
 //NewReason ...
 func NewReason() IObserver {
-	return &Times{
+	return &Reason{
 		typeValue: "reason",
 	}
 }
@@ -15,6 +15,11 @@ func NewReason() IObserver {
 //Reason ...
 type Reason struct {
 	typeValue string
+}
+
+//Convert ...
+func (f *Reason) Convert(_key, _value, _type string) []sensors.ISensor {
+	return f.Build(_key, _value, _type)
 }
 
 //Build ...
@@ -29,7 +34,7 @@ func (f *Reason) Build(_key, _value, _type string) []sensors.ISensor {
 	return sensorsArr
 }
 
-func (f *Reason) mapReasons(_deviceReason int) int {
+func (f *Reason) mapReasons(_deviceReason int) int32 {
 	switch _deviceReason {
 	case 0: //Power UP
 		return 0x00

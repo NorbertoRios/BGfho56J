@@ -55,3 +55,17 @@ func (storage *DMStorage) AddDevice(_device interfaces.IDevice) {
 	storage.devices[_device.Identity()] = _device
 	logger.Logger().WriteToLog(logger.Info, "[DMStorage | Device] Device with identity "+_device.Identity()+" added")
 }
+
+//ConnectionTypeCount ...
+func (storage *DMStorage) ConnectionTypeCount(_type string) int {
+	storage.mutex.Lock()
+	defer storage.mutex.Unlock()
+	res := 0
+	for _, device := range storage.devices {
+		switch device.Channel().Type() {
+		case _type:
+			res++
+		}
+	}
+	return res
+}
