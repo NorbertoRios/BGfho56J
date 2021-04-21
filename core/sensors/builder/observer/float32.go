@@ -1,6 +1,7 @@
 package observer
 
 import (
+	"fmt"
 	"geometris-go/core/sensors"
 	"geometris-go/types"
 )
@@ -18,8 +19,8 @@ type Float64 struct {
 }
 
 //Convert ...
-func (f *Float64) Convert(_key, _value, _type string) []sensors.ISensor {
-	return f.Build(_key, _value, _type)
+func (f *Float64) Convert(_key string, _value interface{}, _type string) []sensors.ISensor {
+	return f.Build(_key, fmt.Sprintf("%v", _value), _type)
 }
 
 //Build ...

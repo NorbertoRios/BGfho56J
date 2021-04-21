@@ -44,12 +44,12 @@ func (c *StatsController) MetricsHandler(ctx *gin.Context) {
 }
 
 func (c *StatsController) updateServiceInfo() {
-	devices := storage.Storage().Devices()
-	c.serviceInfo.Set("ManagedConnections", MetricIntValue{len(devices)})
-	c.serviceInfo.Set("TotalCountByWorkers", MetricIntValue{len(devices)})
+	storageMetrics := storage.NewMetric()
+	c.serviceInfo.Set("ManagedConnections", MetricIntValue{storageMetrics.DevicesCount()})
+	c.serviceInfo.Set("TotalCountByWorkers", MetricIntValue{storageMetrics.DevicesCount()})
 	c.serviceInfo.Set("UnregisteredConnectionsCount", MetricIntValue{0})
-	c.serviceInfo.Set("UDPConnectionsCount", MetricIntValue{storage.Storage().ConnectionTypeCount("udp")})
-	c.serviceInfo.Set("TCPConnectionsCount", MetricIntValue{storage.Storage().ConnectionTypeCount("tcp")})
+	c.serviceInfo.Set("UDPConnectionsCount", MetricIntValue{storageMetrics.ConnectionsCount("udp")})
+	c.serviceInfo.Set("TCPConnectionsCount", MetricIntValue{storageMetrics.ConnectionsCount("tcp")})
 }
 
 // GetServiceStats ...
@@ -61,13 +61,13 @@ func (c *StatsController) GetServiceStats(ctx *gin.Context) {
 		percentage = math.Round(percentage) / 10
 		p.CPUPercent = percentage
 	}
-	devices := storage.Storage().Devices()
+	storageMetrics := storage.NewMetric()
 	resp := &response.ServiceStatistic{
-		TotalDeviceCount:             len(devices),
-		TotalCountByWorkers:          len(devices),
+		TotalDeviceCount:             storageMetrics.DevicesCount(),
+		TotalCountByWorkers:          storageMetrics.DevicesCount(),
 		UnregisteredConnectionsCount: 0,
-		UDPConnectionsCount:          storage.Storage().ConnectionTypeCount("udp"),
-		TCPConnectionsCount:          storage.Storage().ConnectionTypeCount("tcp"),
+		UDPConnectionsCount:          storageMetrics.ConnectionsCount("udp"),
+		TCPConnectionsCount:          storageMetrics.ConnectionsCount("tcp"),
 		ProcessInfo:                  p,
 	}
 	ctx.JSON(http.StatusOK, resp)

@@ -34,6 +34,12 @@ func (s *InProgress) NewMessageArrived(msg interface{}, _device interfaces.IDevi
 	return list.New()
 }
 
+//Stop ...
+func (s *InProgress) Stop() *list.List {
+	s.Watchdog.Stop()
+	return list.New()
+}
+
 //Run ...
 func (s *InProgress) Run() {
 	s.Watchdog.Start()

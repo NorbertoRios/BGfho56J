@@ -34,7 +34,7 @@ func (s *Base) Start(_task interfaces.ITask) *list.List {
 }
 
 //Stop ...
-func (s *Base) Stop(_task interfaces.ITask) *list.List {
+func (s *Base) Stop() *list.List {
 	return list.New()
 }
 

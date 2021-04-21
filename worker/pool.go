@@ -7,10 +7,10 @@ import (
 )
 
 //NewPool ...
-func NewPool(workersCount int, _mysql, rabbit repository.IRepository) *Pool {
+func NewPool(workersCount, _garbageduration int, _mysql, rabbit repository.IRepository) *Pool {
 	_workers := list.New()
 	for i := 0; i < workersCount; i++ {
-		w := NewWorker(_mysql, rabbit)
+		w := NewWorker(_mysql, rabbit, _garbageduration)
 		go w.Run()
 		_workers.PushBack(w)
 	}

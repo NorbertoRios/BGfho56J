@@ -1,6 +1,7 @@
 package observer
 
 import (
+	"fmt"
 	"geometris-go/core/sensors"
 	"geometris-go/logger"
 	"geometris-go/types"
@@ -20,12 +21,12 @@ type Times struct {
 }
 
 //Convert ...
-func (f *Times) Convert(_key, _value, _type string) []sensors.ISensor {
+func (f *Times) Convert(_key string, _value interface{}, _type string) []sensors.ISensor {
 	sensorsArr := []sensors.ISensor{}
 	if _type != f.typeValue {
 		return sensorsArr
 	}
-	time, err := time.Parse("2006-01-02T15:04:05Z", _value)
+	time, err := time.Parse("2006-01-02T15:04:05Z", fmt.Sprintf("%v", _value))
 	if err != nil {
 		logger.Logger().WriteToLog(logger.Error, "[Times | Convert] Error while unmarshal TimeStamp. ", err.Error())
 		sensorsArr = append(sensorsArr, sensors.NewSensor(_key, &types.JSONTime{}))

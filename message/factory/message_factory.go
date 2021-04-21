@@ -10,6 +10,7 @@ import (
 
 //New returns raw message factory
 func New() *MessageFactory {
+	defaultLocation, _ := regexp.Compile("^(?P<Crc>[a-zA-Z0-9]{4}),(?P<Serial>[a-zA-Z0-9]{12}),(?P<Data>(.*)),")
 	location, _ := regexp.Compile("^(?P<Serial>[a-zA-Z0-9]{12}),(?P<Crc>[a-zA-Z0-9]{4}),(?P<Data>(.*)),")
 	ack, _ := regexp.Compile("^(?P<Serial>[a-zA-Z0-9]{12}) ACK <(?P<Command>(.*))>")
 	diagParameters, _ := regexp.Compile("^(?P<Serial>[a-zA-Z0-9]{12}) PARAMETERS (?P<Parameters>(.*));$")
@@ -18,6 +19,7 @@ func New() *MessageFactory {
 			builder.NewAckMessageBuilder(ack),
 			builder.NewParametersMessageBuilder(diagParameters),
 			builder.NewLocationMessageBuilder(location),
+			builder.NewLocationMessageBuilder(defaultLocation),
 		},
 	}
 	return factory

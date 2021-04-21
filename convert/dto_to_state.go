@@ -1,7 +1,6 @@
 package convert
 
 import (
-	"fmt"
 	"geometris-go/configuration"
 	"geometris-go/core/sensors"
 	"geometris-go/core/sensors/builder"
@@ -40,7 +39,7 @@ func (dts *DTOToState) Convert() []sensors.ISensor {
 		if value, f := dtoMessage.GetValue(field.Name); !f {
 			continue
 		} else {
-			for _, sens := range sb.Convert(field.Name, fmt.Sprintf("%v", value), field.ValueType) {
+			for _, sens := range sb.Convert(field.Name, value, field.ValueType) {
 				result = append(result, sens)
 			}
 		}

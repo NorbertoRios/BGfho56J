@@ -3,27 +3,31 @@ package worker
 import (
 	"geometris-go/core/usecase"
 	"geometris-go/repository"
+	"geometris-go/storage"
 	"sync"
+	"time"
 )
 
 //NewWorker ...
-func NewWorker(_mysql, _rabbit repository.IRepository) *Worker {
+func NewWorker(_mysql, _rabbit repository.IRepository, _garbageDuration int) *Worker {
 	return &Worker{
-		mysql:          _mysql,
-		rabbit:         _rabbit,
-		messageChannel: make(chan *EntryData, 1000000),
-		Devices:        make(map[string]bool),
-		Mutex:          &sync.Mutex{},
+		garbageDuration: _garbageDuration,
+		mysql:           _mysql,
+		rabbit:          _rabbit,
+		messageChannel:  make(chan *EntryData, 1000000),
+		Devices:         make(map[string]bool),
+		Mutex:           &sync.Mutex{},
 	}
 }
 
 //Worker ...
 type Worker struct {
-	Mutex          *sync.Mutex
-	mysql          repository.IRepository
-	rabbit         repository.IRepository
-	messageChannel chan *EntryData
-	Devices        map[string]bool
+	garbageDuration int
+	Mutex           *sync.Mutex
+	mysql           repository.IRepository
+	rabbit          repository.IRepository
+	messageChannel  chan *EntryData
+	Devices         map[string]bool
 }
 
 //NewDevice ...
@@ -47,6 +51,7 @@ func (w *Worker) Push(data *EntryData) {
 
 //Run ...
 func (w *Worker) Run() {
+	ticker := time.NewTicker(300 * time.Second)
 	for {
 		select {
 		case entryData := <-w.messageChannel:
@@ -54,6 +59,21 @@ func (w *Worker) Run() {
 				usecase := usecase.NewUDPMessageUseCase(w.mysql, w.rabbit)
 				usecase.Launch(entryData.Message, entryData.Channel)
 			}
+		case <-ticker.C:
+			{
+				w.garbageDevices()
+			}
+		}
+	}
+}
+
+func (w *Worker) garbageDevices() {
+	w.Mutex.Lock()
+	defer w.Mutex.Unlock()
+	for identity := range w.Devices {
+		if time.Now().UTC().Sub(storage.Storage().Device(identity).Channel().LastActivity()).Seconds() >= float64(w.garbageDuration) {
+			storage.Storage().RemoveDevice(identity)
+			delete(w.Devices, identity)
 		}
 	}
 }

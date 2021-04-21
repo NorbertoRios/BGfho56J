@@ -10,9 +10,9 @@ import (
 )
 
 //NewWorkerPool ...
-func NewWorkerPool(workersCount int, _mysql, _rabbit repository.IRepository) IWorkerPool {
+func NewWorkerPool(workersCount, garbageDuration int, _mysql, _rabbit repository.IRepository) IWorkerPool {
 	return &WorkersPool{
-		Pool:  NewPool(workersCount, _mysql, _rabbit),
+		Pool:  NewPool(workersCount, garbageDuration, _mysql, _rabbit),
 		mutex: &sync.Mutex{},
 	}
 }

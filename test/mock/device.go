@@ -7,14 +7,12 @@ import (
 	"geometris-go/core/sensors"
 	"geometris-go/logger"
 	"sync"
-	"time"
 )
 
 //NewDevice ...
 func NewDevice(_identity string, _syncParams map[string]string, _sensors []sensors.ISensor, _channel connInterfaces.IChannel) *Device {
 	d := &Device{}
 	d.DeviceIdentity = _identity
-	d.LastActivity = time.Now().UTC()
 	d.CurrentState = device.NewSensorBasedState(_sensors)
 	d.UDPChannel = _channel
 	d.Mutex = &sync.Mutex{}

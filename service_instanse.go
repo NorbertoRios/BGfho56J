@@ -23,7 +23,7 @@ func buildUDPServers(_credentials *configuration.ServiceCredentials, _controller
 func NewService(_credentials *configuration.ServiceCredentials) *ServiceInstanse {
 	rabbitPero := repository.NewRabbit(_credentials.Rabbit)
 	mysqlRepo := repository.NewMySQL(_credentials.MysqDeviceMasterConnectionString)
-	messageController := controller.NewRawDataController(worker.NewWorkerPool(_credentials.WorkersCount, mysqlRepo, rabbitPero))
+	messageController := controller.NewRawDataController(worker.NewWorkerPool(_credentials.WorkersCount, _credentials.GarbageDuration, mysqlRepo, rabbitPero))
 	return &ServiceInstanse{
 		mysqlRepo:  mysqlRepo,
 		rabbitPero: rabbitPero,

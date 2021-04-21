@@ -48,24 +48,25 @@ func (storage *DMStorage) Device(_identity string) interfaces.IDevice {
 	return v
 }
 
+//RemoveDevice ...
+func (storage *DMStorage) RemoveDevice(_identity string) {
+	storage.mutex.Lock()
+	defer storage.mutex.Unlock()
+	device, f := storage.devices[_identity]
+	if !f {
+		return
+	}
+	for _, proc := range device.Processes().All() {
+		proc.Stop(device, "Device is offline")
+	}
+	delete(storage.devices, _identity)
+	logger.Logger().WriteToLog(logger.Info, "[DMStorage | Device] Device with identity "+_identity+" revoved")
+}
+
 //AddDevice ...
 func (storage *DMStorage) AddDevice(_device interfaces.IDevice) {
 	storage.mutex.Lock()
 	defer storage.mutex.Unlock()
 	storage.devices[_device.Identity()] = _device
 	logger.Logger().WriteToLog(logger.Info, "[DMStorage | Device] Device with identity "+_device.Identity()+" added")
-}
-
-//ConnectionTypeCount ...
-func (storage *DMStorage) ConnectionTypeCount(_type string) int {
-	storage.mutex.Lock()
-	defer storage.mutex.Unlock()
-	res := 0
-	for _, device := range storage.devices {
-		switch device.Channel().Type() {
-		case _type:
-			res++
-		}
-	}
-	return res
 }

@@ -8,5 +8,5 @@ type IDmStorage interface {
 	Device(string) interfaces.IDevice
 	DeviceExist(string) bool
 	Devices() map[string]interfaces.IDevice
-	ConnectionTypeCount(string) int
+	RemoveDevice(string)
 }

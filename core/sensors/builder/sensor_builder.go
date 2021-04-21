@@ -23,6 +23,6 @@ func (sb *SensorBuilder) Build(_key, _value, _type string) []sensors.ISensor {
 }
 
 //Convert ...
-func (sb *SensorBuilder) Convert(_key, _value, _type string) []sensors.ISensor {
+func (sb *SensorBuilder) Convert(_key string, _value interface{}, _type string) []sensors.ISensor {
 	return sb.observable.Convert(_key, _value, _type)
 }

@@ -45,6 +45,11 @@ func (c *UDPChannel) Send(message string) error {
 	return nil
 }
 
+//LastActivity ...
+func (c *UDPChannel) LastActivity() time.Time {
+	return c.ConnectedAt
+}
+
 //Type ...
 func (c *UDPChannel) Type() string {
 	return "udp"

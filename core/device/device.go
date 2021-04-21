@@ -8,7 +8,6 @@ import (
 	"geometris-go/core/sensors"
 	"geometris-go/logger"
 	"sync"
-	"time"
 )
 
 //NewDevice ...
@@ -16,7 +15,6 @@ func NewDevice(_identity string, _syncParameters map[string]string, _sid uint64,
 	return &Device{
 		sourseID:        _sid,
 		DeviceIdentity:  _identity,
-		LastActivity:    time.Now().UTC(),
 		CurrentState:    NewSensorBasedState(_sensors),
 		UDPChannel:      _channel,
 		Mutex:           &sync.Mutex{},
@@ -28,7 +26,6 @@ func NewDevice(_identity string, _syncParameters map[string]string, _sid uint64,
 type Device struct {
 	sourseID        uint64
 	DeviceIdentity  string
-	LastActivity    time.Time
 	CurrentState    interfaces.IDeviceState
 	UDPChannel      connInterfaces.IChannel
 	Mutex           *sync.Mutex
@@ -57,7 +54,6 @@ func (device *Device) NewSourseID(_id uint64) {
 
 //ProcessCommands process commands
 func (device *Device) ProcessCommands(commands *list.List) {
-	device.LastActivity = time.Now().UTC()
 	device.Mutex.Lock()
 	defer device.Mutex.Unlock()
 	for commands.Len() > 0 {
@@ -94,11 +90,6 @@ func (device *Device) Channel() connInterfaces.IChannel {
 //NewChannel ...
 func (device *Device) NewChannel(_channel connInterfaces.IChannel) {
 	device.UDPChannel = _channel
-}
-
-//LastActivityTime ...
-func (device *Device) LastActivityTime() time.Time {
-	return device.LastActivity
 }
 
 //State returns device current state
