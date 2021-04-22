@@ -2,7 +2,7 @@ package states
 
 import (
 	"geometris-go/core/interfaces"
-	"geometris-go/core/processes/states/response"
+	"geometris-go/response"
 )
 
 //NewActual ...

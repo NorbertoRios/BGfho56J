@@ -54,7 +54,7 @@ func (reportConfiguration *ReportConfiguration) GetFieldByID(id string) (*Field,
 func (reportConfiguration *ReportConfiguration) GetFieldsByIds(ids []string) []*Field {
 	result := make([]*Field, 0)
 	for _, id := range ids {
-		if id == "28" {
+		if id == "28" || id == "65" {
 			continue
 		}
 		if reportField, err := reportConfiguration.GetFieldByID(id); err == nil {

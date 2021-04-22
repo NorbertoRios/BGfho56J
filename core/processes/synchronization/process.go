@@ -4,10 +4,7 @@ import (
 	"container/list"
 	"geometris-go/core/interfaces"
 	process "geometris-go/core/processes"
-	"geometris-go/core/processes/response"
 	"geometris-go/core/processes/synchronization/task"
-	"geometris-go/logger"
-	message "geometris-go/message/interfaces"
 	"sync"
 )
 
@@ -29,21 +26,4 @@ type Process struct {
 func (p *Process) NewRequest(_request interface{}, _device interfaces.IDevice) interfaces.IProcessResponse {
 	request, _ := _request.(string)
 	return p.TasksCompetitiveness(task.New(request), _device)
-}
-
-//MessageArrived ...
-func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.IDevice) interfaces.IProcessResponse {
-	p.Mutex.Lock()
-	defer p.Mutex.Unlock()
-	resp := response.NewProcessResponse()
-	commands := p.CurrentTask.NewMessageArrived(_message, _device)
-	p.ExecuteCommands(commands, _device)
-	if p.CurrentTask.IsClosed() {
-		logger.Logger().WriteToLog(logger.Info, "[Synchronization | MessageArrived] Synch task Is Closed")
-		resp.AppendDirtyTask(p.CurrentTask)
-		p.SaveTask(p.CurrentTask)
-		_device.Processes().ProcessComplete(p.Symbol())
-		p.CurrentTask = nil
-	}
-	return resp
 }

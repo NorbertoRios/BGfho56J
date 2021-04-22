@@ -25,6 +25,11 @@ type RawLocationMessage struct {
 	crc     string
 }
 
+//Content ...
+func (rlm *RawLocationMessage) Content() string {
+	return rlm.data
+}
+
 //CRC ...
 func (rlm *RawLocationMessage) CRC() string {
 	return rlm.crc

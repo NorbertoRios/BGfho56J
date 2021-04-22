@@ -1,7 +1,10 @@
 package rabbitlogger
 
 import (
+	"geometris-go/dto"
 	"geometris-go/repository"
+	"geometris-go/types"
+	"time"
 )
 
 var rLogger *rabbitLogger
@@ -23,6 +26,11 @@ type rabbitLogger struct {
 }
 
 //WriteToLog write content to log
-func (l *rabbitLogger) Log(message string) {
-	l.rabbitRepo.Save(message)
+func (l *rabbitLogger) Log(message, identity string) {
+	dtoMessage := dto.NewMessage()
+	dtoMessage.SetValue("Message", message)
+	dtoMessage.SetValue("DevId", identity)
+	dtoMessage.SetValue("TimeStamp", &types.JSONTime{Time: time.Now().UTC()})
+	dtoMessage.SetValue("LocationMessage", false)
+	l.rabbitRepo.Save(dtoMessage.Marshal())
 }

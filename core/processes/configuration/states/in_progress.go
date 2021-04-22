@@ -32,7 +32,7 @@ func (s *InProgress) NewMessageArrived(msg interface{}, _device interfaces.IDevi
 	case *types.AckMessage:
 		{
 			ack, _ := msg.(*types.AckMessage)
-			if ack.Commands() == s.AckMessage {
+			if ack.Content() == s.AckMessage {
 				s.Watchdog.Stop()
 				command := _task.(interfaces.IConfigTask).Command()
 				if command != "" {

@@ -1,8 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ReportConfiguration>
-
-<!-- 12=28.10.66.60.65.9.36.3.4.7.8.11.12.14.17.24.50.56.51.55.70.71.72.73.74.75.76.77.80.81.82; -->
-
   <Fields>    
     <Field id="1" name="ICCID" type="string" /> <!--Requirement-->
     <Field id="3" name="Latitude" type="float32" /> <!--Requirement-->
@@ -16,8 +13,8 @@
     <Field id="14" name="SpeedMPH" type="byte" />    
     <Field id="15" name="Speed" type="float32" /> <!--Requirement-->
     <Field id="17" name="Heading" type="float32" /> <!--Requirement-->
-    <Field id="23" name="Odometer" type="int32" />  <!--Requirement-->
-    <Field id="24" name="OdometerMIl" type="int32" />
+    <Field id="23" name="Odometer" type="odometer" />  <!--Requirement-->
+    <Field id="24" name="OdometerMil" type="odometer" />
     <Field id="36" name="TimeStamp" type="time" /> <!--Requirement-->
     <Field id="43" name="BLEClientState" type="byte" />
     <Field id="48" name="PacketCount" type="int32" />
@@ -25,6 +22,7 @@
     <Field id="50" name="Satellites" type="int32" /> <!--Requirement-->
     <Field id="51" name="IgnitionDuration" type="int32" />
     <Field id="53" name="Supply" type="int32" /> <!--Requirement-->
+    <Field id="54" name="BatteryVoltage" type="int32" />
     <Field id="55" name="TotalIdleDuration" type="byte" />
     <Field id="56" name="FenceID" type="byte" />
     <Field id="57" name="Altitude" type="float32" /> <!--Requirement-->

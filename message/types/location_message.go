@@ -34,6 +34,11 @@ func (lm *LocationMessage) Ack() string {
 	return ""
 }
 
+//Content ...
+func (lm *LocationMessage) Content() string {
+	return ""
+}
+
 //Sensors ...
 func (lm *LocationMessage) Sensors() []sensors.ISensor {
 	return lm.sensors

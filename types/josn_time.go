@@ -15,7 +15,7 @@ func (t *JSONTime) UnmarshalJSON(b []byte) error {
 
 //NewTime ...
 func NewTime(_unixTimeStamp int64) *JSONTime {
-	return &JSONTime{Time: time.Unix(_unixTimeStamp, 0)}
+	return &JSONTime{Time: time.Unix(_unixTimeStamp, 0).UTC()}
 }
 
 //JSONTime ...

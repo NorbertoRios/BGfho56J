@@ -22,6 +22,12 @@ type ParametersMessage struct {
 	parameters string
 }
 
+//Content ...
+func (m *ParametersMessage) Content() string {
+	return m.parameters
+}
+
+//Parameters ...
 func (m *ParametersMessage) Parameters() map[string]string {
 	rawParams := strings.Split(m.parameters, ";")
 	parameters := make(map[string]string)

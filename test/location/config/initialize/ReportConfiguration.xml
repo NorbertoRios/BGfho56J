@@ -1,33 +1,31 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<ReportConfiguration>
-
-<!-- 12=28.10.66.60.65.9.36.3.4.7.8.11.12.14.17.24.50.56.51.55.70.71.72.73.74.75.76.77.80.81.82; -->
-
+﻿<ReportConfiguration>
   <Fields>    
+    <Field id="1" name="ICCID" type="string" /> <!--Requirement-->
     <Field id="3" name="Latitude" type="float32" /> <!--Requirement-->
     <Field id="4" name="Longitude" type="float32" /> <!--Requirement-->
     <Field id="7" name="SequenceID" type="int32" /> 
     <Field id="8" name="LocationAge" type="int32" /> <!--Requirement-->
     <Field id="9" name="ReportClass" type="string" /> 
-    <Field id="10" name="Reasone" type="reason" /> <!--Requirement-->
+    <Field id="10" name="Reason" type="reason" /> <!--Requirement-->
     <Field id="11" name="IgnitionState" type="byte" /> <!--Requirement-->
     <Field id="12" name="Duration" type="int32" />    
     <Field id="14" name="SpeedMPH" type="byte" />    
     <Field id="15" name="Speed" type="float32" /> <!--Requirement-->
     <Field id="17" name="Heading" type="float32" /> <!--Requirement-->
-    <Field id="23" name="Odometer" type="int32" />  <!--Requirement-->
-    <Field id="24" name="OdometerMIl" type="int32" />
+    <Field id="23" name="Odometer" type="odometer" />  <!--Requirement-->
+    <Field id="24" name="OdometerMil" type="odometer" />
     <Field id="36" name="TimeStamp" type="time" /> <!--Requirement-->
     <Field id="43" name="BLEClientState" type="byte" />
     <Field id="48" name="PacketCount" type="int32" />
+    <Field id="46" name="LocHDOP" type="int32" />
     <Field id="50" name="Satellites" type="int32" /> <!--Requirement-->
     <Field id="51" name="IgnitionDuration" type="int32" />
     <Field id="53" name="Supply" type="int32" /> <!--Requirement-->
+    <Field id="54" name="BatteryVoltage" type="int32" />
     <Field id="55" name="TotalIdleDuration" type="byte" />
     <Field id="56" name="FenceID" type="byte" />
     <Field id="57" name="Altitude" type="float32" /> <!--Requirement-->
-    <Field id="60" name="CRC" type="string" />
-    <Field id="65" name="FormatChecksum" type="string" />
+    <Field id="60" name="CRC" type="string" />    
     <Field id="66" name="Firmware" type="string" /> <!--Requirement-->
     <Field id="70" name="RPM" type="int32" />
     <Field id="71" name="CoolantTemp" type="int32" />
@@ -35,7 +33,7 @@
     <Field id="73" name="EngineOdometer" type="int32" />    
     <Field id="74" name="VIN" type="string" />
     <Field id="75" name="FuelLevel" type="byte" />
-    <Field id="76" name="DTC" type="string" />
+    <Field id="76" name="DTCCode" type="dtc" />
     <Field id="77" name="ThrottlePosition" type="byte" />
     <Field id="80" name="CumulativeFuelEconomy" type="byte" />
     <Field id="81" name="TripFuelEconomy" type="byte" />

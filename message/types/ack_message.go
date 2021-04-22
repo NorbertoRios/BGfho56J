@@ -19,8 +19,8 @@ type AckMessage struct {
 	commands string
 }
 
-//Commands ...
-func (m *AckMessage) Commands() string {
+//Content ...
+func (m *AckMessage) Content() string {
 	return m.commands
 }
 

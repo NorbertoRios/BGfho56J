@@ -12,6 +12,7 @@ func NewObservable() *Observable {
 		NewInt32(),
 		NewReason(),
 		NewDTC(),
+		NewOdometer(),
 	}
 	return &Observable{
 		observers: observers,
