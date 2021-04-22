@@ -9,7 +9,6 @@ import (
 	"net"
 
 	_ "geometris-go/docs"
-	"geometris-go/logger"
 	"geometris-go/repository"
 	"geometris-go/response"
 	"geometris-go/storage"
@@ -206,7 +205,6 @@ func (c *DeviceController) UpdateConfig(ctx *gin.Context) {
 	identity := ctx.Request.PostFormValue("identity")
 	callbackID := ctx.Request.PostFormValue("callback_id")
 	commands := ctx.PostFormArray("config")
-	logger.Logger().WriteToLog(logger.Info, "[Debug] ", commands)
 	if !storage.Storage().DeviceExist(identity) {
 		resp := &response.FacadeResponse{
 			Code:      fmt.Sprintf("Cant send config  to %v . Device is offline", identity),

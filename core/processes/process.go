@@ -62,7 +62,7 @@ func (p *Process) TasksCompetitiveness(_newTask interfaces.ITask, _device interf
 	} else {
 		if reflect.DeepEqual(_newTask.Request(), p.CurrentTask.Request()) {
 			_newTask.Stop("Duplicate")
-			resp.AppendDirtyTask(_newTask)
+			//resp.AppendDirtyTask(_newTask)
 		} else {
 			p.CurrentTask.Stop("Deprecated")
 			resp.AppendDirtyTask(p.CurrentTask)
