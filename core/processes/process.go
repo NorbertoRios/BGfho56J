@@ -83,7 +83,7 @@ func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.I
 	commands := p.CurrentTask.NewMessageArrived(_message, _device)
 	p.ExecuteCommands(commands, _device)
 	if p.CurrentTask.IsClosed() {
-		logger.Logger().WriteToLog(logger.Info, "[Process | MessageArrived] Task with id "+p.CurrentTask.Request().CallbackID()+". Is Closed")
+		logger.Logger().WriteToLog(logger.Info, "[Process | MessageArrived] Task "+p.Symbol()+" is closed")
 		resp.AppendDirtyTask(p.CurrentTask)
 		p.SaveTask(p.CurrentTask)
 		_device.Processes().ProcessComplete(p.Symbol())

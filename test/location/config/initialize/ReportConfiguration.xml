@@ -1,6 +1,8 @@
-﻿<ReportConfiguration>
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ReportConfiguration>
   <Fields>    
     <Field id="1" name="ICCID" type="string" /> <!--Requirement-->
+    <Field id="2" name="EventTime" type="time" />
     <Field id="3" name="Latitude" type="float32" /> <!--Requirement-->
     <Field id="4" name="Longitude" type="float32" /> <!--Requirement-->
     <Field id="7" name="SequenceID" type="int32" /> 
@@ -8,12 +10,19 @@
     <Field id="9" name="ReportClass" type="string" /> 
     <Field id="10" name="Reason" type="reason" /> <!--Requirement-->
     <Field id="11" name="IgnitionState" type="byte" /> <!--Requirement-->
-    <Field id="12" name="Duration" type="int32" />    
-    <Field id="14" name="SpeedMPH" type="byte" />    
+    <Field id="12" name="Duration" type="int32" />
+    <Field id="13" name="SpeedKMH" type="float32" />
+    <Field id="14" name="SpeedMPH" type="float32" />
     <Field id="15" name="Speed" type="float32" /> <!--Requirement-->
+    <Field id="16" name="HeadingAlpha" type="string" />
     <Field id="17" name="Heading" type="float32" /> <!--Requirement-->
+    <Field id="20" name="RollTime" type="int32" />
+    <Field id="21" name="TrueOdometerKM" type="odometer" />
+    <Field id="22" name="TrueOdometerMil" type="odometer" />
     <Field id="23" name="Odometer" type="odometer" />  <!--Requirement-->
     <Field id="24" name="OdometerMil" type="odometer" />
+    <Field id="25" name="HighestGPSSpeedMPH" type="float32" />
+    <Field id="35" name="Phone" type="string" />
     <Field id="36" name="TimeStamp" type="time" /> <!--Requirement-->
     <Field id="43" name="BLEClientState" type="byte" />
     <Field id="48" name="PacketCount" type="int32" />
