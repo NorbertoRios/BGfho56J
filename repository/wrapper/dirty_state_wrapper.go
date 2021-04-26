@@ -12,6 +12,7 @@ import (
 func NewDirtyStateWrapper(_state interfaces.IDirtyState) IDirtyStateWrapper {
 	dto := convert.NewStateToDTO(_state.State().State()).Convert()
 	dto.SetValue("DevId", _state.Identity())
+	dto.SetValue("storage", "cloud")
 	return &DirtyStateWrapper{
 		state:      _state,
 		sensors:    _state.State().StateMap(),

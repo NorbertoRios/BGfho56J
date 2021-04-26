@@ -6,7 +6,6 @@ import (
 	"geometris-go/core/processes/response"
 	"geometris-go/logger"
 	message "geometris-go/message/interfaces"
-	"geometris-go/rabbitlogger"
 	"reflect"
 	"sync"
 )
@@ -76,7 +75,6 @@ func (p *Process) TasksCompetitiveness(_newTask interfaces.ITask, _device interf
 
 //MessageArrived ...
 func (p *Process) MessageArrived(_message message.IMessage, _device interfaces.IDevice) interfaces.IProcessResponse {
-	rabbitlogger.Logger().Log(_message.Content(), _message.Identity())
 	p.Mutex.Lock()
 	defer p.Mutex.Unlock()
 	resp := response.NewProcessResponse()

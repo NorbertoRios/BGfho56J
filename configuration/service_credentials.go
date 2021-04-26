@@ -8,7 +8,6 @@ type ServiceCredentials struct {
 	UDPHost                          []string
 	UDPPort                          []int
 	WorkersCount                     int
-	DeviceFacadeHost                 string
 	Rabbit                           *RabbitCredentials
 	SystemExchange                   string
 	FacadeCallbackExchange           string

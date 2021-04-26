@@ -5,6 +5,7 @@ import (
 	"geometris-go/core/device"
 	core "geometris-go/core/interfaces"
 	"geometris-go/message/interfaces"
+	"geometris-go/rabbitlogger"
 	"geometris-go/repository"
 	"geometris-go/storage"
 	"geometris-go/unitofwork"
@@ -26,6 +27,7 @@ type UDPMessageUseCase struct {
 
 //Launch ...
 func (usecase *UDPMessageUseCase) Launch(_message interfaces.IMessage, _channel connInterfaces.IChannel) {
+	rabbitlogger.Logger().Log(_message.Content(), _message.Identity())
 	dev := storage.Storage().Device(_message.Identity())
 	uow := unitofwork.New(usecase.mysqlRepository, usecase.rabbitRepository)
 	if dev == nil {
