@@ -27,7 +27,7 @@ func NewWithDiffConfig(_dir, _file string) *Parser {
 func New() *Parser {
 	if parser == nil {
 		parser = &Parser{
-			reportConfig: configuration.ReportConfig(types.NewFile("/config/initialize/ReportConfiguration.xml")),
+			reportConfig: configuration.ReportConfig(types.NewFile("/config/initializer/ReportConfiguration.xml")),
 		}
 	}
 	return parser

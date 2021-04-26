@@ -11,7 +11,7 @@ var config *ReportConfiguration
 //ReportConfig ...
 func ReportConfig(_file types.IFile) *ReportConfiguration {
 	if config == nil {
-		file := _file //types.NewFile("/config/initialize/ReportConfiguration.xml")
+		file := _file //types.NewFile("/config/initializer/ReportConfiguration.xml")
 		provider := ConstructXMLProvider(file)
 		config = constructReportConfiguration(provider)
 	}

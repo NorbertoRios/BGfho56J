@@ -67,6 +67,6 @@ func (activity *DeviceActivity) AfterFind(tx *gorm.DB) error {
 
 //State ...
 func (activity *DeviceActivity) State() []sensors.ISensor {
-	convertor := convert.NewDTOToState(activity.LastMessage, configuration.ReportConfig(types.NewFile("/config/initialize/ReportConfiguration.xml")))
+	convertor := convert.NewDTOToState(activity.LastMessage, configuration.ReportConfig(types.NewFile("/config/initializer/ReportConfiguration.xml")))
 	return convertor.Convert()
 }
