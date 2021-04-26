@@ -54,6 +54,7 @@ func (c *DeviceController) SendCommand(ctx *gin.Context) {
 			Success:   false,
 		}
 		ctx.JSON(http.StatusNotFound, resp)
+		return
 	}
 	device := storage.Storage().Device(identity)
 	request := boCommandRequest.NewBOCommandRequest(identity, callbackID, command)
@@ -128,7 +129,7 @@ func (c *DeviceController) GetLocateCommand(ctx *gin.Context) {
 // @Produce  json
 // @Param identity formData string true "identity"
 // @Param callback_id formData string true "callback_id"
-// @Success 302 {object} response.FacadeResponse
+// @Success 200 {object} response.FacadeResponse
 // @Failure 404 {object} response.FacadeResponse
 // @Router /device/locate [post]
 func (c *DeviceController) Locate(ctx *gin.Context) {
@@ -137,11 +138,11 @@ func (c *DeviceController) Locate(ctx *gin.Context) {
 	var resp *response.FacadeResponse
 	if !storage.Storage().DeviceExist(identity) {
 		resp = &response.FacadeResponse{
-			Code:      fmt.Sprintf("Device with 'identity'=%v online", identity),
+			Code:      fmt.Sprintf("Device with 'identity'=%v offline", identity),
 			CreatedAt: time.Now().UTC(),
-			Success:   true,
+			Success:   false,
 		}
-		ctx.JSON(http.StatusFound, resp)
+		ctx.JSON(http.StatusNotFound, resp)
 		return
 	}
 	device := storage.Storage().Device(identity)
@@ -157,6 +158,13 @@ func (c *DeviceController) Locate(ctx *gin.Context) {
 		return
 	}
 	usecase.NewAPIRequestUseCase(c.mysql, c.rabbit).Launch(req, device, process)
+	resp = &response.FacadeResponse{
+		Code:            "POLLQ VIAUDP",
+		ExecutedCommand: "POLLQ VIAUDP",
+		CreatedAt:       time.Now().UTC(),
+		Success:         false,
+	}
+	ctx.JSON(http.StatusOK, resp)
 }
 
 // DeviceOnline godoc

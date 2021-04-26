@@ -6,6 +6,7 @@ import (
 	"geometris-go/core/processes/states"
 	"geometris-go/core/processes/watchdog"
 	"geometris-go/message/types"
+	"strings"
 )
 
 //NewInProgressState ..
@@ -35,7 +36,8 @@ func (s *InProgress) NewMessageArrived(msg interface{}, _device interfaces.IDevi
 		{
 			ack, _ := msg.(*types.AckMessage)
 			if value, f := ack.Parameters()["12"]; f {
-				s.complete(_device, _task, value)
+				ackValue := strings.Split(value, "=")
+				s.complete(_device, _task, ackValue[1])
 			}
 		}
 	}
