@@ -3,6 +3,8 @@ package logger
 import (
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 
 	"gopkg.in/natefinch/lumberjack.v2"
 )
@@ -30,22 +32,23 @@ func Logger() *logger {
 
 func buildLogger() *logger {
 	log.SetFlags(log.Ldate | log.Ltime)
+
 	errorOut := &lumberjack.Logger{
-		Filename:   "logs/error.log",
+		Filename:   logFilePath("error.log"),
 		MaxSize:    500, // megabytes
 		MaxBackups: 6,
 		MaxAge:     7,    //days
 		Compress:   true, // disabled by default
 	}
 	infoOut := &lumberjack.Logger{
-		Filename:   "logs/info.log",
+		Filename:   logFilePath("info.log"),
 		MaxSize:    500, // megabytes
 		MaxBackups: 6,
 		MaxAge:     7,    //days
 		Compress:   true, // disabled by default
 	}
 	fatalOut := &lumberjack.Logger{
-		Filename:   "logs/fatal.log",
+		Filename:   logFilePath("fatal.log"),
 		MaxSize:    500, // megabytes
 		MaxBackups: 6,
 		MaxAge:     7,    //days
@@ -56,6 +59,12 @@ func buildLogger() *logger {
 		InfoOutput:  infoOut,
 		FatalOutput: fatalOut,
 	}
+}
+
+func logFilePath(_type string) string {
+	dir := filepath.Dir(os.Args[0])
+	absPath, _ := filepath.Abs(dir + "/logs/" + _type)
+	return absPath
 }
 
 //Logger logger
