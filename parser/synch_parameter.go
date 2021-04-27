@@ -1,15 +1,12 @@
 package parser
 
 import (
-	"geometris-go/logger"
+	"geometris-go/parser/interfaces"
 	"strings"
 )
 
 //NewSynchParameter ...
-func NewSynchParameter(_parameter string) *SynchParameter {
-	if _parameter == "" {
-		logger.Logger().WriteToLog(logger.Info, "[NewSynchParameter] Synch parameter is empty")
-	}
+func NewSynchParameter(_parameter string) interfaces.ISynchParameter {
 	return &SynchParameter{
 		parameter: _parameter,
 	}

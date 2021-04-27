@@ -1,4 +1,4 @@
-package observer
+package factory
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 )
 
 //NewTimes ...
-func NewTimes() IObserver {
+func NewTimes() IFactory {
 	return &Times{
 		typeValue: "time",
 	}

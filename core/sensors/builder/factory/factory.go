@@ -1,10 +1,10 @@
-package observer
+package factory
 
 import "geometris-go/core/sensors"
 
-//NewObservable ..
-func NewObservable() *Observable {
-	observers := []IObserver{
+//New ...
+func New() IFactory {
+	_factories := []IFactory{
 		NewBytes(),
 		NewFloat32(),
 		NewString(),
@@ -14,29 +14,29 @@ func NewObservable() *Observable {
 		NewDTC(),
 		NewOdometer(),
 	}
-	return &Observable{
-		observers: observers,
+	return &Factory{
+		factories: _factories,
 	}
 }
 
-//Observable ...
-type Observable struct {
-	observers []IObserver
+//Factory ...
+type Factory struct {
+	factories []IFactory
 }
 
 //Convert ...
-func (o *Observable) Convert(_key string, _value interface{}, _type string) []sensors.ISensor {
+func (o *Factory) Convert(_key string, _value interface{}, _type string) []sensors.ISensor {
 	sensorsArr := []sensors.ISensor{}
-	for _, observer := range o.observers {
+	for _, observer := range o.factories {
 		sensorsArr = append(sensorsArr, observer.Convert(_key, _value, _type)...)
 	}
 	return sensorsArr
 }
 
 //Build ...
-func (o *Observable) Build(_key, _value, _type string) []sensors.ISensor {
+func (o *Factory) Build(_key, _value, _type string) []sensors.ISensor {
 	sensorsArr := []sensors.ISensor{}
-	for _, observer := range o.observers {
+	for _, observer := range o.factories {
 		sensorsArr = append(sensorsArr, observer.Build(_key, _value, _type)...)
 	}
 	return sensorsArr

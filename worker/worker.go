@@ -2,6 +2,7 @@ package worker
 
 import (
 	"geometris-go/core/usecase"
+	"geometris-go/parser/interfaces"
 	"geometris-go/repository"
 	"geometris-go/storage"
 	"sync"
@@ -9,7 +10,7 @@ import (
 )
 
 //NewWorker ...
-func NewWorker(_mysql, _rabbit repository.IRepository, _garbageDuration int) *Worker {
+func NewWorker(_mysql, _rabbit repository.IRepository, _garbageDuration int, _parser interfaces.IParser) *Worker {
 	return &Worker{
 		garbageDuration: _garbageDuration,
 		mysql:           _mysql,
@@ -17,6 +18,7 @@ func NewWorker(_mysql, _rabbit repository.IRepository, _garbageDuration int) *Wo
 		messageChannel:  make(chan *EntryData, 1000000),
 		Devices:         make(map[string]bool),
 		Mutex:           &sync.Mutex{},
+		parser:          _parser,
 	}
 }
 
@@ -28,6 +30,7 @@ type Worker struct {
 	rabbit          repository.IRepository
 	messageChannel  chan *EntryData
 	Devices         map[string]bool
+	parser          interfaces.IParser
 }
 
 //NewDevice ...
@@ -56,7 +59,7 @@ func (w *Worker) Run() {
 		select {
 		case entryData := <-w.messageChannel:
 			{
-				usecase := usecase.NewUDPMessageUseCase(w.mysql, w.rabbit)
+				usecase := usecase.NewUDPMessageUseCase(w.mysql, w.rabbit, w.parser)
 				usecase.Launch(entryData.Message, entryData.Channel)
 			}
 		case <-ticker.C:

@@ -1,4 +1,4 @@
-package observer
+package factory
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 //NewBytes ...
-func NewBytes() IObserver {
+func NewBytes() IFactory {
 	return &Bytes{
 		typeValue: "byte",
 	}

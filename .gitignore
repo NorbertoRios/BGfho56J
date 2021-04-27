@@ -5,3 +5,4 @@ credentials.json
 *.uxf
 *.exe
 __debug_bin
+debug.test

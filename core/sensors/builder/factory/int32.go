@@ -1,4 +1,4 @@
-package observer
+package factory
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 //NewInt32 ...
-func NewInt32() IObserver {
+func NewInt32() IFactory {
 	return &Int32{
 		typeValue: "int32",
 	}

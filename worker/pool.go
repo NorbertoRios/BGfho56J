@@ -2,6 +2,7 @@ package worker
 
 import (
 	"container/list"
+	"geometris-go/parser"
 	"geometris-go/repository"
 	"sync"
 )
@@ -9,8 +10,9 @@ import (
 //NewPool ...
 func NewPool(workersCount, _garbageduration int, _mysql, rabbit repository.IRepository) *Pool {
 	_workers := list.New()
+	parser := parser.New()
 	for i := 0; i < workersCount; i++ {
-		w := NewWorker(_mysql, rabbit, _garbageduration)
+		w := NewWorker(_mysql, rabbit, _garbageduration, parser)
 		go w.Run()
 		_workers.PushBack(w)
 	}

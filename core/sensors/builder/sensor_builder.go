@@ -2,19 +2,19 @@ package builder
 
 import (
 	"geometris-go/core/sensors"
-	"geometris-go/core/sensors/builder/observer"
+	"geometris-go/core/sensors/builder/factory"
 )
 
 //NewSensorBuilder ...
 func NewSensorBuilder() *SensorBuilder {
 	return &SensorBuilder{
-		observable: observer.NewObservable(),
+		observable: factory.New(),
 	}
 }
 
 //SensorBuilder ...
 type SensorBuilder struct {
-	observable *observer.Observable
+	observable factory.IFactory
 }
 
 //Build ...

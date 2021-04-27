@@ -1,4 +1,4 @@
-package observer
+package factory
 
 import (
 	"geometris-go/core/sensors"
@@ -6,7 +6,7 @@ import (
 )
 
 //NewDTC ...
-func NewDTC() IObserver {
+func NewDTC() IFactory {
 	return &DTC{
 		typeValue: "dtc",
 	}

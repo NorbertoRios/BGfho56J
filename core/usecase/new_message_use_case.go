@@ -5,6 +5,7 @@ import (
 	"geometris-go/core/device"
 	core "geometris-go/core/interfaces"
 	"geometris-go/message/interfaces"
+	iParser "geometris-go/parser/interfaces"
 	"geometris-go/rabbitlogger"
 	"geometris-go/repository"
 	"geometris-go/storage"
@@ -13,8 +14,8 @@ import (
 )
 
 //NewUDPMessageUseCase ...
-func NewUDPMessageUseCase(_mysql, _rabbit repository.IRepository) *UDPMessageUseCase {
-	usecase := &UDPMessageUseCase{}
+func NewUDPMessageUseCase(_mysql, _rabbit repository.IRepository, _parser iParser.IParser) *UDPMessageUseCase {
+	usecase := &UDPMessageUseCase{parser: _parser}
 	usecase.mysqlRepository = _mysql
 	usecase.rabbitRepository = _rabbit
 	return usecase
@@ -23,6 +24,7 @@ func NewUDPMessageUseCase(_mysql, _rabbit repository.IRepository) *UDPMessageUse
 //UDPMessageUseCase ...
 type UDPMessageUseCase struct {
 	Base
+	parser iParser.IParser
 }
 
 //Launch ...
@@ -48,7 +50,7 @@ func (usecase *UDPMessageUseCase) Launch(_message interfaces.IMessage, _channel 
 //BuildDevice ...
 func (usecase *UDPMessageUseCase) BuildDevice(_message interfaces.IMessage, _channel connInterfaces.IChannel, _uow uowInterfaces.IUnitOfWork) core.IDevice {
 	activity := usecase.mysqlRepository.Load(_message.Identity())
-	dev := device.NewDevice(_message.Identity(), activity.Software.SyncParams, activity.LastMessageID, activity.State(), _channel)
+	dev := device.NewDevice(_message.Identity(), activity.Software.SyncParams, activity.LastMessageID, activity.State(usecase.parser.ReportConfig()), _channel, usecase.parser)
 	storage.Storage().AddDevice(dev)
 	processes := dev.Processes().All()
 	for _, process := range processes {

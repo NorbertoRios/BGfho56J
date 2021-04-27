@@ -4,6 +4,7 @@ import (
 	"geometris-go/core/processes/request"
 	"geometris-go/core/usecase"
 	"geometris-go/message/factory"
+	"geometris-go/parser"
 	"geometris-go/repository"
 	"geometris-go/storage"
 	"geometris-go/test/mock"
@@ -36,7 +37,7 @@ func TestLocationRequest(t *testing.T) {
 	}
 	APIUseCase := usecase.NewAPIRequestUseCase(mockMysqlRepo, mockRabbitRepo)
 	APIUseCase.Launch(request, device, process)
-	messageUseCase := usecase.NewUDPMessageUseCase(mockMysqlRepo, mockRabbitRepo)
+	messageUseCase := usecase.NewUDPMessageUseCase(mockMysqlRepo, mockRabbitRepo, parser.NewWithDiffConfig("..", "/config/initializer/ReportConfiguration.xml"))
 	messageFactory := factory.New()
 	locationMessage := messageFactory.BuildMessage([]byte("87A110550003,F001,OFF_PERIODIC,1616773466,48.746404,37.591212,33,9,0,40,0,310,0.0,4,,0,0,,,,,,,0:0,,0,0,"))
 	messageUseCase.Launch(locationMessage, nil)

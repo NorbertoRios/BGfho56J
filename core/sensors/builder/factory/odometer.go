@@ -1,4 +1,4 @@
-package observer
+package factory
 
 import (
 	"geometris-go/core/sensors"
@@ -7,7 +7,7 @@ import (
 )
 
 //NewOdometer ...
-func NewOdometer() IObserver {
+func NewOdometer() IFactory {
 	return &Odometer{
 		typeValue: "odometer",
 	}

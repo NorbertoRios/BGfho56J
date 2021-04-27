@@ -7,6 +7,7 @@ import (
 	"geometris-go/core/processes/states"
 	"geometris-go/core/usecase"
 	"geometris-go/message/factory"
+	"geometris-go/parser"
 	"geometris-go/repository"
 	"geometris-go/storage"
 	"geometris-go/test/mock"
@@ -35,7 +36,7 @@ func TestSynchronizationProcess(t *testing.T) {
 
 func TestSynchronizationComplete(t *testing.T) {
 	SetUP("")
-	messageUseCase := usecase.NewUDPMessageUseCase(mockMysqlRepo, mockRabbitRepo)
+	messageUseCase := usecase.NewUDPMessageUseCase(mockMysqlRepo, mockRabbitRepo, parser.NewWithDiffConfig("..", "/config/initializer/ReportConfiguration.xml"))
 	messageFactory := factory.New()
 	ackMessage := messageFactory.BuildMessage([]byte("87A110550003 PARAMETERS 12=65.28.9.36.3.4.7.8.11.12.14.17.24.50.56.51.55.70.71.72.73.74.75.76.77.80.81.82;"))
 	messageUseCase.Launch(ackMessage, nil)
@@ -71,7 +72,7 @@ func TestMultisync(t *testing.T) {
 	mockRabbitRepo := mock.NewRepository()
 	APIUseCase := usecase.NewAPIRequestUseCase(mockMysqlRepo, mockRabbitRepo)
 	APIUseCase.Launch(request, device, process)
-	messageUseCase := usecase.NewUDPMessageUseCase(mockMysqlRepo, mockRabbitRepo)
+	messageUseCase := usecase.NewUDPMessageUseCase(mockMysqlRepo, mockRabbitRepo, parser.NewWithDiffConfig("..", "/config/initializer/ReportConfiguration.xml"))
 	messageFactory := factory.New()
 	ackMessage := messageFactory.BuildMessage([]byte(fmt.Sprintf("87A110550003 ACK <SETPARAMS %v ACK;>", commands[0])))
 	messageUseCase.Launch(ackMessage, nil)

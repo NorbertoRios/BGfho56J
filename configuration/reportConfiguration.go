@@ -6,16 +6,11 @@ import (
 	"geometris-go/types"
 )
 
-var config *ReportConfiguration
-
-//ReportConfig ...
-func ReportConfig(_file types.IFile) *ReportConfiguration {
-	if config == nil {
-		file := _file //types.NewFile("/config/initializer/ReportConfiguration.xml")
-		provider := ConstructXMLProvider(file)
-		config = constructReportConfiguration(provider)
-	}
-	return config
+//NewReportConfig ...
+func NewReportConfig(_file types.IFile) *ReportConfiguration {
+	file := _file
+	provider := ConstructXMLProvider(file)
+	return constructReportConfiguration(provider)
 }
 
 //ReportConfiguration represents report config

@@ -10,6 +10,7 @@ import (
 	synchStates "geometris-go/core/processes/synchronization/states"
 	"geometris-go/core/usecase"
 	"geometris-go/message/factory"
+	"geometris-go/parser"
 	"geometris-go/rabbitlogger"
 	"geometris-go/repository"
 	"geometris-go/storage"
@@ -54,7 +55,7 @@ func TestConfigWorkflow(t *testing.T) {
 	mockRabbitRepo := mock.NewRepository()
 	APIUseCase := usecase.NewAPIRequestUseCase(mockMysqlRepo, mockRabbitRepo)
 	APIUseCase.Launch(request, device, process)
-	messageUseCase := usecase.NewUDPMessageUseCase(mockMysqlRepo, mockRabbitRepo)
+	messageUseCase := usecase.NewUDPMessageUseCase(mockMysqlRepo, mockRabbitRepo, parser.NewWithDiffConfig("../..", "/config/initializer/ReportConfiguration.xml"))
 	messageFactory := factory.New()
 	for _, command := range commands {
 		time.Sleep(500 * time.Millisecond)
@@ -90,7 +91,7 @@ func TestConfigWorkflow(t *testing.T) {
 		}
 	}
 	difCRCMessage := messageFactory.BuildMessage([]byte("87A110550003,F002,OFF_PERIODIC,1616773466,48.746404,37.591212,33,9,0,40,0,310,0.0,4,,0,0,,,,,,,0:0,,0,0,"))
-	messageUseCase = usecase.NewUDPMessageUseCase(mockMysqlRepo, mockRabbitRepo)
+	messageUseCase = usecase.NewUDPMessageUseCase(mockMysqlRepo, mockRabbitRepo, parser.NewWithDiffConfig("..", "/config/initializer/ReportConfiguration.xml"))
 	messageUseCase.Launch(difCRCMessage, nil)
 	processes = storage.Storage().Device("geometris_87A110550003").Processes().All()
 	for _, process := range processes {
@@ -108,7 +109,7 @@ func TestConfigWorkflow(t *testing.T) {
 		messageUseCase.Launch(difCRCMessage, nil)
 	}
 	paramCRCMessage := messageFactory.BuildMessage([]byte([]byte("87A110550003 PARAMETERS 12=65.28.9.36.3.4.7.8.11.12.14.17.24.50.56.51.55.70.71.72.73.74.75.76.77.80.81.82;")))
-	messageUseCase = usecase.NewUDPMessageUseCase(mockMysqlRepo, mockRabbitRepo)
+	messageUseCase = usecase.NewUDPMessageUseCase(mockMysqlRepo, mockRabbitRepo, parser.NewWithDiffConfig("..", "/config/initializer/ReportConfiguration.xml"))
 	messageUseCase.Launch(paramCRCMessage, nil)
 	processes = storage.Storage().Device("geometris_87A110550003").Processes().All()
 	for _, process := range processes {

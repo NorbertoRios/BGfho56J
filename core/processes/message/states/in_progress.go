@@ -54,8 +54,7 @@ func (s *InProgress) NewLocationMessageArrived(msg *types.RawLocationMessage, _d
 		logger.Logger().WriteToLog(logger.Info, fmt.Sprintf("[NewLocationMessageArrived] Cant find sync parameter for message: %v", msg.RawData()))
 		return cList, syncResp
 	}
-	messageParser := parser.New()
-	locationMessage := messageParser.Parse(msg, parser.NewSynchParameter(synchParameter)).(*types.LocationMessage)
+	locationMessage := _device.Parser().Parse(msg, parser.NewSynchParameter(synchParameter)).(*types.LocationMessage)
 	_device.NewState(locationMessage.Sensors())
 	resp.AppendState(response.NewDirtyState(msg.Identity(), s.synchParams, _device.State(), msg.RawByteData()))
 	cList.PushBack(commands.NewSendMessageCommand(locationMessage.Ack()))

@@ -34,7 +34,7 @@
     <Field id="55" name="TotalIdleDuration" type="byte" />
     <Field id="56" name="FenceID" type="byte" />
     <Field id="57" name="Altitude" type="float32" /> <!--Requirement-->
-    <Field id="60" name="CRC" type="string" />    
+    <Field id="60" name="PacketContent" type="string" />    
     <Field id="66" name="Firmware" type="string" /> <!--Requirement-->
     <Field id="70" name="RPM" type="int32" />
     <Field id="71" name="CoolantTemp" type="int32" />

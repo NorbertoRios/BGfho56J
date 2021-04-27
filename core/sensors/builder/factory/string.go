@@ -1,4 +1,4 @@
-package observer
+package factory
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 )
 
 //NewString ...
-func NewString() IObserver {
+func NewString() IFactory {
 	return &String{
 		typeValue: "string",
 	}

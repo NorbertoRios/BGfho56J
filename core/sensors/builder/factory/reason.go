@@ -1,4 +1,4 @@
-package observer
+package factory
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 //NewReason ...
-func NewReason() IObserver {
+func NewReason() IFactory {
 	return &Reason{
 		typeValue: "reason",
 	}

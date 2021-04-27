@@ -1,4 +1,4 @@
-package observer
+package factory
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 //NewFloat32 ...
-func NewFloat32() IObserver {
+func NewFloat32() IFactory {
 	return &Float64{
 		typeValue: "float32",
 	}

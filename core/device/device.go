@@ -7,11 +7,12 @@ import (
 	"geometris-go/core/processes/manager"
 	"geometris-go/core/sensors"
 	"geometris-go/logger"
+	iParser "geometris-go/parser/interfaces"
 	"sync"
 )
 
 //NewDevice ...
-func NewDevice(_identity string, _syncParameters map[string]string, _sid uint64, _sensors []sensors.ISensor, _channel connInterfaces.IChannel) interfaces.IDevice {
+func NewDevice(_identity string, _syncParameters map[string]string, _sid uint64, _sensors []sensors.ISensor, _channel connInterfaces.IChannel, _parser iParser.IParser) interfaces.IDevice {
 	return &Device{
 		sourseID:        _sid,
 		DeviceIdentity:  _identity,
@@ -19,6 +20,7 @@ func NewDevice(_identity string, _syncParameters map[string]string, _sid uint64,
 		UDPChannel:      _channel,
 		Mutex:           &sync.Mutex{},
 		DeviceProcesses: manager.New(_syncParameters),
+		parser:          _parser,
 	}
 }
 
@@ -30,6 +32,7 @@ type Device struct {
 	UDPChannel      connInterfaces.IChannel
 	Mutex           *sync.Mutex
 	DeviceProcesses interfaces.IProcesses
+	parser          iParser.IParser
 }
 
 //Send send command to device
@@ -40,6 +43,11 @@ func (device *Device) Send(message string) bool {
 		return false
 	}
 	return true
+}
+
+//Parser ....
+func (device *Device) Parser() iParser.IParser {
+	return device.parser
 }
 
 //SourseID ...

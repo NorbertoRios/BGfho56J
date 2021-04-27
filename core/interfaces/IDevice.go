@@ -4,6 +4,7 @@ import (
 	"container/list"
 	connInterfaces "geometris-go/connection/interfaces"
 	"geometris-go/core/sensors"
+	"geometris-go/parser/interfaces"
 )
 
 //IDevice ...
@@ -18,4 +19,5 @@ type IDevice interface {
 	Identity() string
 	SourseID() uint64
 	Processes() IProcesses
+	Parser() interfaces.IParser
 }
